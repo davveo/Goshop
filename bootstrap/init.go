@@ -21,7 +21,9 @@ func checkRequiredFolders() {
 
 	//3.检查Storage/logs 目录是否存在
 	if _, err := os.Stat(variable.BasePath + "/logs/"); err != nil {
-		log.Fatal(my_errors.ErrorsStorageLogsNotExists + err.Error())
+		if err := os.Mkdir(variable.BasePath+"/logs/", 0666); err != nil {
+			log.Fatal(my_errors.ErrorsStorageLogsMake + err.Error())
+		}
 	}
 }
 

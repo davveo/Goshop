@@ -5,6 +5,7 @@ const (
 	ErrorsConfigYamlNotExists    string = "config.yml 配置文件不存在"
 	ErrorsPublicNotExists        string = "public 目录不存在"
 	ErrorsStorageLogsNotExists   string = "storage/logs 目录不存在"
+	ErrorsStorageLogsMake   string = "storage/logs 目录创建失败"
 	ErrorsConfigInitFail         string = "初始化配置文件发生错误"
 	ErrorsFuncEventAlreadyExists string = "注册函数类事件失败，键名已经被注册"
 	ErrorsFuncEventNotRegister   string = "没有找到键名对应的函数"
