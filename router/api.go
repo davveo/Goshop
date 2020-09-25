@@ -23,10 +23,10 @@ func InitRouter() *gin.Engine {
 		AdminGroup.GET("admin/systems/roles/:roleId/checked", controller.RoleCheck) // done
 		AdminGroup.POST("admin/systems/admin-users/logout", controller.Logout)      // done
 		AdminGroup.GET("admin/index/page", controller.Index)
-		AdminGroup.GET("admin/admin/goods", controller.GoodsList)
-		AdminGroup.GET("admin/admin/shops/list", controller.ShopList)        // done
-		AdminGroup.GET("admin/admin/goods/brands/all", controller.BrandList) // done
-		AdminGroup.GET("admin/admin/goods/categories/0/children", controller.CategoryList)
+		AdminGroup.GET("admin/admin/goods", controller.GoodsList)                                   // done
+		AdminGroup.GET("admin/admin/shops/list", controller.ShopList)                               // done
+		AdminGroup.GET("admin/admin/goods/brands/all", controller.BrandList)                        // done
+		AdminGroup.GET("admin/admin/goods/categories/:parent_id/children", controller.CategoryList) // done
 	}
 
 	return router
