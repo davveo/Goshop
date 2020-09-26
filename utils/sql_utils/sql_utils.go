@@ -7,6 +7,13 @@ import (
 	"reflect"
 )
 
+var (
+	sqlNullStringType  = reflect.TypeOf(sql.NullString{})
+	sqlNullBoolType    = reflect.TypeOf(sql.NullBool{})
+	sqlNullFloat64Type = reflect.TypeOf(sql.NullFloat64{})
+	sqlNullInt64ype    = reflect.TypeOf(sql.NullInt64{})
+)
+
 func ParseJSON(rows *sql.Rows) ([]map[string]interface{}, error) {
 	columns, err := rows.Columns()
 	if err != nil {
@@ -44,7 +51,7 @@ func ParseJSON(rows *sql.Rows) ([]map[string]interface{}, error) {
 
 func ParseToStruct(rows *sql.Rows, to interface{}) error {
 	/*
-	parse sql rows to struct
+		parse sql rows to struct
 	*/
 	v := reflect.ValueOf(to)
 	if v.Elem().Type().Kind() != reflect.Struct {
@@ -68,4 +75,44 @@ func ParseToStruct(rows *sql.Rows, to interface{}) error {
 		scanDest = append(scanDest, addrByColumnName[columnName])
 	}
 	return rows.Scan(scanDest...)
+}
+
+func Transfer(dest interface{}) error {
+	tp := reflect.TypeOf(dest)
+	val := reflect.ValueOf(dest)
+
+	if val.Kind() != reflect.Ptr {
+		return errors.New("expect struct Ptr")
+	}
+	nums := val.Elem().NumField()
+	for i := 0; i < nums; i++ {
+		tpField := tp.Elem().Field(i)
+		valField := val.Elem().Field(i)
+		if tpField.Type == sqlNullStringType {
+			tsField := valField.Addr().Interface().(*sql.NullString)
+			// TODO 有点问题
+			valField.SetString(tsField.String)
+		} else if tpField.Type == sqlNullBoolType {
+			tsField := valField.Addr().Interface().(*sql.NullBool)
+			valField.SetBool(tsField.Bool)
+		} else if tpField.Type == sqlNullFloat64Type {
+			tsField := valField.Addr().Interface().(*sql.NullFloat64)
+			valField.SetFloat(tsField.Float64)
+		} else if tpField.Type == sqlNullInt64ype {
+			tsField := valField.Addr().Interface().(*sql.NullInt64)
+			valField.SetInt(tsField.Int64)
+		} else if tpField.Type.Kind() == reflect.Int ||
+			tpField.Type.Kind() == reflect.Int8 || tpField.Type.Kind() == reflect.Int16 ||
+			tpField.Type.Kind() == reflect.Int32 || tpField.Type.Kind() == reflect.Int64 ||
+			tpField.Type.Kind() == reflect.Uint || tpField.Type.Kind() == reflect.Uint8 ||
+			tpField.Type.Kind() == reflect.Uint16 || tpField.Type.Kind() == reflect.Uint32 ||
+			tpField.Type.Kind() == reflect.Uint64 || tpField.Type.Kind() == reflect.Float32 ||
+			tpField.Type.Kind() == reflect.Float64 || tpField.Type.Kind() == reflect.String ||
+			tpField.Type.Kind() == reflect.Slice || tpField.Type.Kind() == reflect.Struct {
+
+		} else {
+			return errors.New("unsupport sqlType")
+		}
+	}
+	return nil
 }
