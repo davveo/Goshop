@@ -2,7 +2,9 @@ package sql_utils
 
 import (
 	"database/sql"
+	"errors"
 	"log"
+	"reflect"
 )
 
 func ParseJSON(rows *sql.Rows) ([]map[string]interface{}, error) {
@@ -38,4 +40,32 @@ func ParseJSON(rows *sql.Rows) ([]map[string]interface{}, error) {
 		tableData = append(tableData, entry)
 	}
 	return tableData, nil
+}
+
+func ParseToStruct(rows *sql.Rows, to interface{}) error {
+	/*
+	parse sql rows to struct
+	*/
+	v := reflect.ValueOf(to)
+	if v.Elem().Type().Kind() != reflect.Struct {
+		return errors.New("expect a struct")
+	}
+
+	var scanDest []interface{}
+	columnNames, _ := rows.Columns()
+
+	addrByColumnName := map[string]interface{}{}
+
+	for i := 0; i < v.Elem().NumField(); i++ {
+		oneValue := v.Elem().Field(i)
+		columnName := v.Elem().Type().Field(i).Tag.Get("json")
+		if columnName == "" {
+			columnName = oneValue.Type().Name()
+		}
+		addrByColumnName[columnName] = oneValue.Addr().Interface()
+	}
+	for _, columnName := range columnNames {
+		scanDest = append(scanDest, addrByColumnName[columnName])
+	}
+	return rows.Scan(scanDest...)
 }

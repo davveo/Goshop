@@ -2,6 +2,7 @@ package model
 
 import (
 	"log"
+	"orange/utils/sql_utils"
 	"orange/utils/yml_config"
 )
 
@@ -20,22 +21,22 @@ func CreateCategoryFactory(sqlType string) *CategoryModel {
 }
 
 type BaseCategory struct {
-	AdvImage      string `json:"adv_image"`
-	AdvImageLink  string `json:"adv_image_link"`
-	BrandList     string `json:"brand_list"`
-	CategoryID    int    `json:"category_id"`
-	CategoryOrder string `json:"category_order"`
-	CategoryPath  string `json:"category_path"`
-	GoodsCount    string `json:"goods_count"`
-	Image         string `json:"image"`
-	IsShow        string `json:"is_show"`
-	Name          string `json:"name"`
-	ParentID      string `json:"parent_id"`
+	AdvImage      string `sql:"adv_image" json:"adv_image"`
+	AdvImageLink  string `sql:"adv_image_link" json:"adv_image_link"`
+	BrandList     string `sql:"brand_list" json:"brand_list"`
+	CategoryID    int    `sql:"category_id" json:"category_id"`
+	CategoryOrder string `sql:"category_order" json:"category_order"`
+	CategoryPath  string `sql:"category_path" json:"category_path"`
+	GoodsCount    string `sql:"goods_count" json:"goods_count"`
+	Image         string `sql:"image" json:"image"`
+	IsShow        string `sql:"is_show" json:"is_show"`
+	Name          string `sql:"name" json:"name"`
+	ParentID      string `sql:"parent_id" json:"parent_id"`
 }
 
 type CategoryTree struct {
 	BaseCategory
-	Children []CategoryTree `json:"children" jpath:"children"`
+	Children []CategoryTree `json:"children"`
 }
 
 type CategoryModel struct {
@@ -57,20 +58,15 @@ func (cm *CategoryModel) QueryTargetParentTree(parentID int) (err error, allCate
 
 	if rows != nil {
 		for rows.Next() {
-			// 与数据库列对其 坑!!!
-			err := rows.Scan(
-				&cm.CategoryID, &cm.Name, &cm.ParentID, &cm.CategoryPath,
-				&cm.GoodsCount, &cm.CategoryOrder, &cm.Image, &cm.IsShow,
-				&cm.AdvImage, &cm.AdvImageLink)
-			if err == nil {
-				// TODO image字段存在问题
-				allCategory = append(
-					allCategory, CategoryTree{
-						BaseCategory: cm.BaseCategory, Children: nil,
-					})
-			} else {
-				log.Println("sql查询错误", err.Error())
-			}
+			// TODO 与数据库列对其 坑!!!
+			// rows.Scan 参数的顺序很重要, 需要和查询的结果的column对应.
+			// 例如 “SELECT * From user where age >=20 AND age < 30”
+			// 查询的行的 column 顺序是 “id, name, age” 和插入操作顺序相同,
+			// 因此 rows.Scan 也需要按照此顺序 rows.Scan(&id, &name, &age), 不然会造成数据读取的错位.
+			// https://www.cnblogs.com/hanyouchun/p/6708037.html
+			baseCategory := BaseCategory{}
+			_ = sql_utils.ParseToStruct(rows, &baseCategory)
+			allCategory = append(allCategory, CategoryTree{BaseCategory: baseCategory, Children: nil})
 		}
 		_ = rows.Close()
 	}
