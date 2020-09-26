@@ -80,4 +80,8 @@ const (
 	PUSH         = "PUSH"
 	PAGE         = "PAGE"
 	ES_SIGN      = "ES_SIGN"
+
+	// 其他常数
+	YEAR  = "YEAR"
+	MONTH = "MONTH"
 )
