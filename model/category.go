@@ -48,7 +48,7 @@ func (cm *CategoryModel) List(parentID int) (error, []CategoryTree) {
 	return cm.getCategoryTree(parentID)
 }
 
-func (cm *CategoryModel) QueryTargetParentTree(parentID int) (err error, allCategory []CategoryTree) {
+func (cm *CategoryModel) QueryTargetParentTree(parentID int) (allCategory []CategoryTree) {
 	var (
 		sqlString = "select c.* from es_category c  where c.parent_id = ? order by c.category_order asc"
 	)
@@ -71,12 +71,12 @@ func (cm *CategoryModel) QueryTargetParentTree(parentID int) (err error, allCate
 		_ = rows.Close()
 	}
 
-	return err, allCategory
+	return allCategory
 }
 
 func (cm *CategoryModel) getCategoryTree(parentID int) (error, []CategoryTree) {
 	var categoryTree []CategoryTree
-	_, categoryList := cm.QueryTargetParentTree(parentID)
+	categoryList := cm.QueryTargetParentTree(parentID)
 
 	for _, v := range categoryList {
 		_, trees := cm.getCategoryTree(v.CategoryID)

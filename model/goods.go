@@ -2,6 +2,7 @@ package model
 
 import (
 	"bytes"
+	"fmt"
 	"log"
 	"orange/utils/sql_utils"
 	"orange/utils/yml_config"
@@ -10,7 +11,7 @@ import (
 
 func CreateGoodsFactory(sqlType string) *GoodsModel {
 	if len(sqlType) == 0 {
-		sqlType = yml_config.CreateYamlFactory().GetString("UseDbType") //如果系统的某个模块需要使用非默认（mysql）数据库，例如 sqlserver，那么就在这里
+		sqlType = yml_config.CreateYamlFactory().GetString("UseDbType")
 	}
 	dbDriver := CreateBaseSqlFactory(sqlType)
 	if dbDriver != nil {
@@ -22,40 +23,44 @@ func CreateGoodsFactory(sqlType string) *GoodsModel {
 	return nil
 }
 
-type GoodsModel struct {
-	*BaseModel
-	BrandID        string `json:"brand_id"`
-	CreateTime     string `json:"create_time"`
-	EnableQuantity int64  `json:"enable_quantity"`
-	GoodsID        string `json:"goods_id"`
-	GoodsName      string `json:"goods_name"`
-	IsAuth         int64  `json:"is_auth"`
-	MarketEnable   int64  `json:"market_enable"`
-	Price          int64  `json:"price"`
-	Priority       int64  `json:"priority"`
-	Quantity       int64  `json:"quantity"`
-	SellerName     string `json:"seller_name"`
-	Sn             string `json:"sn"`
-	Thumbnail      string `json:"thumbnail"`
-	UnderMessage   string `json:"under_message"`
+type Goods struct {
+	BrandID        string `sql:"brand_id" json:"brand_id"`
+	CreateTime     string `sql:"create_time" json:"create_time"`
+	EnableQuantity int64  `sql:"enable_quantity" json:"enable_quantity"`
+	GoodsID        string `sql:"goods_id" json:"goods_id"`
+	GoodsName      string `sql:"goods_name" json:"goods_name"`
+	IsAuth         int  `sql:"is_auth" json:"is_auth"`
+	MarketEnable   int  `sql:"market_enable" json:"market_enable"`
+	Price          int  `sql:"price" json:"price"`
+	Priority       int  `sql:"priority" json:"priority"`
+	Quantity       int  `sql:"quantity" json:"quantity"`
+	SellerName     string `sql:"seller_name" json:"seller_name"`
+	Sn             string `sql:"sn" json:"sn"`
+	Thumbnail      string `sql:"thumbnail" json:"thumbnail"`
+	UnderMessage   string `sql:"under_message" json:"under_message"`
 }
 
-func (u *GoodsModel) NewGoods(length int) {
-	//sql := "select * from es_goods where market_enable = 1 and disabled = 1 order by create_time desc limit 0, ?"
-	//rows := u.QuerySql(sql, length)
-	//if rows != nil {
-	//	tmp := make([]UsersModel, 0)
-	//	for rows.Next() {
-	//		err := rows.Scan(&u.Id, &u.UserName, &u.Department)
-	//		if err == nil {
-	//			tmp = append(tmp, *u)
-	//		} else {
-	//			log.Println("sql查询错误", err.Error())
-	//		}
-	//	}
-	//	_ = rows.Close()
-	//	return tmp
-	//}
+type GoodsModel struct {
+	*BaseModel
+}
+
+func (gm *GoodsModel) NewGoods(length int) (allGoodsList []Goods) {
+
+	sqlString := "select * from es_goods where market_enable = 1 and disabled = 1 order by create_time desc limit 0, ?"
+
+	rows := gm.QuerySql(sqlString, length)
+	defer rows.Close()
+
+	if rows != nil {
+		for rows.Next() {
+			goods := Goods{}
+			err := sql_utils.ParseToStruct(rows, &goods)
+			fmt.Println(err)
+			allGoodsList = append(allGoodsList, goods)
+		}
+		_ = rows.Close()
+	}
+	return allGoodsList
 }
 
 func (gm *GoodsModel) List(params map[string]interface{}) ([]map[string]interface{}, int) {
