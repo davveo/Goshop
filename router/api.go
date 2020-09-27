@@ -25,6 +25,7 @@ func InitRouter() *gin.Engine {
 		AdminGroup.GET("admin/admin/systems/admin-users/token", controller.Refresh) // done
 		AdminGroup.GET("admin/index/page", controller.Index)
 		AdminGroup.GET("admin/admin/goods", controller.GoodsList)                                   // done
+		AdminGroup.GET("admin/admin/goods/specs", controller.SpecsList)                             // done
 		AdminGroup.GET("admin/admin/shops/list", controller.ShopList)                               // done
 		AdminGroup.GET("admin/admin/goods/brands", controller.BrandList)                            // done
 		AdminGroup.GET("admin/admin/goods/brands/all", controller.BrandAllList)                     // done

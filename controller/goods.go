@@ -10,10 +10,10 @@ import (
 
 func GoodsList(context *gin.Context) {
 	queryParams := make(map[string]interface{})
-	pageNo, _ := strconv.Atoi(context.Query("page_no"))
-	pageSize, _ := strconv.Atoi(context.Query("page_size"))
 	IsAuth, _ := strconv.Atoi(context.Query("is_auth"))
 	supplierGoodsType := context.Query("supplier_goods_type")
+	pageNo, _ := strconv.Atoi(context.DefaultQuery("page_no", "1"))
+	pageSize, _ := strconv.Atoi(context.DefaultQuery("page_size", "20"))
 
 	queryParams["page_no"] = pageNo
 	queryParams["is_auth"] = IsAuth
@@ -31,8 +31,8 @@ func GoodsList(context *gin.Context) {
 
 func BrandList(context *gin.Context) {
 	queryParams := make(map[string]interface{})
-	pageNo, _ := strconv.Atoi(context.Query("page_no"))
-	pageSize, _ := strconv.Atoi(context.Query("page_size"))
+	pageNo, _ := strconv.Atoi(context.DefaultQuery("page_no", "1"))
+	pageSize, _ := strconv.Atoi(context.DefaultQuery("page_size", "20"))
 
 	name := context.Query("name")
 
