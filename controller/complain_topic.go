@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func MemberReceiptList(ctx *gin.Context) {
+func ComplainTopicsList(ctx *gin.Context) {
 	queryParams := make(map[string]interface{})
 
 	pageNo, _ := strconv.Atoi(ctx.DefaultQuery("page_no", "1"))
@@ -16,7 +16,7 @@ func MemberReceiptList(ctx *gin.Context) {
 
 	queryParams["page_no"] = pageNo
 	queryParams["page_size"] = pageSize
-	data, dataTotal := model.CreateReceiptFactory("").List(queryParams)
+	data, dataTotal := model.CreateComplainTopicFactory("").List(queryParams)
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"data":       data,
