@@ -96,7 +96,10 @@ func (gm *GoodsModel) NewGoods(length int) (allGoodsList []Goods) {
 }
 
 func (gm *GoodsModel) List(params map[string]interface{}) ([]map[string]interface{}, int64) {
-	var sqlString bytes.Buffer
+	var (
+		sqlString bytes.Buffer
+		err       error
+	)
 	sqlString.WriteString("select g.goods_id,g.goods_name,g.sn,g.brand_id,g.thumbnail,g.seller_name," +
 		"g.enable_quantity,g.quantity,g.price,g.create_time,g.market_enable,g.is_auth,g.under_message," +
 		"g.priority from es_goods g where 1 = 1")
@@ -104,9 +107,15 @@ func (gm *GoodsModel) List(params map[string]interface{}) ([]map[string]interfac
 	pageNo, okPageNo := params["page_no"].(int)
 	pageSize, okPageSize := params["page_size"].(int)
 
-	gm.baseQuery(params, &sqlString)
-	gm.categoryQuery(params, &sqlString)
-	gm.shopCatQuery(params, &sqlString)
+	_ = gm.baseQuery(params, &sqlString)
+	err = gm.categoryQuery(params, &sqlString)
+	if err != nil {
+		log.Println("gm.categoryQuery 错误", err.Error())
+	}
+	err = gm.shopCatQuery(params, &sqlString)
+	if err != nil {
+		log.Println("gm.shopCatQuery 错误", err.Error())
+	}
 
 	sqlString.WriteString(" order by g.priority desc,g.create_time desc")
 
@@ -127,7 +136,7 @@ func (gm *GoodsModel) List(params map[string]interface{}) ([]map[string]interfac
 	return tableData, gm.count()
 }
 
-func (gm *GoodsModel) baseQuery(params map[string]interface{}, sqlString *bytes.Buffer) {
+func (gm *GoodsModel) baseQuery(params map[string]interface{}, sqlString *bytes.Buffer) error {
 	sn := params["sn"].(string)
 	keyword := params["keyword"].(string)
 	brandId := params["brand_id"].(string)
@@ -181,6 +190,7 @@ func (gm *GoodsModel) baseQuery(params map[string]interface{}, sqlString *bytes.
 	if endPrice != "" {
 		sqlString.WriteString(fmt.Sprintf(" and g.price <= %s", endPrice))
 	}
+	return nil
 }
 
 func (gm *GoodsModel) categoryQuery(params map[string]interface{}, sqlString *bytes.Buffer) error {
@@ -213,15 +223,33 @@ func (gm *GoodsModel) categoryQuery(params map[string]interface{}, sqlString *by
 	return nil
 }
 
-func (gm *GoodsModel) shopCatQuery(params map[string]interface{}, sqlString *bytes.Buffer) {
+func (gm *GoodsModel) shopCatQuery(params map[string]interface{}, sqlString *bytes.Buffer) error {
 	categoryPath := params["category_path"].(string)
 	if categoryPath != "" {
-		gm.getshopCatChidren(categoryPath)
+		catList, err := gm.getShopCatChidren(categoryPath)
+
+		if err != nil {
+			return err
+		}
+
+		if len(catList) <= 0 {
+			return errors.New("店铺分组不存在")
+		}
+		var tmp bytes.Buffer
+		for index, data := range catList {
+			categoryId, ok := data["shop_cat_id"].(string)
+			if index == 0 && ok {
+				tmp.WriteString(fmt.Sprintf("%s", categoryId))
+			} else {
+				tmp.WriteString(fmt.Sprintf(",%s", categoryId))
+			}
+		}
+		sqlString.WriteString(fmt.Sprintf(" and g.shop_cat_id in (%s)", tmp.String()))
 	}
 }
 
-func (gm *GoodsModel) getshopCatChidren(categoryPath string) []string {
-
+func (gm *GoodsModel) getShopCatChidren(categoryPath string) ([]map[string]interface{}, error) {
+	return CreateShopCateGoryFactory("").getChildren(categoryPath)
 }
 
 func (gm *GoodsModel) count() (rows int64) {

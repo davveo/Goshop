@@ -198,7 +198,7 @@ func (sm *ShopModel) List(params map[string]interface{}) ([]map[string]interface
 
 func (sm *ShopModel) count() (rows int64) {
 	var (
-		sql = "select count(*) from es_shop;"
+		sql = "select count(*) from es_shop"
 	)
 
 	err := sm.QueryRow(sql).Scan(&rows)
