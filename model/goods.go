@@ -93,7 +93,7 @@ func (gm *GoodsModel) NewGoods(length int) (allGoodsList []Goods) {
 	return allGoodsList
 }
 
-func (gm *GoodsModel) List(params map[string]interface{}) ([]map[string]interface{}, int) {
+func (gm *GoodsModel) List(params map[string]interface{}) ([]map[string]interface{}, int64) {
 	var sqlString bytes.Buffer
 	sqlString.WriteString("select g.goods_id,g.goods_name,g.sn,g.brand_id,g.thumbnail,g.seller_name," +
 		"g.enable_quantity,g.quantity,g.price,g.create_time,g.market_enable,g.is_auth,g.under_message," +
@@ -101,9 +101,15 @@ func (gm *GoodsModel) List(params map[string]interface{}) ([]map[string]interfac
 
 	pageNo, okPageNo := params["page_no"].(int)
 	pageSize, okPageSize := params["page_size"].(int)
+	IsAuth, okIsAuth := params["is_auth"].(int)
+	if okIsAuth {
+		sqlString.WriteString(" and is_auth = ")
+		sqlString.WriteString(strconv.Itoa(IsAuth))
+	}
+
 	if okPageNo && okPageSize {
 		sqlString.WriteString(" limit ")
-		sqlString.WriteString(strconv.Itoa(pageNo))
+		sqlString.WriteString(strconv.Itoa(pageNo - 1))
 		sqlString.WriteString(",")
 		sqlString.WriteString(strconv.Itoa(pageSize))
 	}
@@ -115,5 +121,18 @@ func (gm *GoodsModel) List(params map[string]interface{}) ([]map[string]interfac
 		log.Println("sql_utils.ParseJSON 错误", err.Error())
 		return nil, 0
 	}
-	return tableData, 0
+	return tableData, gm.count()
+}
+
+func (gm *GoodsModel) count() (rows int64) {
+	var (
+		sql = "select count(*) from es_goods;"
+	)
+
+	err := gm.QueryRow(sql).Scan(&rows)
+	if err != nil {
+		log.Println("sql.count 错误", err.Error())
+	}
+
+	return rows
 }

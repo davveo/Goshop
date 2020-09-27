@@ -1,9 +1,11 @@
 package model
 
 import (
+	"bytes"
 	"log"
 	"orange/utils/sql_utils"
 	"orange/utils/yml_config"
+	"strconv"
 )
 
 func CreateBrandFactory(sqlType string) *BrandModel {
@@ -58,8 +60,53 @@ func (bm *BrandModel) getModel(brandID int) *BrandModel {
 	return nil
 }
 
-func (bm *BrandModel) List() {
+func (bm *BrandModel) List(params map[string]interface{}, name string) ([]map[string]interface{}, int64) {
+	var (
+		sqlString bytes.Buffer
+	)
 
+	sqlString.WriteString("select * from es_brand ")
+
+	pageNo, okPageNo := params["page_no"].(int)
+	pageSize, okPageSize := params["page_size"].(int)
+
+	if name != "" {
+		sqlString.WriteString(" where name like ")
+		sqlString.WriteString(" '%" + name + "%' ")
+	}
+
+	sqlString.WriteString(" order by brand_id desc ")
+
+	if okPageNo && okPageSize {
+		sqlString.WriteString(" limit ")
+		sqlString.WriteString(strconv.Itoa(pageNo - 1))
+		sqlString.WriteString(",")
+		sqlString.WriteString(strconv.Itoa(pageSize))
+	}
+
+	rows := bm.QuerySql(sqlString.String())
+	defer rows.Close()
+
+	tableData, err := sql_utils.ParseJSON(rows)
+	if err != nil {
+		log.Println("sql_utils.ParseJSON 错误", err.Error())
+		return nil, 0
+	}
+
+	return tableData, bm.count()
+}
+
+func (bm *BrandModel) count() (rows int64) {
+	var (
+		sql = "select count(*) from es_brand;"
+	)
+
+	err := bm.QueryRow(sql).Scan(&rows)
+	if err != nil {
+		log.Println("sql.count 错误", err.Error())
+	}
+
+	return rows
 }
 
 func (bm *BrandModel) Add() {
