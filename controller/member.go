@@ -69,7 +69,6 @@ func MemberAskList(ctx *gin.Context) {
 func MemberDepositRechargeList(ctx *gin.Context) {
 	queryParams := make(map[string]interface{})
 
-	disabled := ctx.Query("disabled")
 	pageNo, _ := strconv.Atoi(ctx.DefaultQuery("page_no", "1"))
 	pageSize, _ := strconv.Atoi(ctx.DefaultQuery("page_size", "20"))
 
@@ -88,7 +87,6 @@ func MemberDepositRechargeList(ctx *gin.Context) {
 func MemberDepositLogList(ctx *gin.Context) {
 	queryParams := make(map[string]interface{})
 
-	disabled := ctx.Query("disabled")
 	pageNo, _ := strconv.Atoi(ctx.DefaultQuery("page_no", "1"))
 	pageSize, _ := strconv.Atoi(ctx.DefaultQuery("page_size", "20"))
 
