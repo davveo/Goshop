@@ -1,10 +1,13 @@
 package model
 
 import (
+	"bytes"
 	"database/sql"
+	"fmt"
 	"log"
 	"orange/utils/sql_utils"
 	"orange/utils/yml_config"
+	"strconv"
 
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
@@ -130,4 +133,78 @@ func (sm *ShopModel) All() []map[string]interface{} {
 	}
 
 	return tableData
+}
+
+func (sm *ShopModel) List(params map[string]interface{}) ([]map[string]interface{}, int64) {
+	var (
+		sqlString bytes.Buffer
+	)
+
+	sqlString.WriteString("")
+
+	pageNo, okPageNo := params["page_no"].(int)
+	pageSize, okPageSize := params["page_size"].(int)
+
+	shopType := params["shop_type"].(string)
+	shopDisable := params["shop_disable"].(string)
+	keyword := params["keyword"].(string)
+	shop_name := params["shop_name"].(string)
+
+	if shopDisable == "" {
+		shopDisable = "OPEN"
+	}
+
+	if shopDisable == "ALL" {
+		sqlString.WriteString("select  s.member_id,s.member_name,s.shop_name,s.shop_disable,s.shop_createtime," +
+			"s.shop_endtime,sd.* from es_shop s  left join es_shop_detail sd on s.shop_id = sd.shop_id  where  shop_disable != 'APPLYING' ")
+	} else {
+		sqlString.WriteString("select  s.member_id,s.member_name,s.shop_name,s.shop_disable,s.shop_createtime," +
+			"s.shop_endtime,sd.* from es_shop s  left join es_shop_detail sd on s.shop_id = sd.shop_id   where  shop_disable = '" + shopDisable + "'")
+	}
+
+	if shopType != "" {
+		// TODO
+	}
+
+	if keyword != "" {
+		sqlString.WriteString(fmt.Sprintf("  and (s.shop_name like %s or s.member_name like %s) ",
+			"'"+keyword+"'", "'"+keyword+"'"))
+	}
+
+	if shop_name != "" {
+		sqlString.WriteString(fmt.Sprintf("  and s.shop_name like %s ", "'"+shop_name+"'"))
+	}
+
+	sqlString.WriteString(" order by create_time desc")
+
+	if okPageNo && okPageSize {
+		sqlString.WriteString(" limit ")
+		sqlString.WriteString(strconv.Itoa(pageNo - 1))
+		sqlString.WriteString(",")
+		sqlString.WriteString(strconv.Itoa(pageSize))
+	}
+
+	rows := sm.QuerySql(sqlString.String())
+	defer rows.Close()
+
+	tableData, err := sql_utils.ParseJSON(rows)
+	if err != nil {
+		log.Println("sql_utils.ParseJSON 错误", err.Error())
+		return nil, 0
+	}
+
+	return tableData, sm.count()
+}
+
+func (sm *ShopModel) count() (rows int64) {
+	var (
+		sql = "select count(*) from es_shop;"
+	)
+
+	err := sm.QueryRow(sql).Scan(&rows)
+	if err != nil {
+		log.Println("sql.count 错误", err.Error())
+	}
+
+	return rows
 }

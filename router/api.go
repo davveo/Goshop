@@ -32,7 +32,6 @@ func InitRouter() *gin.Engine {
 		AdminGroup.GET("index/page", controller.Index)
 		AdminGroup.GET("admin/goods", controller.GoodsList)                                   // done
 		AdminGroup.GET("admin/goods/specs", controller.SpecsList)                             // done
-		AdminGroup.GET("admin/shops/list", controller.ShopList)                               // done
 		AdminGroup.GET("admin/goods/brands", controller.BrandList)                            // done
 		AdminGroup.GET("admin/goods/brands/all", controller.BrandAllList)                     // done
 		AdminGroup.GET("admin/goods/categories/:parent_id/children", controller.CategoryList) // done
@@ -46,6 +45,9 @@ func InitRouter() *gin.Engine {
 		AdminGroup.GET("admin/members", controller.MemberList)
 		AdminGroup.GET("admin/members/comments", controller.MemberCommentsList)
 		AdminGroup.GET("admin/members/asks", controller.MemberAskList)
+
+		AdminGroup.GET("admin/shops/list", controller.AllShopList) // done
+		AdminGroup.GET("admin/shops", controller.ShopList)
 
 		// 未发现
 		AdminGroup.GET("admin/members/deposit/recharge", controller.MemberDepositRechargeList)
