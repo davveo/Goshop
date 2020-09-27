@@ -37,7 +37,7 @@ func InitRouter() *gin.Engine {
 		AdminGroup.GET("admin/trade/orders", controller.OrderList)
 		AdminGroup.GET("admin/after-sales", controller.AfterSalesList)
 		AdminGroup.GET("admin/after-sales/refund", controller.AfterSalesRefundList)
-		AdminGroup.GET("admin/trade/orders/pay-log", controller.TradeOrderPayLogList)
+		AdminGroup.GET("admin/trade/orders/pay-log", controller.OrderPayLogList)
 		AdminGroup.GET("admin/members/receipts", controller.MemberReceiptList)
 		AdminGroup.GET("admin/members/zpzz", controller.ZpzzList)
 		AdminGroup.GET("admin/trade/order-complains", controller.OrderComplainsList)
