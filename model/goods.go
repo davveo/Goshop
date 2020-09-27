@@ -2,6 +2,8 @@ package model
 
 import (
 	"bytes"
+	"errors"
+	"fmt"
 	"log"
 	"orange/utils/sql_utils"
 	"orange/utils/yml_config"
@@ -101,11 +103,12 @@ func (gm *GoodsModel) List(params map[string]interface{}) ([]map[string]interfac
 
 	pageNo, okPageNo := params["page_no"].(int)
 	pageSize, okPageSize := params["page_size"].(int)
-	IsAuth, okIsAuth := params["is_auth"].(int)
-	if okIsAuth {
-		sqlString.WriteString(" and is_auth = ")
-		sqlString.WriteString(strconv.Itoa(IsAuth))
-	}
+
+	gm.baseQuery(params, &sqlString)
+	gm.categoryQuery(params, &sqlString)
+	gm.shopCatQuery(params, &sqlString)
+
+	sqlString.WriteString(" order by g.priority desc,g.create_time desc")
 
 	if okPageNo && okPageSize {
 		sqlString.WriteString(" limit ")
@@ -122,6 +125,103 @@ func (gm *GoodsModel) List(params map[string]interface{}) ([]map[string]interfac
 		return nil, 0
 	}
 	return tableData, gm.count()
+}
+
+func (gm *GoodsModel) baseQuery(params map[string]interface{}, sqlString *bytes.Buffer) {
+	sn := params["sn"].(string)
+	keyword := params["keyword"].(string)
+	brandId := params["brand_id"].(string)
+	disabled := params["disabled"].(string)
+	endPrice := params["end_price"].(string)
+	sellerId := params["seller_id"].(string)
+	goodsName := params["goods_name"].(string)
+	goodsType := params["goods_type"].(string)
+	IsAuth, okIsAuth := params["is_auth"].(int)
+	startPrice := params["start_price"].(string)
+	sellerName := params["seller_name"].(string)
+	marketEnable := params["market_enable"].(string)
+	if okIsAuth {
+		sqlString.WriteString(" and is_auth = ")
+		sqlString.WriteString(strconv.Itoa(IsAuth))
+	}
+	if disabled == "" {
+		disabled = "1"
+	}
+	if disabled != "" {
+		sqlString.WriteString(fmt.Sprintf(" and g.disabled = %s", disabled))
+	}
+	// 上下架
+	if marketEnable != "" {
+		sqlString.WriteString(fmt.Sprintf(" and g.market_enable =  %s", marketEnable))
+	}
+	if keyword != "" {
+		sqlString.WriteString(fmt.Sprintf(" and (g.goods_name like '%s' or g.sn like '%s' ) ", keyword, keyword))
+	}
+	if goodsName != "" {
+		sqlString.WriteString(fmt.Sprintf(" and g.goods_name like '%s'", goodsName))
+	}
+	if sellerName != "" {
+		sqlString.WriteString(fmt.Sprintf(" and g.seller_name like '%s'", sellerName))
+	}
+	if sn != "" {
+		sqlString.WriteString(fmt.Sprintf(" and g.sn like '%s'", sn))
+	}
+	if sellerId != "" {
+		sqlString.WriteString(fmt.Sprintf(" and g.seller_id = %s", sellerId))
+	}
+	if goodsType != "" {
+		sqlString.WriteString(fmt.Sprintf(" and g.goods_type = %s", goodsType))
+	}
+	if brandId != "" {
+		sqlString.WriteString(fmt.Sprintf(" and g.brand_id = %s", brandId))
+	}
+	if startPrice != "" {
+		sqlString.WriteString(fmt.Sprintf(" and g.price >= %s", startPrice))
+	}
+	if endPrice != "" {
+		sqlString.WriteString(fmt.Sprintf(" and g.price <= %s", endPrice))
+	}
+}
+
+func (gm *GoodsModel) categoryQuery(params map[string]interface{}, sqlString *bytes.Buffer) error {
+	// 商城分类，同时需要查询出子分类的商品
+	categoryPath := params["category_path"].(string)
+	if categoryPath != "" {
+		sql := fmt.Sprintf("select category_id from es_category where category_path like '%s'", categoryPath)
+		rows := gm.QuerySql(sql)
+		defer rows.Close()
+
+		tableData, err := sql_utils.ParseJSON(rows)
+		if err != nil {
+			log.Println("sql_utils.ParseJSON 错误", err.Error())
+			return err
+		}
+		if len(tableData) == 0 {
+			return errors.New("分类不存在")
+		}
+		var tmp bytes.Buffer
+		for index, data := range tableData {
+			categoryId, ok := data["category_id"].(string)
+			if index == 0 && ok {
+				tmp.WriteString(fmt.Sprintf("%s", categoryId))
+			} else {
+				tmp.WriteString(fmt.Sprintf(",%s", categoryId))
+			}
+		}
+		sqlString.WriteString(fmt.Sprintf(" and g.category_id in (%s)", tmp.String()))
+	}
+	return nil
+}
+
+func (gm *GoodsModel) shopCatQuery(params map[string]interface{}, sqlString *bytes.Buffer) {
+	categoryPath := params["category_path"].(string)
+	if categoryPath != "" {
+		gm.getshopCatChidren(categoryPath)
+	}
+}
+
+func (gm *GoodsModel) getshopCatChidren(categoryPath string) []string {
+
 }
 
 func (gm *GoodsModel) count() (rows int64) {
