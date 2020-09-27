@@ -27,3 +27,7 @@ func OrderList(ctx *gin.Context) {
 		"page_size":  pageSize,
 	})
 }
+
+func OrderComplainsList(ctx *gin.Context) {
+
+}
