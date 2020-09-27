@@ -1,9 +1,11 @@
 package model
 
 import (
+	"bytes"
 	"log"
 	"orange/utils/sql_utils"
 	"orange/utils/yml_config"
+	"strconv"
 )
 
 func CreateMemberFactory(sqlType string) *MemberModel {
@@ -53,4 +55,60 @@ func (mm *MemberModel) NewMember(length int) (allMemberList []BaseMember) {
 		_ = rows.Close()
 	}
 	return allMemberList
+}
+
+func (mm *MemberModel) List(params map[string]interface{}) ([]map[string]interface{}, int64) {
+	var (
+		sqlString bytes.Buffer
+	)
+
+	sqlString.WriteString("select * from es_member ")
+
+	disabled := params["disabled"].(string)
+	pageNo, okPageNo := params["page_no"].(int)
+	pageSize, okPageSize := params["page_size"].(int)
+
+	if disabled != "" {
+		if disabled != "-1" && disabled != "0" {
+			sqlString.WriteString(" where disabled = 0")
+		} else {
+			sqlString.WriteString(" where disabled = ")
+			sqlString.WriteString(disabled)
+		}
+	} else {
+		sqlString.WriteString(" where disabled = 0")
+	}
+
+	sqlString.WriteString(" order by create_time desc")
+
+	if okPageNo && okPageSize {
+		sqlString.WriteString(" limit ")
+		sqlString.WriteString(strconv.Itoa(pageNo - 1))
+		sqlString.WriteString(",")
+		sqlString.WriteString(strconv.Itoa(pageSize))
+	}
+
+	rows := mm.QuerySql(sqlString.String())
+	defer rows.Close()
+
+	tableData, err := sql_utils.ParseJSON(rows)
+	if err != nil {
+		log.Println("sql_utils.ParseJSON 错误", err.Error())
+		return nil, 0
+	}
+
+	return tableData, mm.count()
+}
+
+func (mm *MemberModel) count() (rows int64) {
+	var (
+		sql = "select count(*) from es_member"
+	)
+
+	err := mm.QueryRow(sql).Scan(&rows)
+	if err != nil {
+		log.Println("sql.count 错误", err.Error())
+	}
+
+	return rows
 }

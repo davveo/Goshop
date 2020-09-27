@@ -42,6 +42,13 @@ func InitRouter() *gin.Engine {
 		AdminGroup.GET("admin/members/zpzz", controller.ZpzzList)
 		AdminGroup.GET("admin/trade/order-complains", controller.OrderComplainsList)
 		AdminGroup.GET("admin/systems/complain-topics", controller.ComplainTopicsList)
+		AdminGroup.GET("admin/members", controller.MemberList)
+		AdminGroup.GET("admin/members/comments", controller.MemberCommentsList)
+		AdminGroup.GET("admin/members/asks", controller.MemberAskList)
+
+		// 未发现
+		AdminGroup.GET("admin/members/deposit/recharge", controller.MemberDepositRechargeList)
+		AdminGroup.GET("admin/members/deposit/log", controller.MemberDepositLogList)
 	}
 
 	return router
