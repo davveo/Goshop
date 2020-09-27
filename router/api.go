@@ -24,9 +24,11 @@ func InitRouter() *gin.Engine {
 	AdminGroup := router.Group("admin/")
 	{
 		AdminGroup.GET("systems/admin-users/login", controller.Login)         // done
-		AdminGroup.GET("systems/roles/:roleId/checked", controller.RoleCheck) // done
 		AdminGroup.POST("systems/admin-users/logout", controller.Logout)      // done
+		AdminGroup.GET("systems/roles/:roleId/checked", controller.RoleCheck) // done
+		AdminGroup.GET("admin/systems/messages", controller.MessageList)
 		AdminGroup.GET("admin/systems/admin-users/token", controller.Refresh) // done
+		AdminGroup.GET("admin/systems/complain-topics", controller.ComplainTopicsList)
 		AdminGroup.GET("index/page", controller.Index)
 		AdminGroup.GET("admin/goods", controller.GoodsList)                                   // done
 		AdminGroup.GET("admin/goods/specs", controller.SpecsList)                             // done
@@ -38,10 +40,9 @@ func InitRouter() *gin.Engine {
 		AdminGroup.GET("admin/after-sales", controller.AfterSalesList)
 		AdminGroup.GET("admin/after-sales/refund", controller.AfterSalesRefundList)
 		AdminGroup.GET("admin/trade/orders/pay-log", controller.OrderPayLogList)
+		AdminGroup.GET("admin/trade/order-complains", controller.OrderComplainsList)
 		AdminGroup.GET("admin/members/receipts", controller.MemberReceiptList)
 		AdminGroup.GET("admin/members/zpzz", controller.ZpzzList)
-		AdminGroup.GET("admin/trade/order-complains", controller.OrderComplainsList)
-		AdminGroup.GET("admin/systems/complain-topics", controller.ComplainTopicsList)
 		AdminGroup.GET("admin/members", controller.MemberList)
 		AdminGroup.GET("admin/members/comments", controller.MemberCommentsList)
 		AdminGroup.GET("admin/members/asks", controller.MemberAskList)
