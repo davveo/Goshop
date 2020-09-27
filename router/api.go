@@ -13,32 +13,35 @@ func InitRouter() *gin.Engine {
 	router.Use(middleware.Cors())
 	//router.Use(middleware.JwtMiddleWare())
 
-	// 路由管理
-	AdminGroup := router.Group("")
+	ApiGroup := router.Group("")
 	{
-		AdminGroup.GET("health", controller.Health)                                 // done
-		AdminGroup.GET("site-show", controller.SiteShow)                            // done
-		AdminGroup.GET("captcha/:uuid/:scene", controller.NewCaptcha)               // done
-		AdminGroup.GET("admin/systems/admin-users/login", controller.Login)         // done
-		AdminGroup.GET("admin/systems/roles/:roleId/checked", controller.RoleCheck) // done
-		AdminGroup.POST("admin/systems/admin-users/logout", controller.Logout)      // done
-		AdminGroup.GET("admin/admin/systems/admin-users/token", controller.Refresh) // done
-		AdminGroup.GET("admin/index/page", controller.Index)
-		AdminGroup.GET("admin/admin/goods", controller.GoodsList)                                   // done
-		AdminGroup.GET("admin/admin/goods/specs", controller.SpecsList)                             // done
-		AdminGroup.GET("admin/admin/shops/list", controller.ShopList)                               // done
-		AdminGroup.GET("admin/admin/goods/brands", controller.BrandList)                            // done
-		AdminGroup.GET("admin/admin/goods/brands/all", controller.BrandAllList)                     // done
-		AdminGroup.GET("admin/admin/goods/categories/:parent_id/children", controller.CategoryList) // done
+		ApiGroup.GET("health", controller.Health)                   // done
+		ApiGroup.GET("site-show", controller.SiteShow)              // done
+		ApiGroup.GET("captcha/:uuid/:scene", controller.NewCaptcha) // done
+	}
 
-		AdminGroup.GET("admin/admin/trade/orders", controller.OrderList)
-		AdminGroup.GET("admin/admin/after-sales", controller.AfterSalesList)
-		AdminGroup.GET("admin/admin/after-sales/refund", controller.AfterSalesRefundList)
-		AdminGroup.GET("admin/admin/trade/orders/pay-log", controller.TradeOrderPayLogList)
-		AdminGroup.GET("admin/admin/members/receipts", controller.MemberReceiptList)
-		AdminGroup.GET("admin/admin/members/zpzz", controller.ZpzzList)
-		AdminGroup.GET("admin/admin/trade/order-complains", controller.OrderComplainsList)
-		AdminGroup.GET("admin/admin/systems/complain-topics", controller.ComplainTopicsList)
+	// 路由管理
+	AdminGroup := router.Group("admin/")
+	{
+		AdminGroup.GET("systems/admin-users/login", controller.Login)         // done
+		AdminGroup.GET("systems/roles/:roleId/checked", controller.RoleCheck) // done
+		AdminGroup.POST("systems/admin-users/logout", controller.Logout)      // done
+		AdminGroup.GET("admin/systems/admin-users/token", controller.Refresh) // done
+		AdminGroup.GET("index/page", controller.Index)
+		AdminGroup.GET("admin/goods", controller.GoodsList)                                   // done
+		AdminGroup.GET("admin/goods/specs", controller.SpecsList)                             // done
+		AdminGroup.GET("admin/shops/list", controller.ShopList)                               // done
+		AdminGroup.GET("admin/goods/brands", controller.BrandList)                            // done
+		AdminGroup.GET("admin/goods/brands/all", controller.BrandAllList)                     // done
+		AdminGroup.GET("admin/goods/categories/:parent_id/children", controller.CategoryList) // done
+		AdminGroup.GET("admin/trade/orders", controller.OrderList)
+		AdminGroup.GET("admin/after-sales", controller.AfterSalesList)
+		AdminGroup.GET("admin/after-sales/refund", controller.AfterSalesRefundList)
+		AdminGroup.GET("admin/trade/orders/pay-log", controller.TradeOrderPayLogList)
+		AdminGroup.GET("admin/members/receipts", controller.MemberReceiptList)
+		AdminGroup.GET("admin/members/zpzz", controller.ZpzzList)
+		AdminGroup.GET("admin/trade/order-complains", controller.OrderComplainsList)
+		AdminGroup.GET("admin/systems/complain-topics", controller.ComplainTopicsList)
 	}
 
 	return router
