@@ -51,3 +51,16 @@ func Logout(context *gin.Context) {
 	model.CreateUserFactory("").Logout(uuid, uid)
 	context.JSON(http.StatusOK, gin.H{})
 }
+
+func Refresh(context *gin.Context) {
+	refreshToken := context.PostForm("refresh_token")
+	err, m := model.CreateUserFactory("").ExchangeToken(refreshToken)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{
+			"code":    http.StatusInternalServerError,
+			"message": err.Error(),
+		})
+		return
+	}
+	context.JSON(http.StatusOK, m)
+}

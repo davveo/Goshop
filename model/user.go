@@ -61,10 +61,10 @@ func (u *UsersModel) Login(uuid, name, pass string) *UsersModel {
 			rds.Put(accessTokenCacheKey, u.AccessToken, variable.AccessTokenCacheExpireTime)
 
 			refreshTokenCacheKey := u.cacheName(variable.RefreshTokenPrefix, string(u.Id), uuid)
-			rds.Put(refreshTokenCacheKey, u.AccessToken, variable.RefreshTokenCacheExpireTime)
+			rds.Put(refreshTokenCacheKey, u.RefreshToken, variable.RefreshTokenCacheExpireTime)
 
 			adminDisabledCacheKey := u.cacheName(variable.AdminDisabledPrefix, string(u.Id))
-			rds.Put(adminDisabledCacheKey, u.AccessToken, variable.AccessTokenCacheExpireTime)
+			rds.Put(adminDisabledCacheKey, u.UserState, variable.AccessTokenCacheExpireTime)
 
 			return u
 		}
@@ -171,8 +171,48 @@ func (u *UsersModel) list() []UsersModel {
 	return nil
 }
 
-func (u *UsersModel) exchangeToken(refreshToken string) string {
-	return ""
+func (u *UsersModel) ExchangeToken(refreshToken string) (error, map[string]string) {
+	if refreshToken == "" {
+		return errors.New("当前管理员不存在"), nil
+	}
+	j := ojwt.NewJwt()
+	claims, err := j.ParseToken(refreshToken)
+	if err != nil {
+		return errors.New("parse token error"), nil
+	}
+
+	adminUser := u.selectById(claims.ID)
+	if adminUser == nil {
+		return errors.New("当前管理员不存在"), nil
+	}
+	//从缓存中获取refreshToken
+	refreshTokenCacheKey := u.cacheName(variable.RefreshTokenPrefix, string(u.Id), adminUser.Id)
+	exist, _ := rds.Gain(refreshTokenCacheKey)
+	if !exist {
+		return errors.New("当前管理员已经退出"), nil
+	}
+	// 判断是否过期
+	if time.Now().Unix() > claims.ExpiresAt {
+		return errors.New("当前token已经失效"), nil
+	}
+
+	newAccessToken := u.createToken(variable.AccessTokenExpireTime)
+	newRefreshToken := u.createToken(variable.RefreshTokenExpireTime)
+
+	accessTokenCacheKey := u.cacheName(variable.AccessTokenPrefix, string(u.Id), adminUser.Id)
+	rds.Put(accessTokenCacheKey, newAccessToken, variable.AccessTokenCacheExpireTime)
+
+	refreshTokenCacheKey = u.cacheName(variable.RefreshTokenPrefix, string(u.Id), adminUser.Id)
+	rds.Put(refreshTokenCacheKey, newRefreshToken, variable.RefreshTokenCacheExpireTime)
+
+	adminDisabledCacheKey := u.cacheName(variable.AdminDisabledPrefix, string(u.Id))
+	rds.Put(adminDisabledCacheKey, u.UserState, variable.AccessTokenCacheExpireTime)
+
+	m := make(map[string]string)
+	m["accessToken"] = newAccessToken
+	m["refreshToken"] = newRefreshToken
+
+	return nil, m
 }
 
 func (u *UsersModel) cacheName(prefix string, params ...interface{}) string {

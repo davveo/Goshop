@@ -22,6 +22,7 @@ func InitRouter() *gin.Engine {
 		AdminGroup.GET("admin/systems/admin-users/login", controller.Login)         // done
 		AdminGroup.GET("admin/systems/roles/:roleId/checked", controller.RoleCheck) // done
 		AdminGroup.POST("admin/systems/admin-users/logout", controller.Logout)      // done
+		AdminGroup.GET("admin/admin/systems/admin-users/token", controller.Refresh) // done
 		AdminGroup.GET("admin/index/page", controller.Index)
 		AdminGroup.GET("admin/admin/goods", controller.GoodsList)                                   // done
 		AdminGroup.GET("admin/admin/shops/list", controller.ShopList)                               // done
