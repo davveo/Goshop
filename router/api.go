@@ -50,6 +50,8 @@ func InitRouter() *gin.Engine {
 		AdminGroup.GET("admin/shops", controller.ShopList)
 		AdminGroup.GET("admin/shops/themes", controller.ShopThemesList)
 
+		AdminGroup.GET("admin/order/bills/statistics", controller.OrderBillStatisticList)
+
 		// 未发现
 		AdminGroup.GET("admin/members/deposit/recharge", controller.MemberDepositRechargeList)
 		AdminGroup.GET("admin/members/deposit/log", controller.MemberDepositLogList)
