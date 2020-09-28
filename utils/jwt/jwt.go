@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	secretKey = "orange"
+	secretKey = "Eshop"
 )
 
 var (

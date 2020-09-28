@@ -3,14 +3,14 @@ package sql_factory
 import (
 	"database/sql"
 	"fmt"
-	"orange/core/event"
+	"Eshop/core/event"
 
 	//	_ "github.com/denisenkom/go-mssqldb" // sqlserver驱动
 	_ "github.com/go-sql-driver/mysql" // mysql 驱动
 	// _ "github.com/lib/pq"              //  postgreSql  驱动
-	"orange/global/my_errors"
-	"orange/global/variable"
-	"orange/utils/yml_config"
+	"Eshop/global/my_errors"
+	"Eshop/global/variable"
+	"Eshop/utils/yml_config"
 	"strings"
 	"time"
 

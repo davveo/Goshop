@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"orange/global/variable"
-	"orange/utils/yml_config"
+	"Eshop/global/variable"
+	"Eshop/utils/yml_config"
 )
 
 type Setting struct {

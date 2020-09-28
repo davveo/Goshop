@@ -3,10 +3,10 @@ package model
 import (
 	"database/sql"
 	"log"
-	"orange/utils/enum"
-	"orange/utils/redis"
-	"orange/utils/sql_factory"
-	"orange/utils/yml_config"
+	"Eshop/utils/enum"
+	"Eshop/utils/redis"
+	"Eshop/utils/sql_factory"
+	"Eshop/utils/yml_config"
 	"strings"
 )
 

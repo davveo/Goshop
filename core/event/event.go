@@ -1,8 +1,8 @@
 package event
 
 import (
-	"orange/global/my_errors"
-	"orange/global/variable"
+	"Eshop/global/my_errors"
+	"Eshop/global/variable"
 	"strings"
 	"sync"
 )

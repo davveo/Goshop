@@ -3,7 +3,7 @@ package controller
 import (
 	"fmt"
 	"net/http"
-	"orange/model"
+	"Eshop/model"
 
 	"github.com/gin-gonic/gin"
 )

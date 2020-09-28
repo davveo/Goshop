@@ -2,7 +2,7 @@ package variable
 
 import (
 	"log"
-	"orange/global/my_errors"
+	"Eshop/global/my_errors"
 	"os"
 	"strings"
 	"time"

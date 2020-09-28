@@ -2,8 +2,8 @@ package yml_config
 
 import (
 	"log"
-	"orange/global/my_errors"
-	"orange/global/variable"
+	"Eshop/global/my_errors"
+	"Eshop/global/variable"
 	"time"
 
 	"github.com/spf13/viper"

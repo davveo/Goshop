@@ -6,7 +6,7 @@ GOTEST=$(GOCMD) test
 GOGET=$(GOCMD) get
 
 # Binary names
-BINARY_NAME=orange
+BINARY_NAME=Eshop
 BINARY_UNIX=$(BINARY_NAME)_unix
 
 build:

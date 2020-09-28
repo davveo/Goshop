@@ -2,8 +2,8 @@ package model
 
 import (
 	"log"
-	"orange/utils/sql_utils"
-	"orange/utils/yml_config"
+	"Eshop/utils/sql_utils"
+	"Eshop/utils/yml_config"
 )
 
 func CreateCategoryFactory(sqlType string) *CategoryModel {

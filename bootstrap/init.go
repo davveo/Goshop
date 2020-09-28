@@ -2,9 +2,9 @@ package bootstrap
 
 import (
 	"log"
-	_ "orange/core/destroy"
-	"orange/global/my_errors"
-	"orange/global/variable"
+	_ "Eshop/core/destroy"
+	"Eshop/global/my_errors"
+	"Eshop/global/variable"
 	"os"
 )
 

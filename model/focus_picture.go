@@ -3,8 +3,8 @@ package model
 import (
 	"fmt"
 	"log"
-	"orange/utils/sql_utils"
-	"orange/utils/yml_config"
+	"Eshop/utils/sql_utils"
+	"Eshop/utils/yml_config"
 )
 
 func CreateFocusPictureFactory(sqlType string) *FocusPictureModel {

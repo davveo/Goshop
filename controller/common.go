@@ -3,8 +3,8 @@ package controller
 import (
 	"fmt"
 	"net/http"
-	"orange/global/consts"
-	"orange/model"
+	"Eshop/global/consts"
+	"Eshop/model"
 	"strconv"
 
 	"github.com/gin-gonic/gin"

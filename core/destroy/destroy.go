@@ -1,9 +1,9 @@
 package destroy
 
 import (
-	"orange/core/event"
-	"orange/global/consts"
-	"orange/global/variable"
+	"Eshop/core/event"
+	"Eshop/global/consts"
+	"Eshop/global/variable"
 	"os"
 	"os/signal"
 	"syscall"

@@ -1,4 +1,4 @@
-module orange
+module Eshop
 
 go 1.13
 

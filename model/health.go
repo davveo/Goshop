@@ -2,7 +2,7 @@ package model
 
 import (
 	"log"
-	"orange/utils/yml_config"
+	"Eshop/utils/yml_config"
 )
 
 func CreateHealthFactory(sqlType string) *HealthModel {

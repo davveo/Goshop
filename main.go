@@ -2,9 +2,9 @@ package main
 
 import (
 	"log"
-	_ "orange/bootstrap"
-	"orange/router"
-	"orange/utils/yml_config"
+	_ "Eshop/bootstrap"
+	"Eshop/router"
+	"Eshop/utils/yml_config"
 )
 
 func main() {

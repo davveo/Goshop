@@ -3,8 +3,8 @@ package middleware
 import (
 	"log"
 	"net/http"
-	"orange/utils/enum"
-	ojwt "orange/utils/jwt"
+	"Eshop/utils/enum"
+	ojwt "Eshop/utils/jwt"
 
 	"github.com/gin-gonic/gin"
 )

@@ -2,7 +2,7 @@ package controller
 
 import (
 	"net/http"
-	"orange/model"
+	"Eshop/model"
 	"strconv"
 
 	"github.com/gin-gonic/gin"

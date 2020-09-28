@@ -1,8 +1,8 @@
 package router
 
 import (
-	"orange/controller"
-	"orange/middleware"
+	"Eshop/controller"
+	"Eshop/middleware"
 
 	"github.com/gin-gonic/gin"
 )

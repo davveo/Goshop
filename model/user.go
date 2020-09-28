@@ -4,10 +4,10 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"orange/global/variable"
-	ojwt "orange/utils/jwt"
-	"orange/utils/md5_encrypt"
-	"orange/utils/yml_config"
+	"Eshop/global/variable"
+	ojwt "Eshop/utils/jwt"
+	"Eshop/utils/md5_encrypt"
+	"Eshop/utils/yml_config"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -141,7 +141,7 @@ func (u *UsersModel) createToken(expire int64) string {
 		StandardClaims: jwt.StandardClaims{
 			NotBefore: time.Now().Unix() - 1000,
 			ExpiresAt: time.Now().Unix() + 1000*expire,
-			Issuer:    "orange",
+			Issuer:    "Eshop",
 		},
 	}
 	token, err := j.CreateToken(claims)

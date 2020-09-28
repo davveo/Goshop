@@ -3,9 +3,9 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"orange/global/consts"
-	"orange/model"
-	"orange/utils/time_utils"
+	"Eshop/global/consts"
+	"Eshop/model"
+	"Eshop/utils/time_utils"
 )
 
 func Index(context *gin.Context) {

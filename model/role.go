@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"log"
-	"orange/utils/yml_config"
+	"Eshop/utils/yml_config"
 )
 
 func CreateRoleFactory(sqlType string) *RoleModel {
