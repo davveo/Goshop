@@ -1,8 +1,8 @@
 package model
 
 import (
-	"log"
 	"Goshop/utils/yml_config"
+	"log"
 )
 
 func CreateHealthFactory(sqlType string) *HealthModel {
@@ -24,5 +24,5 @@ type HealthModel struct {
 }
 
 func (h *HealthModel) Check() bool {
-	return h.dbDriverRead.Ping() == nil
+	return h.dbDriverWrite.Ping() == nil
 }

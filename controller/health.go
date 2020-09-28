@@ -1,22 +1,17 @@
 package controller
 
 import (
-	"net/http"
+	"Goshop/global/errno"
 	"Goshop/model"
+	"Goshop/utils/response"
 
 	"github.com/gin-gonic/gin"
 )
 
-func Health(context *gin.Context) {
+func Health(ctx *gin.Context) {
 	if !model.CreateHealthFactory("").Check() {
-		context.JSON(http.StatusInternalServerError, gin.H{
-			"code":    http.StatusInternalServerError,
-			"message": "数据库链接异常",
-		})
+		response.SendResponse(ctx, errno.ErrDatabase, nil)
 		return
 	}
-	context.JSON(http.StatusOK, gin.H{
-		"code":    http.StatusOK,
-		"message": "ok",
-	})
+	response.SendResponse(ctx, nil, nil)
 }

@@ -3,6 +3,7 @@ package router
 import (
 	"Goshop/controller"
 	"Goshop/middleware"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -11,7 +12,14 @@ func InitRouter() *gin.Engine {
 	router := gin.Default()
 	// 中间件管理
 	router.Use(middleware.Cors())
+	router.Use(middleware.NoCache())
+	router.Use(middleware.Logging())
+	router.Use(middleware.RequestId())
 	//router.Use(middleware.JwtMiddleWare())
+
+	router.NoRoute(func(c *gin.Context) {
+		c.String(http.StatusNotFound, "The incorrect API route.")
+	})
 
 	ApiGroup := router.Group("")
 	{
