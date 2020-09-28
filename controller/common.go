@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 	"orange/global/consts"
 	"orange/model"
@@ -69,4 +70,61 @@ func PageSiteNavigationList(ctx *gin.Context) {
 		"page_no":    pageNo,
 		"page_size":  pageSize,
 	})
+}
+
+func HotKeyWordsList(ctx *gin.Context) {
+	queryParams := make(map[string]interface{})
+
+	pageNo, _ := strconv.Atoi(ctx.DefaultQuery("page_no", "1"))
+	pageSize, _ := strconv.Atoi(ctx.DefaultQuery("page_size", "20"))
+
+	queryParams["page_no"] = pageNo
+	queryParams["page_size"] = pageSize
+	data, dataTotal := model.CreateHotKeyWordFactory("").List(queryParams)
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data":       data,
+		"data_total": dataTotal,
+		"page_no":    pageNo,
+		"page_size":  pageSize,
+	})
+}
+
+func AdminTask(ctx *gin.Context) {
+	taskType := ctx.Param("task_type") // PAGE_CREATE/GOODS_INDEX_INIT
+	fmt.Println(taskType)
+}
+
+func PageCreateInput(ctx *gin.Context) {
+
+}
+
+func GoodsSearchCustomWord(ctx *gin.Context) {
+	queryParams := make(map[string]interface{})
+
+	pageNo, _ := strconv.Atoi(ctx.DefaultQuery("page_no", "1"))
+	pageSize, _ := strconv.Atoi(ctx.DefaultQuery("page_size", "20"))
+
+	queryParams["page_no"] = pageNo
+	queryParams["page_size"] = pageSize
+}
+
+func GoodsSearchKeyWord(ctx *gin.Context) {
+	queryParams := make(map[string]interface{})
+
+	pageNo, _ := strconv.Atoi(ctx.DefaultQuery("page_no", "1"))
+	pageSize, _ := strconv.Atoi(ctx.DefaultQuery("page_size", "20"))
+
+	queryParams["page_no"] = pageNo
+	queryParams["page_size"] = pageSize
+}
+
+func GoodsSearchGoodsWord(ctx *gin.Context) {
+	queryParams := make(map[string]interface{})
+
+	pageNo, _ := strconv.Atoi(ctx.DefaultQuery("page_no", "1"))
+	pageSize, _ := strconv.Atoi(ctx.DefaultQuery("page_size", "20"))
+
+	queryParams["page_no"] = pageNo
+	queryParams["page_size"] = pageSize
 }

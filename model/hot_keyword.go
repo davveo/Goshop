@@ -2,20 +2,19 @@ package model
 
 import (
 	"bytes"
-	"fmt"
 	"log"
 	"orange/utils/sql_utils"
 	"orange/utils/yml_config"
 	"strconv"
 )
 
-func CreateSiteNavigationFactory(sqlType string) *SiteNavigationModel {
+func CreateHotKeyWordFactory(sqlType string) *HotKeyWordModel {
 	if len(sqlType) == 0 {
 		sqlType = yml_config.CreateYamlFactory().GetString("UseDbType") //如果系统的某个模块需要使用非默认（mysql）数据库，例如 sqlserver，那么就在这里
 	}
 	dbDriver := CreateBaseSqlFactory(sqlType)
 	if dbDriver != nil {
-		return &SiteNavigationModel{
+		return &HotKeyWordModel{
 			BaseModel: dbDriver,
 		}
 	}
@@ -23,25 +22,20 @@ func CreateSiteNavigationFactory(sqlType string) *SiteNavigationModel {
 	return nil
 }
 
-type SiteNavigationModel struct {
+type HotKeyWordModel struct {
 	*BaseModel
 }
 
-func (sngm *SiteNavigationModel) List(params map[string]interface{}) ([]map[string]interface{}, int64) {
+func (hkwm *HotKeyWordModel) List(params map[string]interface{}) ([]map[string]interface{}, int64) {
 	var (
 		sqlString bytes.Buffer
 	)
 
-	sqlString.WriteString("select * from es_site_navigation")
+	sqlString.WriteString("select * from es_hot_keyword  ")
 
 	pageNo, okPageNo := params["page_no"].(int)
 	pageSize, okPageSize := params["page_size"].(int)
-	clientType, okclientType := params["client_type"].(string)
 
-	if clientType != "" && okclientType {
-		sqlString.WriteString(fmt.Sprintf(" where client_type = '%s'", clientType))
-	}
-	sqlString.WriteString(" order by sort desc ")
 	if okPageNo && okPageSize {
 		sqlString.WriteString(" limit ")
 		sqlString.WriteString(strconv.Itoa(pageNo - 1))
@@ -49,7 +43,7 @@ func (sngm *SiteNavigationModel) List(params map[string]interface{}) ([]map[stri
 		sqlString.WriteString(strconv.Itoa(pageSize))
 	}
 
-	rows := sngm.QuerySql(sqlString.String())
+	rows := hkwm.QuerySql(sqlString.String())
 	defer rows.Close()
 
 	tableData, err := sql_utils.ParseJSON(rows)
@@ -58,19 +52,15 @@ func (sngm *SiteNavigationModel) List(params map[string]interface{}) ([]map[stri
 		return nil, 0
 	}
 
-	return tableData, sngm.count(clientType)
+	return tableData, hkwm.count()
 }
 
-func (sngm *SiteNavigationModel) count(clientType string) (rows int64) {
+func (hkwm *HotKeyWordModel) count() (rows int64) {
 	var (
-		sql = fmt.Sprintf("select count(*) from es_site_navigation ")
+		sql = "select count(*) from es_hot_keyword;"
 	)
 
-	if clientType != "" {
-		sql += fmt.Sprintf(" where client_type = '%s'", clientType)
-	}
-
-	err := sngm.QueryRow(sql).Scan(&rows)
+	err := hkwm.QueryRow(sql).Scan(&rows)
 	if err != nil {
 		log.Println("sql.count 错误", err.Error())
 	}
