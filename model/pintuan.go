@@ -9,13 +9,13 @@ import (
 	"strconv"
 )
 
-func CreateCouponFactory(sqlType string) *CouponModel {
+func CreatePinTuanFactory(sqlType string) *PinTuanModel {
 	if len(sqlType) == 0 {
 		sqlType = yml_config.CreateYamlFactory().GetString("UseDbType") //如果系统的某个模块需要使用非默认（mysql）数据库，例如 sqlserver，那么就在这里
 	}
 	dbDriver := CreateBaseSqlFactory(sqlType)
 	if dbDriver != nil {
-		return &CouponModel{
+		return &PinTuanModel{
 			BaseModel: dbDriver,
 		}
 	}
@@ -23,23 +23,24 @@ func CreateCouponFactory(sqlType string) *CouponModel {
 	return nil
 }
 
-type CouponModel struct {
+type PinTuanModel struct {
 	*BaseModel
 }
 
-func (cm *CouponModel) List(params map[string]interface{}) ([]map[string]interface{}, int64) {
+func (ptm *PinTuanModel) List(params map[string]interface{}) ([]map[string]interface{}, int64) {
 	var (
 		sqlString bytes.Buffer
 	)
 
-	sqlString.WriteString("select * from es_coupon")
+	sqlString.WriteString("select * from es_pintuan ")
 
 	pageNo, okPageNo := params["page_no"].(int)
+	status, okStatus := params["status"].(string)
 	pageSize, okPageSize := params["page_size"].(int)
-	keyword, okKeyword := params["keyword"].(string)
 	endTime, okEndTime := params["end_time"].(string)
 	sellerId, okSellerId := params["seller_id"].(string)
 	startTime, okStartTime := params["start_time"].(string)
+	promotionName, okPromotionName := params["promotion_name"].(string)
 
 	if sellerId != "" && sellerId != "0" && okSellerId {
 		sqlString.WriteString(fmt.Sprintf(" where seller_id = %s", sellerId))
@@ -53,11 +54,15 @@ func (cm *CouponModel) List(params map[string]interface{}) ([]map[string]interfa
 		sqlString.WriteString(fmt.Sprintf(" and end_time <= %s", endTime))
 	}
 
-	if keyword != "" && okKeyword {
-		sqlString.WriteString(fmt.Sprintf(" and title like  '%s'", "%"+keyword+"%"))
+	if promotionName != "" && okPromotionName {
+		sqlString.WriteString(fmt.Sprintf(" and promotion_name like  '%s'", "%"+promotionName+"%"))
 	}
 
-	sqlString.WriteString(" order by coupon_id desc")
+	if status != "" && okStatus {
+		sqlString.WriteString(fmt.Sprintf(" and status = %s", status))
+	}
+
+	sqlString.WriteString(" order by create_time desc")
 
 	if okPageNo && okPageSize {
 		sqlString.WriteString(" limit ")
@@ -66,7 +71,7 @@ func (cm *CouponModel) List(params map[string]interface{}) ([]map[string]interfa
 		sqlString.WriteString(strconv.Itoa(pageSize))
 	}
 
-	rows := cm.QuerySql(sqlString.String())
+	rows := ptm.QuerySql(sqlString.String())
 	defer rows.Close()
 
 	tableData, err := sql_utils.ParseJSON(rows)
@@ -75,15 +80,15 @@ func (cm *CouponModel) List(params map[string]interface{}) ([]map[string]interfa
 		return nil, 0
 	}
 
-	return tableData, cm.count()
+	return tableData, ptm.count()
 }
 
-func (cm *CouponModel) count() (rows int64) {
+func (ptm *PinTuanModel) count() (rows int64) {
 	var (
-		sql = "select count(*) from es_pintuan "
+		sql = "select count(*) from es_pintuan"
 	)
 
-	err := cm.QueryRow(sql).Scan(&rows)
+	err := ptm.QueryRow(sql).Scan(&rows)
 	if err != nil {
 		log.Println("sql.count 错误", err.Error())
 	}
