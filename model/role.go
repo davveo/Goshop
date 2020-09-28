@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"log"
-	"Eshop/utils/yml_config"
+	"Goshop/utils/yml_config"
 )
 
 func CreateRoleFactory(sqlType string) *RoleModel {

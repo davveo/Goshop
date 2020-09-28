@@ -3,10 +3,10 @@ package model
 import (
 	"database/sql"
 	"log"
-	"Eshop/utils/enum"
-	"Eshop/utils/redis"
-	"Eshop/utils/sql_factory"
-	"Eshop/utils/yml_config"
+	"Goshop/utils/enum"
+	"Goshop/utils/redis"
+	"Goshop/utils/sql_factory"
+	"Goshop/utils/yml_config"
 	"strings"
 )
 

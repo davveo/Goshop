@@ -1,4 +1,4 @@
-module Eshop
+module Goshop
 
 go 1.13
 

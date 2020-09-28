@@ -2,8 +2,8 @@ package yml_config
 
 import (
 	"log"
-	"Eshop/global/my_errors"
-	"Eshop/global/variable"
+	"Goshop/global/my_errors"
+	"Goshop/global/variable"
 	"time"
 
 	"github.com/spf13/viper"

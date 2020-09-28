@@ -2,7 +2,7 @@ package controller
 
 import (
 	"net/http"
-	"Eshop/model"
+	"Goshop/model"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -11,7 +11,7 @@ import (
 func AllShopList(context *gin.Context) {
 	context.JSON(
 		http.StatusOK,
-		model.CreateShopFactory("").All())
+		model.CreatGoshopFactory("").All())
 }
 
 func ShopList(ctx *gin.Context) {
@@ -26,7 +26,7 @@ func ShopList(ctx *gin.Context) {
 	queryParams["page_size"] = pageSize
 	queryParams["shop_type"] = shopType
 	queryParams["shop_disable"] = shopDisable
-	data, dataTotal := model.CreateShopFactory("").List(queryParams)
+	data, dataTotal := model.CreatGoshopFactory("").List(queryParams)
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"data":       data,
@@ -47,7 +47,7 @@ func ShopThemesList(ctx *gin.Context) {
 	queryParams["type"] = _type
 	queryParams["page_no"] = pageNo
 	queryParams["page_size"] = pageSize
-	data, dataTotal := model.CreateShopThemeFactory("").List(queryParams)
+	data, dataTotal := model.CreatGoshopThemeFactory("").List(queryParams)
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"data":       data,

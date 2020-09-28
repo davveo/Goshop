@@ -4,10 +4,10 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"Eshop/global/variable"
-	ojwt "Eshop/utils/jwt"
-	"Eshop/utils/md5_encrypt"
-	"Eshop/utils/yml_config"
+	"Goshop/global/variable"
+	ojwt "Goshop/utils/jwt"
+	"Goshop/utils/md5_encrypt"
+	"Goshop/utils/yml_config"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -141,7 +141,7 @@ func (u *UsersModel) createToken(expire int64) string {
 		StandardClaims: jwt.StandardClaims{
 			NotBefore: time.Now().Unix() - 1000,
 			ExpiresAt: time.Now().Unix() + 1000*expire,
-			Issuer:    "Eshop",
+			Issuer:    "Goshop",
 		},
 	}
 	token, err := j.CreateToken(claims)

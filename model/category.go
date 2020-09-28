@@ -2,8 +2,8 @@ package model
 
 import (
 	"log"
-	"Eshop/utils/sql_utils"
-	"Eshop/utils/yml_config"
+	"Goshop/utils/sql_utils"
+	"Goshop/utils/yml_config"
 )
 
 func CreateCategoryFactory(sqlType string) *CategoryModel {

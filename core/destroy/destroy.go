@@ -1,9 +1,9 @@
 package destroy
 
 import (
-	"Eshop/core/event"
-	"Eshop/global/consts"
-	"Eshop/global/variable"
+	"Goshop/core/event"
+	"Goshop/global/consts"
+	"Goshop/global/variable"
 	"os"
 	"os/signal"
 	"syscall"

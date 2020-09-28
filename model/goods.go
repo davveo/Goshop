@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"Eshop/utils/sql_utils"
-	"Eshop/utils/yml_config"
+	"Goshop/utils/sql_utils"
+	"Goshop/utils/yml_config"
 	"strconv"
 )
 
@@ -250,7 +250,7 @@ func (gm *GoodsModel) shopCatQuery(params map[string]interface{}, sqlString *byt
 }
 
 func (gm *GoodsModel) getShopCatChidren(categoryPath string) ([]map[string]interface{}, error) {
-	return CreateShopCateGoryFactory("").getChildren(categoryPath)
+	return CreatGoshopCateGoryFactory("").getChildren(categoryPath)
 }
 
 func (gm *GoodsModel) count() (rows int64) {

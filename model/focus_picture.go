@@ -3,8 +3,8 @@ package model
 import (
 	"fmt"
 	"log"
-	"Eshop/utils/sql_utils"
-	"Eshop/utils/yml_config"
+	"Goshop/utils/sql_utils"
+	"Goshop/utils/yml_config"
 )
 
 func CreateFocusPictureFactory(sqlType string) *FocusPictureModel {

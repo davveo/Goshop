@@ -1,1 +1,1 @@
-# Eshop
+# Goshop

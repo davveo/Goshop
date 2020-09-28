@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"fmt"
 	"log"
-	"Eshop/utils/sql_utils"
-	"Eshop/utils/yml_config"
+	"Goshop/utils/sql_utils"
+	"Goshop/utils/yml_config"
 	"strconv"
 )
 
-func CreateShopThemeFactory(sqlType string) *ShopThemeModel {
+func CreatGoshopThemeFactory(sqlType string) *ShopThemeModel {
 	if len(sqlType) == 0 {
 		sqlType = yml_config.CreateYamlFactory().GetString("UseDbType") //如果系统的某个模块需要使用非默认（mysql）数据库，例如 sqlserver，那么就在这里
 	}

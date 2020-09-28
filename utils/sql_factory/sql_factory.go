@@ -3,14 +3,14 @@ package sql_factory
 import (
 	"database/sql"
 	"fmt"
-	"Eshop/core/event"
+	"Goshop/core/event"
 
 	//	_ "github.com/denisenkom/go-mssqldb" // sqlserver驱动
 	_ "github.com/go-sql-driver/mysql" // mysql 驱动
 	// _ "github.com/lib/pq"              //  postgreSql  驱动
-	"Eshop/global/my_errors"
-	"Eshop/global/variable"
-	"Eshop/utils/yml_config"
+	"Goshop/global/my_errors"
+	"Goshop/global/variable"
+	"Goshop/utils/yml_config"
 	"strings"
 	"time"
 

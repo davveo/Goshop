@@ -2,9 +2,9 @@ package bootstrap
 
 import (
 	"log"
-	_ "Eshop/core/destroy"
-	"Eshop/global/my_errors"
-	"Eshop/global/variable"
+	_ "Goshop/core/destroy"
+	"Goshop/global/my_errors"
+	"Goshop/global/variable"
 	"os"
 )
 

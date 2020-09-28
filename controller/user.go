@@ -3,7 +3,7 @@ package controller
 import (
 	"fmt"
 	"net/http"
-	"Eshop/model"
+	"Goshop/model"
 
 	"github.com/gin-gonic/gin"
 )

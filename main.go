@@ -2,9 +2,9 @@ package main
 
 import (
 	"log"
-	_ "Eshop/bootstrap"
-	"Eshop/router"
-	"Eshop/utils/yml_config"
+	_ "Goshop/bootstrap"
+	"Goshop/router"
+	"Goshop/utils/yml_config"
 )
 
 func main() {

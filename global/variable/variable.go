@@ -2,7 +2,7 @@ package variable
 
 import (
 	"log"
-	"Eshop/global/my_errors"
+	"Goshop/global/my_errors"
 	"os"
 	"strings"
 	"time"

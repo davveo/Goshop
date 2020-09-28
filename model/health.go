@@ -2,7 +2,7 @@ package model
 
 import (
 	"log"
-	"Eshop/utils/yml_config"
+	"Goshop/utils/yml_config"
 )
 
 func CreateHealthFactory(sqlType string) *HealthModel {

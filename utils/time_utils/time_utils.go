@@ -2,7 +2,7 @@ package time_utils
 
 import (
 	"fmt"
-	"Eshop/global/consts"
+	"Goshop/global/consts"
 	"time"
 )
 

@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"Eshop/global/variable"
-	"Eshop/utils/yml_config"
+	"Goshop/global/variable"
+	"Goshop/utils/yml_config"
 )
 
 type Setting struct {

@@ -1,8 +1,8 @@
 package event
 
 import (
-	"Eshop/global/my_errors"
-	"Eshop/global/variable"
+	"Goshop/global/my_errors"
+	"Goshop/global/variable"
 	"strings"
 	"sync"
 )

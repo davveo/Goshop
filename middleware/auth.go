@@ -3,8 +3,8 @@ package middleware
 import (
 	"log"
 	"net/http"
-	"Eshop/utils/enum"
-	ojwt "Eshop/utils/jwt"
+	"Goshop/utils/enum"
+	ojwt "Goshop/utils/jwt"
 
 	"github.com/gin-gonic/gin"
 )

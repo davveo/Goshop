@@ -12,7 +12,7 @@ HttpServer:
 Mysql:
   Write:
     Host: "127.0.0.1"
-    DataBase: "Eshop"
+    DataBase: "Goshop"
     Port: 3306                        #注意，非3306，请自行调整
     Prefix: ""
     User: "root"
@@ -26,7 +26,7 @@ Mysql:
   IsOpenReadDb: 0                     # 是否开启读写分离配置（1=开启、0=关闭），IsOpenReadDb=1,Read 部分参数有效，否则Read部分参数直接忽略
   Read:
     Host: "127.0.0.1"
-    DataBase: "Eshop"
+    DataBase: "Goshop"
     Port: 3306                        #注意，非3306，请自行调整
     Prefix: "es_"
     User: "root"
