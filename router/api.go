@@ -57,7 +57,8 @@ func InitRouter() *gin.Engine {
 		AdminGroup.GET("admin/promotion/seckills", controller.SeckillList)
 		AdminGroup.GET("admin/promotion/coupons", controller.CouponList)
 		AdminGroup.GET("admin/promotion/pintuan", controller.PinTuanList)
-		AdminGroup.GET("admin/pages/:client_type/:page_type", controller.Page)
+		AdminGroup.GET("admin/pages/site-navigations", controller.PageSiteNavigationList)
+		AdminGroup.GET("admin/pages/client_type/page_type", controller.Page) // 替换原来admin/admin/pages/PC/INDEX
 		AdminGroup.GET("admin/focus-pictures", controller.FocusPicture)
 
 		// 未发现

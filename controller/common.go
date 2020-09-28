@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"orange/global/consts"
 	"orange/model"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -36,8 +37,8 @@ func FocusPicture(ctx *gin.Context) {
 }
 
 func Page(ctx *gin.Context) {
-	pageType := ctx.Param("page_type")     // APP/WAP/PC
-	clientType := ctx.Param("client_type") // INDEX/SPECIAL
+	pageType := ctx.Query("page_type")     // APP/WAP/PC
+	clientType := ctx.Query("client_type") // INDEX/SPECIAL
 	data, err := model.CreatePageFactory("").GetByType(clientType, pageType)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -48,4 +49,24 @@ func Page(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, data)
+}
+
+func PageSiteNavigationList(ctx *gin.Context) {
+	queryParams := make(map[string]interface{})
+
+	clientType := ctx.Query("client_type")
+	pageNo, _ := strconv.Atoi(ctx.DefaultQuery("page_no", "1"))
+	pageSize, _ := strconv.Atoi(ctx.DefaultQuery("page_size", "20"))
+
+	queryParams["page_no"] = pageNo
+	queryParams["page_size"] = pageSize
+	queryParams["client_type"] = clientType
+	data, dataTotal := model.CreateSiteNavigationFactory("").List(queryParams)
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data":       data,
+		"data_total": dataTotal,
+		"page_no":    pageNo,
+		"page_size":  pageSize,
+	})
 }
