@@ -57,6 +57,8 @@ func InitRouter() *gin.Engine {
 		AdminGroup.GET("admin/promotion/seckills", controller.SeckillList)
 		AdminGroup.GET("admin/promotion/coupons", controller.CouponList)
 		AdminGroup.GET("admin/promotion/pintuan", controller.PinTuanList)
+		AdminGroup.GET("admin/pages/:client_type/:page_type", controller.Page)
+		AdminGroup.GET("admin/focus-pictures", controller.FocusPicture)
 
 		// 未发现
 		AdminGroup.GET("admin/members/deposit/recharge", controller.MemberDepositRechargeList)
