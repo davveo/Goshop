@@ -17,8 +17,12 @@ func InitRouter() *gin.Engine {
 	router.Use(middleware.RequestId())
 	//router.Use(middleware.JwtMiddleWare())
 
-	router.NoRoute(func(c *gin.Context) {
-		c.String(http.StatusNotFound, "The incorrect API route.")
+	router.NoRoute(func(ctx *gin.Context) {
+		ctx.JSON(http.StatusNotFound, gin.H{
+			"code":    http.StatusNotFound,
+			"message": "The incorrect API route.",
+			"data":    nil,
+		})
 	})
 
 	ApiGroup := router.Group("")
