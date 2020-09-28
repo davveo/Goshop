@@ -73,6 +73,7 @@ func Logging() gin.HandlerFunc {
 			code = resp.Code
 			message = resp.Message
 		}
+
 		variable.ZapLog.Info(fmt.Sprintf(
 			"%-13s | %-12s | %s %s | {code: %d, message: %s}", latency, ip, pad.Right(method, 5, ""), path, code, message))
 	}
