@@ -31,8 +31,7 @@ func (scgm *ShopCateGoryModel) List(params map[string]interface{}) ([]map[string
 
 func (scgm *ShopCateGoryModel) getChildren(catPath string) ([]map[string]interface{}, error) {
 
-	sql := fmt.Sprintf(""+
-		"select shop_cat_id from es_shop_cat where cat_path like '%s' ", catPath)
+	sql := fmt.Sprintf("select shop_cat_id from es_shop_cat where cat_path like '%s' ", "%"+catPath+"%")
 	rows := scgm.QuerySql(sql)
 	defer rows.Close()
 

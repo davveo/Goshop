@@ -1,10 +1,10 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"orange/model"
-	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
 func PointCategory(ctx *gin.Context) {

@@ -164,16 +164,16 @@ func (gm *GoodsModel) baseQuery(params map[string]interface{}, sqlString *bytes.
 		sqlString.WriteString(fmt.Sprintf(" and g.market_enable =  %s", marketEnable))
 	}
 	if keyword != "" {
-		sqlString.WriteString(fmt.Sprintf(" and (g.goods_name like '%s' or g.sn like '%s' ) ", keyword, keyword))
+		sqlString.WriteString(fmt.Sprintf(" and (g.goods_name like '%s' or g.sn like '%s' ) ", "%"+keyword+"%", "%"+keyword+"%"))
 	}
 	if goodsName != "" {
-		sqlString.WriteString(fmt.Sprintf(" and g.goods_name like '%s'", goodsName))
+		sqlString.WriteString(fmt.Sprintf(" and g.goods_name like '%s'", "%"+goodsName+"%"))
 	}
 	if sellerName != "" {
-		sqlString.WriteString(fmt.Sprintf(" and g.seller_name like '%s'", sellerName))
+		sqlString.WriteString(fmt.Sprintf(" and g.seller_name like '%s'", "%"+sellerName+"%"))
 	}
 	if sn != "" {
-		sqlString.WriteString(fmt.Sprintf(" and g.sn like '%s'", sn))
+		sqlString.WriteString(fmt.Sprintf(" and g.sn like '%s'", "%"+sn+"%"))
 	}
 	if sellerId != "" {
 		sqlString.WriteString(fmt.Sprintf(" and g.seller_id = %s", sellerId))
@@ -197,7 +197,7 @@ func (gm *GoodsModel) categoryQuery(params map[string]interface{}, sqlString *by
 	// 商城分类，同时需要查询出子分类的商品
 	categoryPath := params["category_path"].(string)
 	if categoryPath != "" {
-		sql := fmt.Sprintf("select category_id from es_category where category_path like '%s'", categoryPath)
+		sql := fmt.Sprintf("select category_id from es_category where category_path like '%s'", "%"+categoryPath+"%")
 		rows := gm.QuerySql(sql)
 		defer rows.Close()
 
@@ -246,6 +246,7 @@ func (gm *GoodsModel) shopCatQuery(params map[string]interface{}, sqlString *byt
 		}
 		sqlString.WriteString(fmt.Sprintf(" and g.shop_cat_id in (%s)", tmp.String()))
 	}
+	return nil
 }
 
 func (gm *GoodsModel) getShopCatChidren(categoryPath string) ([]map[string]interface{}, error) {
