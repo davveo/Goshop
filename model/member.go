@@ -1,10 +1,10 @@
 package model
 
 import (
-	"bytes"
-	"log"
 	"Goshop/utils/sql_utils"
 	"Goshop/utils/yml_config"
+	"bytes"
+	"log"
 	"strconv"
 )
 
@@ -46,10 +46,7 @@ func (mm *MemberModel) NewMember(length int) (allMemberList []BaseMember) {
 	if rows != nil {
 		for rows.Next() {
 			member := BaseMember{}
-			err := sql_utils.ParseToStruct(rows, &member)
-			if err != nil {
-				log.Println("sql_utils.ParseToStruct 错误.", err.Error())
-			}
+			_ = sql_utils.ParseToStruct(rows, &member)
 			allMemberList = append(allMemberList, member)
 		}
 		_ = rows.Close()

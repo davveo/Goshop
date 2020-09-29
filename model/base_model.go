@@ -1,12 +1,12 @@
 package model
 
 import (
-	"database/sql"
-	"log"
 	"Goshop/utils/enum"
 	"Goshop/utils/redis"
 	"Goshop/utils/sql_factory"
 	"Goshop/utils/yml_config"
+	"database/sql"
+	"log"
 	"strings"
 )
 
@@ -73,7 +73,6 @@ func (b *BaseModel) ExecuteSql(sql string, args ...interface{}) int64 {
 //  查询类: select， 适合一次性查询完成就结束的操作
 func (b *BaseModel) QuerySql(sql string, args ...interface{}) *sql.Rows {
 	if stm, err := b.dbDriverRead.Prepare(sql); err == nil {
-		// 可变参数的二次传递，需要在后面添加三个点 ...  ，这里和php刚好相反
 		if Rows, err := stm.Query(args...); err == nil {
 			return Rows
 		} else {

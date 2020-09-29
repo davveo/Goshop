@@ -1,12 +1,16 @@
 package middleware
 
 import (
-	"log"
-	"net/http"
 	"Goshop/utils/enum"
 	ojwt "Goshop/utils/jwt"
+	"log"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
+)
+
+var (
+	whiteList = []string{""}
 )
 
 type HeaderParams struct {

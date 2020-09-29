@@ -1,12 +1,12 @@
 package model
 
 import (
+	"Goshop/utils/sql_utils"
+	"Goshop/utils/yml_config"
 	"bytes"
 	"errors"
 	"fmt"
 	"log"
-	"Goshop/utils/sql_utils"
-	"Goshop/utils/yml_config"
 	"strconv"
 )
 
@@ -84,10 +84,7 @@ func (gm *GoodsModel) NewGoods(length int) (allGoodsList []Goods) {
 	if rows != nil {
 		for rows.Next() {
 			goods := Goods{}
-			err := sql_utils.ParseToStruct(rows, &goods)
-			if err != nil {
-				log.Println(err)
-			}
+			_ = sql_utils.ParseToStruct(rows, &goods)
 			allGoodsList = append(allGoodsList, goods)
 		}
 		_ = rows.Close()
