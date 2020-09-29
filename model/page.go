@@ -1,12 +1,11 @@
 package model
 
 import (
+	"Goshop/utils/sql_utils"
+	"Goshop/utils/yml_config"
 	"bytes"
 	"fmt"
 	"log"
-	"Goshop/utils/sql_utils"
-	"Goshop/utils/yml_config"
-	"strconv"
 )
 
 func CreatePageFactory(sqlType string) *PageModel {
@@ -38,10 +37,7 @@ func (pm *PageModel) List(params map[string]interface{}) ([]map[string]interface
 	pageSize, okPageSize := params["page_size"].(int)
 
 	if okPageNo && okPageSize {
-		sqlString.WriteString(" limit ")
-		sqlString.WriteString(strconv.Itoa(pageNo - 1))
-		sqlString.WriteString(",")
-		sqlString.WriteString(strconv.Itoa(pageSize))
+		sqlString.WriteString(fmt.Sprintf(" limit %d, %d", pageNo-1, pageSize))
 	}
 
 	rows := pm.QuerySql(sqlString.String())

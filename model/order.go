@@ -1,11 +1,11 @@
 package model
 
 import (
-	"bytes"
-	"log"
 	"Goshop/utils/sql_utils"
 	"Goshop/utils/yml_config"
-	"strconv"
+	"bytes"
+	"fmt"
+	"log"
 )
 
 func CreateOrderFactory(sqlType string) *OrderModel {
@@ -39,10 +39,7 @@ func (om *OrderModel) List(params map[string]interface{}) ([]map[string]interfac
 	sqlString.WriteString(" order by o.order_id desc")
 
 	if okPageNo && okPageSize {
-		sqlString.WriteString(" limit ")
-		sqlString.WriteString(strconv.Itoa(pageNo - 1))
-		sqlString.WriteString(",")
-		sqlString.WriteString(strconv.Itoa(pageSize))
+		sqlString.WriteString(fmt.Sprintf(" limit %d, %d", pageNo-1, pageSize))
 	}
 
 	rows := om.QuerySql(sqlString.String())

@@ -1,12 +1,11 @@
 package model
 
 import (
+	"Goshop/utils/sql_utils"
+	"Goshop/utils/yml_config"
 	"bytes"
 	"fmt"
 	"log"
-	"Goshop/utils/sql_utils"
-	"Goshop/utils/yml_config"
-	"strconv"
 )
 
 func CreatGoshopThemeFactory(sqlType string) *ShopThemeModel {
@@ -43,10 +42,7 @@ func (stm *ShopThemeModel) List(params map[string]interface{}) ([]map[string]int
 	}
 
 	if okPageNo && okPageSize {
-		sqlString.WriteString(" limit ")
-		sqlString.WriteString(strconv.Itoa(pageNo - 1))
-		sqlString.WriteString(",")
-		sqlString.WriteString(strconv.Itoa(pageSize))
+		sqlString.WriteString(fmt.Sprintf(" limit %d, %d", pageNo-1, pageSize))
 	}
 
 	rows := stm.QuerySql(sqlString.String())

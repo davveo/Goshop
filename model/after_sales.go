@@ -1,11 +1,11 @@
 package model
 
 import (
-	"bytes"
-	"log"
 	"Goshop/utils/sql_utils"
 	"Goshop/utils/yml_config"
-	"strconv"
+	"bytes"
+	"fmt"
+	"log"
 )
 
 func CreateAfterSalesFactory(sqlType string) *AfterSalesModel {
@@ -39,10 +39,7 @@ func (asm *AfterSalesModel) List(params map[string]interface{}) ([]map[string]in
 	sqlString.WriteString(" order by create_time desc")
 
 	if okPageNo && okPageSize {
-		sqlString.WriteString(" limit ")
-		sqlString.WriteString(strconv.Itoa(pageNo - 1))
-		sqlString.WriteString(",")
-		sqlString.WriteString(strconv.Itoa(pageSize))
+		sqlString.WriteString(fmt.Sprintf(" limit %d, %d", pageNo-1, pageSize))
 	}
 
 	rows := asm.QuerySql(sqlString.String())

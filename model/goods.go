@@ -119,10 +119,7 @@ func (gm *GoodsModel) List(params map[string]interface{}) ([]map[string]interfac
 	countSqlString = sql_utils.GetCountSql(sqlString.String())
 
 	if okPageNo && okPageSize {
-		sqlString.WriteString(" limit ")
-		sqlString.WriteString(strconv.Itoa(pageNo - 1))
-		sqlString.WriteString(",")
-		sqlString.WriteString(strconv.Itoa(pageSize))
+		sqlString.WriteString(fmt.Sprintf(" limit %d, %d", pageNo-1, pageSize))
 	}
 	rows := gm.QuerySql(sqlString.String())
 	defer rows.Close()

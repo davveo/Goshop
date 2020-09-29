@@ -1,11 +1,11 @@
 package model
 
 import (
-	"bytes"
-	"log"
 	"Goshop/utils/sql_utils"
 	"Goshop/utils/yml_config"
-	"strconv"
+	"bytes"
+	"fmt"
+	"log"
 )
 
 func CreateComplainTopicFactory(sqlType string) *ComplainTopicModel {
@@ -37,10 +37,7 @@ func (ctm *ComplainTopicModel) List(params map[string]interface{}) ([]map[string
 	pageSize, okPageSize := params["page_size"].(int)
 
 	if okPageNo && okPageSize {
-		sqlString.WriteString(" limit ")
-		sqlString.WriteString(strconv.Itoa(pageNo - 1))
-		sqlString.WriteString(",")
-		sqlString.WriteString(strconv.Itoa(pageSize))
+		sqlString.WriteString(fmt.Sprintf(" limit %d, %d", pageNo-1, pageSize))
 	}
 
 	rows := ctm.QuerySql(sqlString.String())

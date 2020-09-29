@@ -1,11 +1,11 @@
 package model
 
 import (
-	"bytes"
-	"log"
 	"Goshop/utils/sql_utils"
 	"Goshop/utils/yml_config"
-	"strconv"
+	"bytes"
+	"fmt"
+	"log"
 )
 
 func CreateReceiptFactory(sqlType string) *ReceiptModel {
@@ -39,10 +39,7 @@ func (rm *ReceiptModel) List(params map[string]interface{}) ([]map[string]interf
 	sqlString.WriteString(" order by add_time desc")
 
 	if okPageNo && okPageSize {
-		sqlString.WriteString(" limit ")
-		sqlString.WriteString(strconv.Itoa(pageNo - 1))
-		sqlString.WriteString(",")
-		sqlString.WriteString(strconv.Itoa(pageSize))
+		sqlString.WriteString(fmt.Sprintf(" limit %d, %d", pageNo-1, pageSize))
 	}
 
 	rows := rm.QuerySql(sqlString.String())

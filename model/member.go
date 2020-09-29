@@ -4,8 +4,8 @@ import (
 	"Goshop/utils/sql_utils"
 	"Goshop/utils/yml_config"
 	"bytes"
+	"fmt"
 	"log"
-	"strconv"
 )
 
 func CreateMemberFactory(sqlType string) *MemberModel {
@@ -79,10 +79,7 @@ func (mm *MemberModel) List(params map[string]interface{}) ([]map[string]interfa
 	sqlString.WriteString(" order by create_time desc")
 
 	if okPageNo && okPageSize {
-		sqlString.WriteString(" limit ")
-		sqlString.WriteString(strconv.Itoa(pageNo - 1))
-		sqlString.WriteString(",")
-		sqlString.WriteString(strconv.Itoa(pageSize))
+		sqlString.WriteString(fmt.Sprintf(" limit %d, %d", pageNo-1, pageSize))
 	}
 
 	rows := mm.QuerySql(sqlString.String())
