@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log"
 	"reflect"
+	"strings"
 )
 
 var (
@@ -115,4 +116,10 @@ func Transfer(dest interface{}) error {
 		}
 	}
 	return nil
+}
+
+func GetCountSql(origin string) string {
+	end := strings.Index(origin, "from")
+	start := strings.Index(origin, "select") + 6
+	return strings.ReplaceAll(origin, origin[start:end], " count(*) ")
 }
