@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"net/http"
 	"Goshop/model"
+	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
