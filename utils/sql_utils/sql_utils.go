@@ -3,6 +3,7 @@ package sql_utils
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"log"
 	"reflect"
 	"strings"
@@ -122,4 +123,33 @@ func GetCountSql(origin string) string {
 	end := strings.Index(origin, "from")
 	start := strings.Index(origin, "select") + 6
 	return strings.ReplaceAll(origin, origin[start:end], " count(*) ")
+}
+
+func Like(field, value string, obscure bool) string {
+	if obscure {
+		return fmt.Sprintf(" and %s like '%s'", field, "%"+value+"%")
+	}
+	return fmt.Sprintf(" and %s like '%s'", field, value)
+}
+
+func LimitOffset(limit, offset int) string {
+	if offset == 0 {
+		offset = 20 // 默认20
+	}
+	return fmt.Sprintf(" limit %d, %d", limit-1, offset)
+}
+
+func OrderBy(field, order string) string {
+	if order == "" {
+		order = "desc"
+	}
+	return fmt.Sprintf(" order by %s %s ", field, order)
+}
+
+func Count(sql string, db *sql.DB) (rows int64) {
+	err := db.QueryRow(sql).Scan(&rows)
+	if err != nil {
+		log.Println("sql.count 错误", err.Error())
+	}
+	return rows
 }

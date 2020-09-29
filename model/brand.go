@@ -4,7 +4,6 @@ import (
 	"Goshop/utils/sql_utils"
 	"Goshop/utils/yml_config"
 	"bytes"
-	"fmt"
 	"log"
 )
 
@@ -78,7 +77,7 @@ func (bm *BrandModel) List(params map[string]interface{}, name string) ([]map[st
 	sqlString.WriteString(" order by brand_id desc ")
 
 	if okPageNo && okPageSize {
-		sqlString.WriteString(fmt.Sprintf(" limit %d, %d", pageNo-1, pageSize))
+		sqlString.WriteString(sql_utils.LimitOffset(pageNo, pageSize))
 	}
 
 	rows := bm.QuerySql(sqlString.String())

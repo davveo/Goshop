@@ -64,7 +64,7 @@ func (ptm *PinTuanModel) List(params map[string]interface{}) ([]map[string]inter
 	sqlString.WriteString(" order by create_time desc")
 
 	if okPageNo && okPageSize {
-		sqlString.WriteString(fmt.Sprintf(" limit %d, %d", pageNo-1, pageSize))
+		sqlString.WriteString(sql_utils.LimitOffset(pageNo, pageSize))
 	}
 
 	rows := ptm.QuerySql(sqlString.String())

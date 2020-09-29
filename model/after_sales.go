@@ -4,13 +4,12 @@ import (
 	"Goshop/utils/sql_utils"
 	"Goshop/utils/yml_config"
 	"bytes"
-	"fmt"
 	"log"
 )
 
 func CreateAfterSalesFactory(sqlType string) *AfterSalesModel {
 	if len(sqlType) == 0 {
-		sqlType = yml_config.CreateYamlFactory().GetString("UseDbType") //如果系统的某个模块需要使用非默认（mysql）数据库，例如 sqlserver，那么就在这里
+		sqlType = yml_config.CreateYamlFactory().GetString("UseDbType")
 	}
 	dbDriver := CreateBaseSqlFactory(sqlType)
 	if dbDriver != nil {
@@ -39,7 +38,7 @@ func (asm *AfterSalesModel) List(params map[string]interface{}) ([]map[string]in
 	sqlString.WriteString(" order by create_time desc")
 
 	if okPageNo && okPageSize {
-		sqlString.WriteString(fmt.Sprintf(" limit %d, %d", pageNo-1, pageSize))
+		sqlString.WriteString(sql_utils.LimitOffset(pageNo, pageSize))
 	}
 
 	rows := asm.QuerySql(sqlString.String())

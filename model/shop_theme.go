@@ -42,7 +42,7 @@ func (stm *ShopThemeModel) List(params map[string]interface{}) ([]map[string]int
 	}
 
 	if okPageNo && okPageSize {
-		sqlString.WriteString(fmt.Sprintf(" limit %d, %d", pageNo-1, pageSize))
+		sqlString.WriteString(sql_utils.LimitOffset(pageNo, pageSize))
 	}
 
 	rows := stm.QuerySql(sqlString.String())

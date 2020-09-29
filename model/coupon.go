@@ -59,7 +59,7 @@ func (cm *CouponModel) List(params map[string]interface{}) ([]map[string]interfa
 	sqlString.WriteString(" order by coupon_id desc")
 
 	if okPageNo && okPageSize {
-		sqlString.WriteString(fmt.Sprintf(" limit %d, %d", pageNo-1, pageSize))
+		sqlString.WriteString(sql_utils.LimitOffset(pageNo, pageSize))
 	}
 
 	rows := cm.QuerySql(sqlString.String())

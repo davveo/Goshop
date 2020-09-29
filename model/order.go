@@ -4,7 +4,6 @@ import (
 	"Goshop/utils/sql_utils"
 	"Goshop/utils/yml_config"
 	"bytes"
-	"fmt"
 	"log"
 )
 
@@ -39,7 +38,7 @@ func (om *OrderModel) List(params map[string]interface{}) ([]map[string]interfac
 	sqlString.WriteString(" order by o.order_id desc")
 
 	if okPageNo && okPageSize {
-		sqlString.WriteString(fmt.Sprintf(" limit %d, %d", pageNo-1, pageSize))
+		sqlString.WriteString(sql_utils.LimitOffset(pageNo, pageSize))
 	}
 
 	rows := om.QuerySql(sqlString.String())

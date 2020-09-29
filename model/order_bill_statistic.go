@@ -38,7 +38,7 @@ func (obsm *OrderBillStatisticModel) List(params map[string]interface{}) ([]map[
 	pageSize, okPageSize := params["page_size"].(int)
 
 	if okPageNo && okPageSize {
-		sqlString.WriteString(fmt.Sprintf(" limit %d, %d", pageNo-1, pageSize))
+		sqlString.WriteString(sql_utils.LimitOffset(pageNo, pageSize))
 	}
 
 	rows := obsm.QuerySql(sqlString.String())

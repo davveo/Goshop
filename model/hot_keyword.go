@@ -4,7 +4,6 @@ import (
 	"Goshop/utils/sql_utils"
 	"Goshop/utils/yml_config"
 	"bytes"
-	"fmt"
 	"log"
 )
 
@@ -37,7 +36,7 @@ func (hkwm *HotKeyWordModel) List(params map[string]interface{}) ([]map[string]i
 	pageSize, okPageSize := params["page_size"].(int)
 
 	if okPageNo && okPageSize {
-		sqlString.WriteString(fmt.Sprintf(" limit %d, %d", pageNo-1, pageSize))
+		sqlString.WriteString(sql_utils.LimitOffset(pageNo, pageSize))
 	}
 
 	rows := hkwm.QuerySql(sqlString.String())

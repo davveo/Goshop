@@ -4,7 +4,6 @@ import (
 	"Goshop/utils/sql_utils"
 	"Goshop/utils/yml_config"
 	"bytes"
-	"fmt"
 	"log"
 )
 
@@ -39,7 +38,7 @@ func (mzm *MemberZpzzModel) List(params map[string]interface{}) ([]map[string]in
 	sqlString.WriteString(" order by apply_time desc")
 
 	if okPageNo && okPageSize {
-		sqlString.WriteString(fmt.Sprintf(" limit %d, %d", pageNo-1, pageSize))
+		sqlString.WriteString(sql_utils.LimitOffset(pageNo, pageSize))
 	}
 
 	rows := mzm.QuerySql(sqlString.String())

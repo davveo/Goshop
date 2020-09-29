@@ -42,7 +42,7 @@ func (sngm *SiteNavigationModel) List(params map[string]interface{}) ([]map[stri
 	}
 	sqlString.WriteString(" order by sort desc ")
 	if okPageNo && okPageSize {
-		sqlString.WriteString(fmt.Sprintf(" limit %d, %d", pageNo-1, pageSize))
+		sqlString.WriteString(sql_utils.LimitOffset(pageNo, pageSize))
 	}
 
 	rows := sngm.QuerySql(sqlString.String())

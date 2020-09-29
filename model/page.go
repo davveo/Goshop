@@ -37,7 +37,7 @@ func (pm *PageModel) List(params map[string]interface{}) ([]map[string]interface
 	pageSize, okPageSize := params["page_size"].(int)
 
 	if okPageNo && okPageSize {
-		sqlString.WriteString(fmt.Sprintf(" limit %d, %d", pageNo-1, pageSize))
+		sqlString.WriteString(sql_utils.LimitOffset(pageNo, pageSize))
 	}
 
 	rows := pm.QuerySql(sqlString.String())
