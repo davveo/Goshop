@@ -1,11 +1,10 @@
 package model
 
 import (
-	"bytes"
-	"log"
 	"Goshop/utils/sql_utils"
 	"Goshop/utils/yml_config"
-	"strconv"
+	"bytes"
+	"log"
 )
 
 func CreateGroupBuyCategoryFactory(sqlType string) *GroupBuyCategoryModel {
@@ -37,10 +36,7 @@ func (gbcm *GroupBuyCategoryModel) List(params map[string]interface{}) ([]map[st
 	pageSize, okPageSize := params["page_size"].(int)
 
 	if okPageNo && okPageSize {
-		sqlString.WriteString(" limit ")
-		sqlString.WriteString(strconv.Itoa(pageNo - 1))
-		sqlString.WriteString(",")
-		sqlString.WriteString(strconv.Itoa(pageSize))
+		sqlString.WriteString(sql_utils.LimitOffset(pageNo, pageSize))
 	}
 
 	rows := gbcm.QuerySql(sqlString.String())

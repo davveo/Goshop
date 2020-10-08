@@ -1,11 +1,10 @@
 package model
 
 import (
-	"bytes"
-	"log"
 	"Goshop/utils/sql_utils"
 	"Goshop/utils/yml_config"
-	"strconv"
+	"bytes"
+	"log"
 )
 
 func CreateMemberCommentFactory(sqlType string) *MemberCommentModel {
@@ -39,10 +38,7 @@ func (mcm *MemberCommentModel) List(params map[string]interface{}) ([]map[string
 	sqlString.WriteString(" order by create_time desc")
 
 	if okPageNo && okPageSize {
-		sqlString.WriteString(" limit ")
-		sqlString.WriteString(strconv.Itoa(pageNo - 1))
-		sqlString.WriteString(",")
-		sqlString.WriteString(strconv.Itoa(pageSize))
+		sqlString.WriteString(sql_utils.LimitOffset(pageNo, pageSize))
 	}
 
 	rows := mcm.QuerySql(sqlString.String())

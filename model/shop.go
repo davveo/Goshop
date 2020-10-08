@@ -1,13 +1,12 @@
 package model
 
 import (
+	"Goshop/utils/sql_utils"
+	"Goshop/utils/yml_config"
 	"bytes"
 	"database/sql"
 	"fmt"
 	"log"
-	"Goshop/utils/sql_utils"
-	"Goshop/utils/yml_config"
-	"strconv"
 
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
@@ -178,10 +177,7 @@ func (sm *ShopModel) List(params map[string]interface{}) ([]map[string]interface
 	sqlString.WriteString(" order by create_time desc")
 
 	if okPageNo && okPageSize {
-		sqlString.WriteString(" limit ")
-		sqlString.WriteString(strconv.Itoa(pageNo - 1))
-		sqlString.WriteString(",")
-		sqlString.WriteString(strconv.Itoa(pageSize))
+		sqlString.WriteString(sql_utils.LimitOffset(pageNo, pageSize))
 	}
 
 	rows := sm.QuerySql(sqlString.String())

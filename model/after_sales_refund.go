@@ -1,11 +1,10 @@
 package model
 
 import (
-	"bytes"
-	"log"
 	"Goshop/utils/sql_utils"
 	"Goshop/utils/yml_config"
-	"strconv"
+	"bytes"
+	"log"
 )
 
 func CreateAfterSalesRefundFactory(sqlType string) *AfterSalesRefundModel {
@@ -39,10 +38,7 @@ func (asfm *AfterSalesRefundModel) List(params map[string]interface{}) ([]map[st
 	sqlString.WriteString(" order by create_time desc")
 
 	if okPageNo && okPageSize {
-		sqlString.WriteString(" limit ")
-		sqlString.WriteString(strconv.Itoa(pageNo - 1))
-		sqlString.WriteString(",")
-		sqlString.WriteString(strconv.Itoa(pageSize))
+		sqlString.WriteString(sql_utils.LimitOffset(pageNo, pageSize))
 	}
 
 	rows := asfm.QuerySql(sqlString.String())

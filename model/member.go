@@ -1,11 +1,10 @@
 package model
 
 import (
-	"bytes"
-	"log"
 	"Goshop/utils/sql_utils"
 	"Goshop/utils/yml_config"
-	"strconv"
+	"bytes"
+	"log"
 )
 
 func CreateMemberFactory(sqlType string) *MemberModel {
@@ -46,10 +45,7 @@ func (mm *MemberModel) NewMember(length int) (allMemberList []BaseMember) {
 	if rows != nil {
 		for rows.Next() {
 			member := BaseMember{}
-			err := sql_utils.ParseToStruct(rows, &member)
-			if err != nil {
-				log.Println("sql_utils.ParseToStruct 错误.", err.Error())
-			}
+			_ = sql_utils.ParseToStruct(rows, &member)
 			allMemberList = append(allMemberList, member)
 		}
 		_ = rows.Close()
@@ -82,10 +78,7 @@ func (mm *MemberModel) List(params map[string]interface{}) ([]map[string]interfa
 	sqlString.WriteString(" order by create_time desc")
 
 	if okPageNo && okPageSize {
-		sqlString.WriteString(" limit ")
-		sqlString.WriteString(strconv.Itoa(pageNo - 1))
-		sqlString.WriteString(",")
-		sqlString.WriteString(strconv.Itoa(pageSize))
+		sqlString.WriteString(sql_utils.LimitOffset(pageNo, pageSize))
 	}
 
 	rows := mm.QuerySql(sqlString.String())

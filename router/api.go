@@ -13,9 +13,7 @@ func InitRouter() *gin.Engine {
 	// 中间件管理
 	router.Use(middleware.Cors())
 	router.Use(middleware.NoCache())
-	router.Use(middleware.Logging())
 	router.Use(middleware.RequestId())
-	//router.Use(middleware.JwtMiddleWare())
 
 	router.NoRoute(func(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotFound, gin.H{
@@ -34,6 +32,7 @@ func InitRouter() *gin.Engine {
 	}
 
 	// 路由管理
+	//AdminGroup := router.Group("admin/").Use(middleware.JWTAuth())
 	AdminGroup := router.Group("admin/")
 	{
 		AdminGroup.GET("systems/admin-users/login", controller.Login)         // done
@@ -42,7 +41,7 @@ func InitRouter() *gin.Engine {
 		AdminGroup.GET("admin/systems/messages", controller.MessageList)
 		AdminGroup.GET("admin/systems/admin-users/token", controller.Refresh) // done
 		AdminGroup.GET("admin/systems/complain-topics", controller.ComplainTopicsList)
-		AdminGroup.GET("index/page", controller.Index)
+		AdminGroup.GET("admin/index/page", controller.Index)                                  // done
 		AdminGroup.GET("admin/goods", controller.GoodsList)                                   // done
 		AdminGroup.GET("admin/goods/specs", controller.SpecsList)                             // done
 		AdminGroup.GET("admin/goods/brands", controller.BrandList)                            // done

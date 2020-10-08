@@ -1,12 +1,11 @@
 package model
 
 import (
+	"Goshop/utils/sql_utils"
+	"Goshop/utils/yml_config"
 	"bytes"
 	"fmt"
 	"log"
-	"Goshop/utils/sql_utils"
-	"Goshop/utils/yml_config"
-	"strconv"
 )
 
 func CreateCouponFactory(sqlType string) *CouponModel {
@@ -60,10 +59,7 @@ func (cm *CouponModel) List(params map[string]interface{}) ([]map[string]interfa
 	sqlString.WriteString(" order by coupon_id desc")
 
 	if okPageNo && okPageSize {
-		sqlString.WriteString(" limit ")
-		sqlString.WriteString(strconv.Itoa(pageNo - 1))
-		sqlString.WriteString(",")
-		sqlString.WriteString(strconv.Itoa(pageSize))
+		sqlString.WriteString(sql_utils.LimitOffset(pageNo, pageSize))
 	}
 
 	rows := cm.QuerySql(sqlString.String())

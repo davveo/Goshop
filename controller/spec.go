@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"net/http"
 	"Goshop/model"
+	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -18,7 +18,7 @@ func SpecsList(ctx *gin.Context) {
 	queryParams["page_no"] = pageNo
 	queryParams["keyword"] = keyWord
 	queryParams["page_size"] = pageSize
-	data, dataTotal := model.CreateSpecFactory("").List(queryParams, keyWord)
+	data, dataTotal := model.CreateSpecFactory("").List(queryParams)
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"data":       data,

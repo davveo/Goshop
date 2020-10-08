@@ -1,12 +1,12 @@
 package model
 
 import (
+	"Goshop/utils/sql_utils"
+	"Goshop/utils/yml_config"
 	"bytes"
 	"errors"
 	"fmt"
 	"log"
-	"Goshop/utils/sql_utils"
-	"Goshop/utils/yml_config"
 	"strconv"
 )
 
@@ -84,10 +84,7 @@ func (gm *GoodsModel) NewGoods(length int) (allGoodsList []Goods) {
 	if rows != nil {
 		for rows.Next() {
 			goods := Goods{}
-			err := sql_utils.ParseToStruct(rows, &goods)
-			if err != nil {
-				log.Println(err)
-			}
+			_ = sql_utils.ParseToStruct(rows, &goods)
 			allGoodsList = append(allGoodsList, goods)
 		}
 		_ = rows.Close()
@@ -97,8 +94,9 @@ func (gm *GoodsModel) NewGoods(length int) (allGoodsList []Goods) {
 
 func (gm *GoodsModel) List(params map[string]interface{}) ([]map[string]interface{}, int64) {
 	var (
-		sqlString bytes.Buffer
-		err       error
+		countSqlString string
+		sqlString      bytes.Buffer
+		err            error
 	)
 	sqlString.WriteString("select g.goods_id,g.goods_name,g.sn,g.brand_id,g.thumbnail,g.seller_name," +
 		"g.enable_quantity,g.quantity,g.price,g.create_time,g.market_enable,g.is_auth,g.under_message," +
@@ -118,12 +116,10 @@ func (gm *GoodsModel) List(params map[string]interface{}) ([]map[string]interfac
 	}
 
 	sqlString.WriteString(" order by g.priority desc,g.create_time desc")
+	countSqlString = sql_utils.GetCountSql(sqlString.String())
 
 	if okPageNo && okPageSize {
-		sqlString.WriteString(" limit ")
-		sqlString.WriteString(strconv.Itoa(pageNo - 1))
-		sqlString.WriteString(",")
-		sqlString.WriteString(strconv.Itoa(pageSize))
+		sqlString.WriteString(sql_utils.LimitOffset(pageNo, pageSize))
 	}
 	rows := gm.QuerySql(sqlString.String())
 	defer rows.Close()
@@ -133,22 +129,22 @@ func (gm *GoodsModel) List(params map[string]interface{}) ([]map[string]interfac
 		log.Println("sql_utils.ParseJSON 错误", err.Error())
 		return nil, 0
 	}
-	return tableData, gm.count()
+	return tableData, gm.count(countSqlString)
 }
 
 func (gm *GoodsModel) baseQuery(params map[string]interface{}, sqlString *bytes.Buffer) error {
-	sn := params["sn"].(string)
-	keyword := params["keyword"].(string)
-	brandId := params["brand_id"].(string)
-	disabled := params["disabled"].(string)
-	endPrice := params["end_price"].(string)
-	sellerId := params["seller_id"].(string)
-	goodsName := params["goods_name"].(string)
-	goodsType := params["goods_type"].(string)
+	sn, okSn := params["sn"].(string)
+	keyword, okKeyword := params["keyword"].(string)
+	brandId, okBrandID := params["brand_id"].(string)
+	disabled, okDisabled := params["disabled"].(string)
+	endPrice, okEndPrice := params["end_price"].(string)
+	sellerId, okSellerId := params["seller_id"].(string)
+	goodsName, okGoodsName := params["goods_name"].(string)
+	goodsType, okGoodsType := params["goods_type"].(string)
 	IsAuth, okIsAuth := params["is_auth"].(int)
-	startPrice := params["start_price"].(string)
-	sellerName := params["seller_name"].(string)
-	marketEnable := params["market_enable"].(string)
+	startPrice, okStartPrice := params["start_price"].(string)
+	sellerName, okSellerName := params["seller_name"].(string)
+	marketEnable, okMarketEnable := params["market_enable"].(string)
 	if okIsAuth {
 		sqlString.WriteString(" and is_auth = ")
 		sqlString.WriteString(strconv.Itoa(IsAuth))
@@ -156,38 +152,38 @@ func (gm *GoodsModel) baseQuery(params map[string]interface{}, sqlString *bytes.
 	if disabled == "" {
 		disabled = "1"
 	}
-	if disabled != "" {
+	if disabled != "" && okDisabled {
 		sqlString.WriteString(fmt.Sprintf(" and g.disabled = %s", disabled))
 	}
 	// 上下架
-	if marketEnable != "" {
+	if marketEnable != "" && okMarketEnable {
 		sqlString.WriteString(fmt.Sprintf(" and g.market_enable =  %s", marketEnable))
 	}
-	if keyword != "" {
+	if keyword != "" && okKeyword {
 		sqlString.WriteString(fmt.Sprintf(" and (g.goods_name like '%s' or g.sn like '%s' ) ", "%"+keyword+"%", "%"+keyword+"%"))
 	}
-	if goodsName != "" {
+	if goodsName != "" && okGoodsName {
 		sqlString.WriteString(fmt.Sprintf(" and g.goods_name like '%s'", "%"+goodsName+"%"))
 	}
-	if sellerName != "" {
+	if sellerName != "" && okSellerName {
 		sqlString.WriteString(fmt.Sprintf(" and g.seller_name like '%s'", "%"+sellerName+"%"))
 	}
-	if sn != "" {
+	if sn != "" && okSn {
 		sqlString.WriteString(fmt.Sprintf(" and g.sn like '%s'", "%"+sn+"%"))
 	}
-	if sellerId != "" {
+	if sellerId != "" && okSellerId {
 		sqlString.WriteString(fmt.Sprintf(" and g.seller_id = %s", sellerId))
 	}
-	if goodsType != "" {
+	if goodsType != "" && okGoodsType {
 		sqlString.WriteString(fmt.Sprintf(" and g.goods_type = %s", goodsType))
 	}
-	if brandId != "" {
+	if brandId != "" && okBrandID {
 		sqlString.WriteString(fmt.Sprintf(" and g.brand_id = %s", brandId))
 	}
-	if startPrice != "" {
+	if startPrice != "" && okStartPrice {
 		sqlString.WriteString(fmt.Sprintf(" and g.price >= %s", startPrice))
 	}
-	if endPrice != "" {
+	if endPrice != "" && okEndPrice {
 		sqlString.WriteString(fmt.Sprintf(" and g.price <= %s", endPrice))
 	}
 	return nil
@@ -195,8 +191,8 @@ func (gm *GoodsModel) baseQuery(params map[string]interface{}, sqlString *bytes.
 
 func (gm *GoodsModel) categoryQuery(params map[string]interface{}, sqlString *bytes.Buffer) error {
 	// 商城分类，同时需要查询出子分类的商品
-	categoryPath := params["category_path"].(string)
-	if categoryPath != "" {
+	categoryPath, okCategoryPath := params["category_path"].(string)
+	if categoryPath != "" && okCategoryPath {
 		sql := fmt.Sprintf("select category_id from es_category where category_path like '%s'", "%"+categoryPath+"%")
 		rows := gm.QuerySql(sql)
 		defer rows.Close()
@@ -224,8 +220,8 @@ func (gm *GoodsModel) categoryQuery(params map[string]interface{}, sqlString *by
 }
 
 func (gm *GoodsModel) shopCatQuery(params map[string]interface{}, sqlString *bytes.Buffer) error {
-	categoryPath := params["category_path"].(string)
-	if categoryPath != "" {
+	categoryPath, okCategoryPath := params["category_path"].(string)
+	if categoryPath != "" && okCategoryPath {
 		catList, err := gm.getShopCatChidren(categoryPath)
 
 		if err != nil {
@@ -253,10 +249,7 @@ func (gm *GoodsModel) getShopCatChidren(categoryPath string) ([]map[string]inter
 	return CreatGoshopCateGoryFactory("").getChildren(categoryPath)
 }
 
-func (gm *GoodsModel) count() (rows int64) {
-	var (
-		sql = "select count(*) from es_goods;"
-	)
+func (gm *GoodsModel) count(sql string) (rows int64) {
 
 	err := gm.QueryRow(sql).Scan(&rows)
 	if err != nil {

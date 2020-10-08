@@ -1,11 +1,10 @@
 package model
 
 import (
-	"bytes"
-	"log"
 	"Goshop/utils/sql_utils"
 	"Goshop/utils/yml_config"
-	"strconv"
+	"bytes"
+	"log"
 )
 
 func CreateTradePayLogFactory(sqlType string) *TradePayLogModel {
@@ -79,10 +78,7 @@ func (tplm *TradePayLogModel) List(params map[string]interface{}) ([]map[string]
 	sqlString.WriteString(" order by pay_log_id desc")
 
 	if okPageNo && okPageSize {
-		sqlString.WriteString(" limit ")
-		sqlString.WriteString(strconv.Itoa(pageNo - 1))
-		sqlString.WriteString(",")
-		sqlString.WriteString(strconv.Itoa(pageSize))
+		sqlString.WriteString(sql_utils.LimitOffset(pageNo, pageSize))
 	}
 
 	rows := tplm.QuerySql(sqlString.String())

@@ -1,10 +1,10 @@
 package main
 
 import (
-	"log"
 	_ "Goshop/bootstrap"
 	"Goshop/router"
 	"Goshop/utils/yml_config"
+	"log"
 )
 
 func main() {

@@ -1,12 +1,11 @@
 package model
 
 import (
+	"Goshop/utils/sql_utils"
+	"Goshop/utils/yml_config"
 	"bytes"
 	"fmt"
 	"log"
-	"Goshop/utils/sql_utils"
-	"Goshop/utils/yml_config"
-	"strconv"
 )
 
 func CreateSiteNavigationFactory(sqlType string) *SiteNavigationModel {
@@ -43,10 +42,7 @@ func (sngm *SiteNavigationModel) List(params map[string]interface{}) ([]map[stri
 	}
 	sqlString.WriteString(" order by sort desc ")
 	if okPageNo && okPageSize {
-		sqlString.WriteString(" limit ")
-		sqlString.WriteString(strconv.Itoa(pageNo - 1))
-		sqlString.WriteString(",")
-		sqlString.WriteString(strconv.Itoa(pageSize))
+		sqlString.WriteString(sql_utils.LimitOffset(pageNo, pageSize))
 	}
 
 	rows := sngm.QuerySql(sqlString.String())

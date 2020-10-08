@@ -1,11 +1,11 @@
 package model
 
 import (
+	"Goshop/global/variable"
+	"Goshop/utils/yml_config"
 	"encoding/json"
 	"fmt"
 	"log"
-	"Goshop/global/variable"
-	"Goshop/utils/yml_config"
 )
 
 type Setting struct {
@@ -65,7 +65,7 @@ func (u *SettingModel) Get(group string) *Setting {
 	}
 
 	if value != "" {
-		json.Unmarshal([]byte(value), &setting)
+		_ = json.Unmarshal([]byte(value), &setting)
 	}
 	return setting
 }
