@@ -2,12 +2,12 @@ package middleware
 
 import (
 	"Goshop/global/errno"
-	"Goshop/global/variable"
 	"Goshop/utils/response"
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -64,7 +64,7 @@ func Logging() gin.HandlerFunc {
 
 		var resp response.Response
 		if err := json.Unmarshal(blw.body.Bytes(), &resp); err != nil {
-			variable.ZapLog.Error(fmt.Sprintf(
+			log.Print(fmt.Sprintf(
 				"response body can not unmarshal to model.Response struct, body: `%s`", blw.body.Bytes()))
 
 			code = errno.InternalServerError.Code
@@ -73,8 +73,7 @@ func Logging() gin.HandlerFunc {
 			code = resp.Code
 			message = resp.Message
 		}
-
-		variable.ZapLog.Info(fmt.Sprintf(
+		log.Print(fmt.Sprintf(
 			"%-13s | %-12s | %s %s | {code: %d, message: %s}", latency, ip, pad.Right(method, 5, ""), path, code, message))
 	}
 }

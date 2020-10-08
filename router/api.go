@@ -13,7 +13,7 @@ func InitRouter() *gin.Engine {
 	// 中间件管理
 	router.Use(middleware.Cors())
 	router.Use(middleware.NoCache())
-	//router.Use(middleware.Logging())
+	router.Use(middleware.Logging())
 	router.Use(middleware.RequestId())
 	//router.Use(middleware.JwtMiddleWare())
 
