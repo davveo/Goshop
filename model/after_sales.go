@@ -4,6 +4,7 @@ import (
 	"Goshop/utils/sql_utils"
 	"Goshop/utils/yml_config"
 	"bytes"
+	"fmt"
 	"log"
 )
 
@@ -26,42 +27,43 @@ type AfterSalesModel struct {
 }
 
 func (asm *AfterSalesModel) List(params map[string]interface{}) ([]map[string]interface{}, int64) {
+	baseSql := "select * from es_as_order "
+	return asm.buildData(baseSql, params)
+}
+
+func (asm *AfterSalesModel) buildSql(baseSql string, params map[string]interface{}) (string, string) {
 	var (
 		sqlString bytes.Buffer
 	)
+	sqlString.WriteString(baseSql)
+	pageNo, _ := params["page_no"].(int)
+	disabled, _ := params["disabled"].(string)
+	pageSize, _ := params["page_size"].(int)
 
-	sqlString.WriteString("select * from es_as_order where disabled = ? ")
+	build := sql_utils.Builder{BaseSql: baseSql}
 
-	pageNo, okPageNo := params["page_no"].(int)
-	pageSize, okPageSize := params["page_size"].(int)
-
-	sqlString.WriteString(" order by create_time desc")
-
-	if okPageNo && okPageSize {
-		sqlString.WriteString(sql_utils.LimitOffset(pageNo, pageSize))
+	if disabled == "" {
+		disabled = "NORMAL"
+	}
+	if disabled != "" {
+		sqlString.WriteString(fmt.Sprintf(" where disabled = '%s'", disabled))
 	}
 
-	rows := asm.QuerySql(sqlString.String())
-	defer rows.Close()
+	sql := build.Where("disabled", disabled, "=").
+		OrderBy("create_time", "desc")
 
+	return sql.LimitOffset(pageNo, pageSize).ToString(), sql_utils.SqlCountString(sql.ToString())
+}
+
+func (asm *AfterSalesModel) buildData(baseSql string, params map[string]interface{}) ([]map[string]interface{}, int64) {
+	sqlString, countSqlString := asm.buildSql(baseSql, params)
+
+	rows := asm.QuerySql(sqlString)
+	defer rows.Close()
 	tableData, err := sql_utils.ParseJSON(rows)
 	if err != nil {
 		log.Println("sql_utils.ParseJSON 错误", err.Error())
 		return nil, 0
 	}
-
-	return tableData, asm.count()
-}
-
-func (asm *AfterSalesModel) count() (rows int64) {
-	var (
-		sql = "select count(*) from es_as_order;"
-	)
-
-	err := asm.QueryRow(sql).Scan(&rows)
-	if err != nil {
-		log.Println("sql.count 错误", err.Error())
-	}
-
-	return rows
+	return tableData, sql_utils.Count(countSqlString, asm.dbDriverRead)
 }

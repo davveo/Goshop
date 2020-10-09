@@ -1,11 +1,13 @@
 package sql_utils
 
 import (
+	"bytes"
 	"database/sql"
 	"errors"
 	"fmt"
 	"log"
 	"reflect"
+	"regexp"
 	"strings"
 )
 
@@ -152,4 +154,87 @@ func Count(sql string, db *sql.DB) (rows int64) {
 		log.Println("sql.count 错误", err.Error())
 	}
 	return rows
+}
+
+type Builder struct {
+	sqlString bytes.Buffer
+	BaseSql   string
+}
+
+func (b *Builder) Where(col string, val interface{}, op string) *Builder {
+	exp := genExp(col, val, op)
+	if b.sqlString.String() == "" {
+		b.sqlString.WriteString(fmt.Sprintf("where %s", exp))
+	} else {
+		b.sqlString.WriteString(fmt.Sprintf(" and %s", exp))
+	}
+	return b
+}
+
+func (b *Builder) OrderBy(field, order string) *Builder {
+	if order == "" {
+		order = "desc"
+	}
+	b.sqlString.WriteString(fmt.Sprintf(" order by %s %s ", field, order))
+	return b
+}
+
+func (b *Builder) LimitOffset(limit, offset int) *Builder {
+	if offset == 0 {
+		offset = 20 // 默认20
+	}
+	b.sqlString.WriteString(fmt.Sprintf(" limit %d, %d", limit-1, offset))
+	return b
+}
+
+func SqlCountString(sqlString string) string {
+	end := strings.Index(sqlString, "from")
+	start := strings.Index(sqlString, "select") + 6
+	return strings.ReplaceAll(sqlString, sqlString[start:end], " count(*) ")
+}
+
+func (b *Builder) ToString() string {
+	return fmt.Sprintf("%s %s", b.BaseSql, b.sqlString.String())
+}
+
+func genExp(col string, val interface{}, op string) string {
+	var sExpr string
+	switch val.(type) {
+	case int, int8, int16, int32, int64:
+		sExpr = fmt.Sprintf("%s %s %d", col, op, val)
+	case float32, float64:
+		sExpr = fmt.Sprintf("%s %s %f", col, op, val)
+	case bool:
+		var newVal int
+		if val == true {
+			newVal = 1
+		} else {
+			newVal = 0
+		}
+		sExpr = fmt.Sprintf("%s %s %d", col, op, newVal)
+	case string:
+		newVal, _ := val.(string)
+		if op == "like" {
+			sExpr = fmt.Sprintf("%s %s '%s'", col, op, "%"+newVal+"%")
+		} else {
+			sExpr = fmt.Sprintf("%s %s '%s'", col, op, val)
+		}
+
+	}
+
+	return deleteExtraSpace(sExpr)
+}
+
+func deleteExtraSpace(s string) string {
+	s1 := strings.Replace(s, "	", " ", -1)
+	regString := "\\s{2,}"
+	reg, _ := regexp.Compile(regString)
+	s2 := make([]byte, len(s1))
+	copy(s2, s1)
+	spcIndex := reg.FindStringIndex(string(s2))
+	for len(spcIndex) > 0 {
+		s2 = append(s2[:spcIndex[0]+1], s2[spcIndex[1]:]...)
+		spcIndex = reg.FindStringIndex(string(s2))
+	}
+	return string(s2)
 }
