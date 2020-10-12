@@ -1,10 +1,10 @@
-package controller
+package admin
 
 import (
-	"fmt"
-	"net/http"
 	"Goshop/global/consts"
 	"Goshop/model"
+	"fmt"
+	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"

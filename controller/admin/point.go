@@ -1,8 +1,8 @@
-package controller
+package admin
 
 import (
-	"net/http"
 	"Goshop/model"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )

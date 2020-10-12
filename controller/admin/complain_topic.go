@@ -1,13 +1,14 @@
-package controller
+package admin
 
 import (
-	"github.com/gin-gonic/gin"
-	"net/http"
 	"Goshop/model"
+	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
-func SeckillList(ctx *gin.Context) {
+func ComplainTopicsList(ctx *gin.Context) {
 	queryParams := make(map[string]interface{})
 
 	pageNo, _ := strconv.Atoi(ctx.DefaultQuery("page_no", "1"))
@@ -15,7 +16,7 @@ func SeckillList(ctx *gin.Context) {
 
 	queryParams["page_no"] = pageNo
 	queryParams["page_size"] = pageSize
-	data, dataTotal := model.CreateSeckillFactory("").List(queryParams)
+	data, dataTotal := model.CreateComplainTopicFactory("").List(queryParams)
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"data":       data,
