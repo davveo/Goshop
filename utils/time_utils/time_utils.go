@@ -1,8 +1,8 @@
 package time_utils
 
 import (
-	"fmt"
 	"Goshop/global/consts"
+	"fmt"
 	"time"
 )
 
@@ -22,4 +22,18 @@ func GetStartTimeAndEndTime(tp string) (start, end string) {
 		// pass
 	}
 	return
+}
+
+func GetToDayOfStart() string {
+	currentTime := time.Now()
+	startTime := time.Date(currentTime.Year(), currentTime.Month(),
+		currentTime.Day(), 0, 0, 0, 0, currentTime.Location())
+	return fmt.Sprintf(startTime.Format(consts.TIME_FORMST))
+}
+
+func GetToDayOfEnd() string {
+	currentTime := time.Now()
+	endTime := time.Date(currentTime.Year(), currentTime.Month(),
+		currentTime.Day(), 23, 59, 59, 0, currentTime.Location())
+	return fmt.Sprintf(endTime.Format(consts.TIME_FORMST))
 }
