@@ -6,7 +6,7 @@ func Login(ctx *gin.Context) {
 
 }
 
-func SendSmsCode(ctx *gin.Context) {
+func SendLoginSmsCode(ctx *gin.Context) {
 
 }
 
