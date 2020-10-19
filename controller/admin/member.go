@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"Goshop/global/consts"
 	"Goshop/model"
 	"net/http"
 	"strconv"
@@ -56,6 +57,7 @@ func MemberAskList(ctx *gin.Context) {
 	queryParams["page_no"] = pageNo
 	queryParams["disabled"] = disabled
 	queryParams["page_size"] = pageSize
+	queryParams["status"] = consts.NORMAL
 	data, dataTotal := model.CreateMemberAskFactory("").List(queryParams)
 
 	ctx.JSON(http.StatusOK, gin.H{
