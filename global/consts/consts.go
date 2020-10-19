@@ -146,3 +146,16 @@ const (
 )
 
 const TIME_FORMST = "2006/01/02 15:04:05"
+
+// 审核状态
+const (
+	WAIT_AUDIT   = "WAIT_AUDIT"   // 待审核
+	PASS_AUDIT   = "PASS_AUDIT"   // 审核通过
+	REFUSE_AUDIT = "REFUSE_AUDIT" // 审核拒绝
+)
+
+// 删除状态枚举
+const (
+	DELETED = "DELETED" // 已经删除
+	NORMAL  = "NORMAL"  // 正常
+)

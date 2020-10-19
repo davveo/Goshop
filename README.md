@@ -1,1 +1,4 @@
 # Goshop
+
+seller-api
+    member
