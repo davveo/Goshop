@@ -16,5 +16,9 @@ func SellerApi(router *gin.RouterGroup) {
 		sellerGroup.GET("members/:ask_id/reply", seller.AskReply) // 商家回复会员商品咨询
 		sellerGroup.GET("members/:ask_id", seller.AskDetail)      // 查询会员商品咨询详请
 
+		//商家登录API
+		sellerGroup.GET("login", seller.Login)                         // 用户名（手机号）/密码登录API
+		sellerGroup.POST("login/smscode/{mobile}", seller.SendSmsCode) //发送验证码
+		sellerGroup.POST("login/{mobile}", seller.MobileLogin)         // 手机号码登录API
 	}
 }

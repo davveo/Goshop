@@ -1,9 +1,11 @@
 package model
 
 import (
+	"Goshop/global/consts"
 	"Goshop/utils/sql_utils"
 	"Goshop/utils/yml_config"
 	"bytes"
+	"errors"
 	"fmt"
 	"log"
 )
@@ -140,4 +142,25 @@ func (mam *MemberAskModel) count(status string) (rows int64) {
 	}
 
 	return rows
+}
+
+func (mam *MemberAskModel) delete(askId int) (success bool) {
+	sql := "update es_member_ask set status = ? where ask_id = ?"
+	success = mam.ExecuteSql(sql, consts.DELETED, askId) < 0
+
+	// TODO 同时删除咨询问题的回复和发送的站内消息
+	// this.askReplyManager.deleteByAskId(askId);
+	// this.askMessageManager.deleteByAskId(askId);
+	return
+}
+
+func (mam *MemberAskModel) Reply(replyContent string, askId int) error {
+	if replyContent == "" {
+		return errors.New("回复内容不能为空")
+	}
+
+	if len(replyContent) < 3 || len(replyContent) > 120 {
+		return errors.New("回复内容应在3到120个字符之间")
+	}
+
 }
