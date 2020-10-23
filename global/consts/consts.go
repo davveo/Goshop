@@ -145,7 +145,10 @@ const (
 	FLOW                       = "FLOW"
 )
 
-const TIME_FORMST = "2006/01/02 15:04:05"
+const (
+	TimeFormatStyleV1 = "2006/01/02 15:04:05"
+	TimeFormatStyleV2 = "20060102"
+)
 
 // 审核状态
 const (
@@ -158,4 +161,81 @@ const (
 const (
 	DELETED = "DELETED" // 已经删除
 	NORMAL  = "NORMAL"  // 正常
+)
+
+// Permission
+const (
+	PermissionSELLER = iota
+	PermissionBUYER
+	PermissionADMIN
+	PermissionCLIENT
+)
+
+// 商家操作枚举
+const (
+	/**
+	 * 下架
+	 */
+	GoodsOperateUNDER = iota
+	/**
+	 * 还原
+	 */
+	GoodsOperateREVRET
+	/**
+	 * 放入回收站
+	 */
+	GoodsOperateRECYCLE
+	/**
+	 * 删除
+	 */
+	GoodsOperateDELETE
+)
+
+// 促销活动工具枚举
+const (
+	/**
+	 * 不参与活动（指不参与任何单品活动）
+	 */
+	PromotionNo = "NO"
+
+	/**
+	 * 积分商品(积分活动)
+	 */
+	PromotionPoint = "POINT"
+
+	/**
+	 * 单品立减活动
+	 */
+	PromotionMinus = "MINUS"
+
+	/**
+	 * 团购活动
+	 */
+	PromotionGroupBuy = "GROUPBUY"
+
+	/**
+	 *积分换购活动
+	 */
+	PromotionExchange = "EXCHANGE"
+
+	/**
+	 * 第二件半价活动
+	 */
+	PromotionHalfPrice = "HALF_PRICE"
+
+	/**
+	 *满优惠活动
+	 */
+	PromotionFullDiscount = "FULL_DISCOUNT"
+
+	/**
+	 * 限时抢购
+	 */
+	PromotionSeckill = "SECKILL"
+
+	/**
+	 * 拼团活动类型
+	 * 指定商品，优惠价格
+	 */
+	PromotionPinTuan = "PINTUAN"
 )

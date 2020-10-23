@@ -11,7 +11,7 @@ import (
 func AllShopList(context *gin.Context) {
 	context.JSON(
 		http.StatusOK,
-		model.CreatGoshopFactory("").All())
+		model.CreateShopFactory("").All())
 }
 
 func ShopList(ctx *gin.Context) {
@@ -26,7 +26,7 @@ func ShopList(ctx *gin.Context) {
 	queryParams["page_size"] = pageSize
 	queryParams["shop_type"] = shopType
 	queryParams["shop_disable"] = shopDisable
-	data, dataTotal := model.CreatGoshopFactory("").List(queryParams)
+	data, dataTotal := model.CreateShopFactory("").List(queryParams)
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"data":       data,

@@ -162,5 +162,5 @@ func (mam *MemberAskModel) Reply(replyContent string, askId int) error {
 	if len(replyContent) < 3 || len(replyContent) > 120 {
 		return errors.New("回复内容应在3到120个字符之间")
 	}
-
+	return nil
 }

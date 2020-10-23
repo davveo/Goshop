@@ -16,8 +16,10 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/systems/admin-users/token", admin.Refresh) // done
 		adminGroup.GET("admin/systems/complain-topics", admin.ComplainTopicsList)
 		adminGroup.GET("admin/index/page", admin.Index)                                  // done
-		adminGroup.GET("admin/goods", admin.GoodsList)                                   // done
 		adminGroup.GET("admin/goods/specs", admin.SpecsList)                             // done
+		adminGroup.GET("admin/goods", admin.GoodsList)                                   // done
+		adminGroup.PUT("admin/goods/:good_id/up", admin.GoodsUp)                         // 商品上架
+		adminGroup.PUT("admin/goods/:goods_ids/under", admin.GoodsDown)                  // 商品下架
 		adminGroup.GET("admin/goods/brands", admin.BrandList)                            // done
 		adminGroup.GET("admin/goods/brands/all", admin.BrandAllList)                     // done
 		adminGroup.GET("admin/goods/categories/:parent_id/children", admin.CategoryList) // done

@@ -28,12 +28,21 @@ func GetToDayOfStart() string {
 	currentTime := time.Now()
 	startTime := time.Date(currentTime.Year(), currentTime.Month(),
 		currentTime.Day(), 0, 0, 0, 0, currentTime.Location())
-	return fmt.Sprintf(startTime.Format(consts.TIME_FORMST))
+	return fmt.Sprintf(startTime.Format(consts.TimeFormatStyleV1))
 }
 
 func GetToDayOfEnd() string {
 	currentTime := time.Now()
 	endTime := time.Date(currentTime.Year(), currentTime.Month(),
 		currentTime.Day(), 23, 59, 59, 0, currentTime.Location())
-	return fmt.Sprintf(endTime.Format(consts.TIME_FORMST))
+	return fmt.Sprintf(endTime.Format(consts.TimeFormatStyleV1))
+}
+
+func GetDateStr(style string) string {
+	currDate := time.Now()
+	if style == consts.TimeFormatStyleV1 {
+		return fmt.Sprintf(currDate.Format(consts.TimeFormatStyleV1))
+	} else if style == consts.TimeFormatStyleV2 {
+		return fmt.Sprintf(currDate.Format(consts.TimeFormatStyleV2))
+	}
 }

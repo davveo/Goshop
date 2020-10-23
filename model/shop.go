@@ -11,7 +11,7 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
-func CreatGoshopFactory(sqlType string) *ShopModel {
+func CreateShopFactory(sqlType string) *ShopModel {
 	if len(sqlType) == 0 {
 		sqlType = yml_config.CreateYamlFactory().GetString("UseDbType")
 	}
@@ -190,6 +190,24 @@ func (sm *ShopModel) List(params map[string]interface{}) ([]map[string]interface
 	}
 
 	return tableData, sm.count()
+}
+
+func (sm *ShopModel) GetShop(shopId int64) (map[string]interface{}, error) {
+	sqlstring := "select s.member_id,s.member_name,s.shop_name,s.shop_disable,s.shop_createtime,s.shop_endtime,d.* from es_shop s " +
+		"left join es_shop_detail d on  s.shop_id = d.shop_id where s.shop_id = ?"
+	rows := sm.QuerySql(sqlstring, shopId)
+	defer rows.Close()
+
+	tableData, err := sql_utils.ParseJSON(rows)
+	if err != nil {
+		log.Println("sql_utils.ParseJSON 错误", err.Error())
+		return nil, err
+	}
+	var tmp map[string]interface{}
+	if len(tableData) > 0 {
+		tmp = tableData[0]
+	}
+	return tmp, nil
 }
 
 func (sm *ShopModel) count() (rows int64) {

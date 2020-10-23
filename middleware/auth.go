@@ -46,7 +46,10 @@ func JWTAuth() gin.HandlerFunc {
 			context.Abort()
 		}
 
-		context.Set("claims", claims)
+		if claims != nil {
+			context.Set("user_id", claims.ID)
+			context.Set("user_name", claims.UserName)
+		}
 		context.Next()
 	}
 }

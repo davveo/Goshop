@@ -238,3 +238,7 @@ func deleteExtraSpace(s string) string {
 	}
 	return string(s2)
 }
+
+func GetInSql([]int) string {
+
+}

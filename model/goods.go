@@ -1,13 +1,18 @@
 package model
 
 import (
+	"Goshop/global/consts"
 	"Goshop/utils/sql_utils"
+	"Goshop/utils/time_utils"
 	"Goshop/utils/yml_config"
 	"bytes"
 	"errors"
 	"fmt"
 	"log"
 	"strconv"
+	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 func CreateGoodsFactory(sqlType string) *GoodsModel {
@@ -90,6 +95,190 @@ func (gm *GoodsModel) NewGoods(length int) (allGoodsList []Goods) {
 		_ = rows.Close()
 	}
 	return allGoodsList
+}
+
+func (gm *GoodsModel) Up(goodId int) error {
+	sqlstring := "select disabled,market_enable,seller_id from es_goods where goods_id = ?"
+	rows := gm.QuerySql(sqlstring, goodId)
+	defer rows.Close()
+
+	tableData, err := sql_utils.ParseJSON(rows)
+	if err != nil {
+		log.Println("sql_utils.ParseJSON 错误", err.Error())
+		return err
+	}
+	var tmp map[string]interface{}
+	if len(tableData) > 0 {
+		tmp = tableData[0]
+	}
+	disabled := tmp["disabled"].(int64)
+	marketEnable := tmp["market_enable"].(int64)
+	sellerId := tmp["seller_id"].(int64)
+
+	//查询店铺是否是关闭中，若未开启，则不能上架
+	shop, _ := CreateShopFactory("").GetShop(sellerId)
+	if shop == nil || shop["shop_disable"] != "OPEN" {
+		return errors.New("店铺关闭中,商品不能上架操作")
+	}
+	//下架未删除才能上架
+	if !(marketEnable == 0 && disabled == 1) {
+		return errors.New("商品不能上架操作")
+	}
+
+	sqlstring = "update es_goods set market_enable = 1 and disabled = 1 where goods_id  = ?"
+	if gm.ExecuteSql(sqlstring, goodId) == -1 {
+		return errors.New("上架商品更新失败")
+	}
+	rds.Remove(fmt.Sprintf("%s_%d", consts.GOODS, goodId))
+	// TODO
+	/* 后面在完善逻辑
+	GoodsChangeMsg goodsChangeMsg = new GoodsChangeMsg(new Integer[]{goodsId}, GoodsChangeMsg.UPDATE_OPERATION);
+	this.amqpTemplate.convertAndSend(AmqpExchange.GOODS_CHANGE, AmqpExchange.GOODS_CHANGE + "_ROUTING", goodsChangeMsg);
+	*/
+	return nil
+}
+
+// TODO ctx优化
+func (gm *GoodsModel) Down(ctx *gin.Context, goodIds []int, reason string, permission int) error {
+	if len(reason) > 500 {
+		return errors.New("下架原因长度不能超过500个字符")
+	}
+	idStr := sql_utils.GetInSql(goodIds)
+
+	if permission == consts.PermissionSELLER {
+		gm.checkPermission(ctx, goodIds, consts.GoodsOperateUNDER)
+		sellerUserName := ctx.GetString("user_name")
+		reason = "店员" + sellerUserName + "下架，原因为：" + reason
+	} else {
+		//查看是否是不能下架的状态
+		sqlString := "select disabled,market_enable from es_goods where goods_id in (" + idStr + ")"
+		rows := gm.QuerySql(sqlString)
+		defer rows.Close()
+
+		tableData, err := sql_utils.ParseJSON(rows)
+		if err != nil {
+			log.Println("sql_utils.ParseJSON 错误", err.Error())
+			return err
+		}
+		for _, data := range tableData {
+			disabled := data["disabled"].(int64)
+			marketEnable := data["market_enable"].(int64)
+
+			//上架并且没有删除的可以下架
+			if !(marketEnable == 1 && disabled == 1) {
+				return errors.New("存在不能下架的商品，不能操作")
+			}
+		}
+		reason = "平台下架，原因为：" + reason
+	}
+	sqlString := "update es_goods set market_enable = 0,under_message = ?, last_modify=?  where goods_id in (" + idStr + ")"
+
+	if gm.ExecuteSql(sqlString, reason, time.Now().Unix()) == -1 {
+		return errors.New("下架商品更新失败")
+	}
+
+	//清除相关的关联
+	for _, goodId := range goodIds {
+		gm.cleanGoodsAssociated(goodId, 0)
+	}
+
+	/*TODO
+	GoodsChangeMsg goodsChangeMsg = new GoodsChangeMsg(goodsIds, GoodsChangeMsg.UNDER_OPERATION, reason);
+	this.amqpTemplate.convertAndSend(AmqpExchange.GOODS_CHANGE, AmqpExchange.GOODS_CHANGE + "_ROUTING", goodsChangeMsg);
+	*/
+	return nil
+}
+
+// 在商品删除、下架要进行调用
+func (gm *GoodsModel) cleanGoodsAssociated(goodId int, markEnable int) {
+	if yml_config.CreateYamlFactory().GetBool("AppDebug") {
+		log.Println("清除goodsid[" + string(goodId) + "]相关的缓存，包括促销的缓存")
+	}
+	rds.Remove(fmt.Sprintf("%s_%d", consts.GOODS, goodId))
+
+	// 删除这个商品的sku缓存(必须要在删除库中sku前先删缓存),首先查出商品对应的sku_id
+	sqlString := "select sku_id from es_goods_sku where goods_id = ?"
+	rows := gm.QuerySql(sqlString, goodId)
+	defer rows.Close()
+
+	tableData, err := sql_utils.ParseJSON(rows)
+	if err != nil {
+		log.Println("sql_utils.ParseJSON 错误", err.Error())
+	}
+	for _, data := range tableData {
+		skuId := data["sku_id"].(int64)
+		rds.Remove(fmt.Sprintf("%s_%d", consts.SKU, skuId))
+	}
+
+	//不再读一次缓存竟然清不掉？？所以在这里又读了一下
+	rds.Gain(fmt.Sprintf("%s_%d", consts.GOODS, goodId))
+
+	//删除该商品关联的活动缓存
+	currTimeStr := time_utils.GetDateStr(consts.TimeFormatStyleV2)
+
+	//清除此商品的缓存
+	rds.Remove(fmt.Sprintf("%s_%s_%d", consts.PROMOTION_KEY, currTimeStr, goodId))
+
+	if markEnable == 0 {
+		gm.deleteExchange(goodId)
+	}
+}
+
+// 删除积分商品
+func (gm *GoodsModel) deleteExchange(goodsId int) {
+	CreateExchangeFactory("").delete(goodsId)
+}
+
+// 查看商品是否属于当前登录用户
+func (gm *GoodsModel) checkPermission(ctx *gin.Context, goodIds []int, goodsOperate int) {
+	sellerId := ctx.GetString("user_id")
+	idStr := sql_utils.GetInSql(goodIds)
+	sqlString := "select disabled,market_enable from es_goods where goods_id in (" + idStr + ") and seller_id = ?"
+	rows := gm.QuerySql(sqlString, sellerId)
+	defer rows.Close()
+
+	tableData, err := sql_utils.ParseJSON(rows)
+	if err != nil {
+		log.Println("sql_utils.ParseJSON 错误", err.Error())
+	}
+
+	if len(tableData) != len(goodIds) {
+		log.Println("存在不属于您的商品，不能操作")
+	}
+
+	for _, data := range tableData {
+		disabled := data["disabled"].(int64)
+		marketEnable := data["market_enable"].(int64)
+
+		switch goodsOperate {
+		case consts.GoodsOperateDELETE:
+			//下架的删除了的才能还原
+			if !(marketEnable == 0 && disabled == 0) {
+				log.Println("存在不能删除的商品，不能操作")
+			}
+			break
+		case consts.GoodsOperateRECYCLE:
+			//下架的商品才能放入回收站
+			if !(marketEnable == 0 && disabled == 1) {
+				log.Println("存在不能放入回收站的商品，不能操作")
+			}
+			break
+		case consts.GoodsOperateREVRET:
+			//下架的删除了的才能还原
+			if !(marketEnable == 0 && disabled == 0) {
+				log.Println("存在不能还原的商品，不能操作")
+			}
+			break
+		case consts.GoodsOperateUNDER:
+			//上架并且没有删除的可以下架
+			if !(marketEnable == 1 && disabled == 1) {
+				log.Println("存在不能下架的商品，不能操作")
+			}
+			break
+		default:
+			break
+		}
+	}
 }
 
 func (gm *GoodsModel) List(params map[string]interface{}) ([]map[string]interface{}, int64) {
