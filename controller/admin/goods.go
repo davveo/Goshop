@@ -9,22 +9,22 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GoodsList(context *gin.Context) {
+func GoodsList(ctx *gin.Context) {
 	queryParams := make(map[string]interface{})
-	IsAuth, _ := strconv.Atoi(context.Query("is_auth"))
-	supplierGoodsType := context.Query("supplier_goods_type")
-	goodsType := context.Query("goods_type") // POINT
-	pageNo, _ := strconv.Atoi(context.DefaultQuery("page_no", "1"))
-	pageSize, _ := strconv.Atoi(context.DefaultQuery("page_size", "20"))
+	IsAuth, _ := strconv.Atoi(ctx.Query("is_auth"))
+	supplierGoodsType := ctx.Query("supplier_goods_type")
+	goodsType := ctx.Query("goods_type") // POINT
+	pageNo, _ := strconv.Atoi(ctx.DefaultQuery("page_no", "1"))
+	pageSize, _ := strconv.Atoi(ctx.DefaultQuery("page_size", "20"))
 
 	queryParams["page_no"] = pageNo
 	queryParams["is_auth"] = IsAuth
 	queryParams["page_size"] = pageSize
 	queryParams["goods_type"] = goodsType
 	queryParams["supplier_goods_type"] = supplierGoodsType
-	data, dataTotal := model.CreateGoodsFactory("").List(queryParams)
+	data, dataTotal := model.CreateGoodsFactory(ctx, "").List(queryParams)
 
-	context.JSON(http.StatusOK, gin.H{
+	ctx.JSON(http.StatusOK, gin.H{
 		"data":       data,
 		"data_total": dataTotal,
 		"page_no":    pageNo,
@@ -34,11 +34,11 @@ func GoodsList(context *gin.Context) {
 
 func GoodsUp(ctx *gin.Context) {
 	var (
-		err       error
-		goodId, _ = strconv.Atoi(ctx.Param("good_id"))
+		err        error
+		goodsId, _ = strconv.Atoi(ctx.Param("goods_id"))
 	)
 
-	err = model.CreateGoodsFactory("").Up(goodId)
+	err = model.CreateGoodsFactory(ctx, "").Up(goodsId)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, nil)
 		return
@@ -49,11 +49,11 @@ func GoodsUp(ctx *gin.Context) {
 func GoodsUnder(ctx *gin.Context) {
 	var (
 		err        error
-		goodIds, _ = strconv.Atoi(ctx.Param("good_ids"))
+		goodsId, _ = strconv.Atoi(ctx.Param("goodsId"))
 		reason     = ctx.PostForm("reason")
 	)
 
-	err = model.CreateGoodsFactory(ctx, "").Under([]int{goodIds}, reason, consts.PermissionADMIN)
+	err = model.CreateGoodsFactory(ctx, "").Under([]int{goodsId}, reason, consts.PermissionADMIN)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, nil)
 		return

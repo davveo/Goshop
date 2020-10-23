@@ -99,9 +99,9 @@ func (gm *GoodsModel) NewGoods(length int) (allGoodsList []Goods) {
 	return allGoodsList
 }
 
-func (gm *GoodsModel) Up(goodId int) error {
+func (gm *GoodsModel) Up(goodsId int) error {
 	sqlstring := "select disabled,market_enable,seller_id from es_goods where goods_id = ?"
-	rows := gm.QuerySql(sqlstring, goodId)
+	rows := gm.QuerySql(sqlstring, goodsId)
 	defer rows.Close()
 
 	tableData, err := sql_utils.ParseJSON(rows)
@@ -129,10 +129,10 @@ func (gm *GoodsModel) Up(goodId int) error {
 	}
 
 	sqlstring = "update es_goods set market_enable = 1 and disabled = 1 where goods_id  = ?"
-	if gm.ExecuteSql(sqlstring, goodId) == -1 {
+	if gm.ExecuteSql(sqlstring, goodsId) == -1 {
 		return errors.New("上架商品更新失败")
 	}
-	rds.Remove(fmt.Sprintf("%s_%d", consts.GOODS, goodId))
+	rds.Remove(fmt.Sprintf("%s_%d", consts.GOODS, goodsId))
 	// TODO
 	/* 后面在完善逻辑
 	GoodsChangeMsg goodsChangeMsg = new GoodsChangeMsg(new Integer[]{goodsId}, GoodsChangeMsg.UPDATE_OPERATION);
@@ -142,14 +142,14 @@ func (gm *GoodsModel) Up(goodId int) error {
 }
 
 // TODO ctx优化
-func (gm *GoodsModel) Under(goodIds []int, reason string, permission int) error {
+func (gm *GoodsModel) Under(goodsIds []int, reason string, permission int) error {
 	if len(reason) > 500 {
 		return errors.New("下架原因长度不能超过500个字符")
 	}
-	idStr := sql_utils.GetInSql(goodIds)
+	idStr := sql_utils.InSqlStr(goodsIds)
 
 	if permission == consts.PermissionSELLER {
-		gm.checkPermission(goodIds, consts.GoodsOperateUNDER)
+		gm.checkPermission(goodsIds, consts.GoodsOperateUNDER)
 		sellerUserName := gm.ctx.GetString("user_name")
 		reason = "店员" + sellerUserName + "下架，原因为：" + reason
 	} else {
@@ -182,8 +182,8 @@ func (gm *GoodsModel) Under(goodIds []int, reason string, permission int) error 
 	}
 
 	//清除相关的关联
-	for _, goodId := range goodIds {
-		gm.cleanGoodsAssociated(goodId, 0)
+	for _, goodsId := range goodsIds {
+		gm.cleanGoodsAssociated(goodsId, 0)
 	}
 
 	/*TODO
@@ -194,15 +194,15 @@ func (gm *GoodsModel) Under(goodIds []int, reason string, permission int) error 
 }
 
 // 在商品删除、下架要进行调用
-func (gm *GoodsModel) cleanGoodsAssociated(goodId int, markEnable int) {
+func (gm *GoodsModel) cleanGoodsAssociated(goodsId int, markEnable int) {
 	if yml_config.CreateYamlFactory().GetBool("AppDebug") {
-		log.Println("清除goodsid[" + string(goodId) + "]相关的缓存，包括促销的缓存")
+		log.Println("清除goodsid[" + string(goodsId) + "]相关的缓存，包括促销的缓存")
 	}
-	rds.Remove(fmt.Sprintf("%s_%d", consts.GOODS, goodId))
+	rds.Remove(fmt.Sprintf("%s_%d", consts.GOODS, goodsId))
 
 	// 删除这个商品的sku缓存(必须要在删除库中sku前先删缓存),首先查出商品对应的sku_id
 	sqlString := "select sku_id from es_goods_sku where goods_id = ?"
-	rows := gm.QuerySql(sqlString, goodId)
+	rows := gm.QuerySql(sqlString, goodsId)
 	defer rows.Close()
 
 	tableData, err := sql_utils.ParseJSON(rows)
@@ -215,16 +215,16 @@ func (gm *GoodsModel) cleanGoodsAssociated(goodId int, markEnable int) {
 	}
 
 	//不再读一次缓存竟然清不掉？？所以在这里又读了一下
-	rds.Gain(fmt.Sprintf("%s_%d", consts.GOODS, goodId))
+	rds.Gain(fmt.Sprintf("%s_%d", consts.GOODS, goodsId))
 
 	//删除该商品关联的活动缓存
 	currTimeStr := time_utils.GetDateStr(consts.TimeFormatStyleV2)
 
 	//清除此商品的缓存
-	rds.Remove(fmt.Sprintf("%s_%s_%d", consts.PROMOTION_KEY, currTimeStr, goodId))
+	rds.Remove(fmt.Sprintf("%s_%s_%d", consts.PROMOTION_KEY, currTimeStr, goodsId))
 
 	if markEnable == 0 {
-		gm.deleteExchange(goodId)
+		gm.deleteExchange(goodsId)
 	}
 }
 
@@ -234,9 +234,9 @@ func (gm *GoodsModel) deleteExchange(goodsId int) {
 }
 
 // 查看商品是否属于当前登录用户
-func (gm *GoodsModel) checkPermission(goodIds []int, goodsOperate int) {
+func (gm *GoodsModel) checkPermission(goodsIds []int, goodsOperate int) {
 	sellerId := gm.ctx.GetString("user_id")
-	idStr := sql_utils.GetInSql(goodIds)
+	idStr := sql_utils.InSqlStr(goodsIds)
 	sqlString := "select disabled,market_enable from es_goods where goods_id in (" + idStr + ") and seller_id = ?"
 	rows := gm.QuerySql(sqlString, sellerId)
 	defer rows.Close()
@@ -246,7 +246,7 @@ func (gm *GoodsModel) checkPermission(goodIds []int, goodsOperate int) {
 		log.Println("sql_utils.ParseJSON 错误", err.Error())
 	}
 
-	if len(tableData) != len(goodIds) {
+	if len(tableData) != len(goodsIds) {
 		log.Println("存在不属于您的商品，不能操作")
 	}
 
@@ -451,4 +451,54 @@ func (gm *GoodsModel) count(sql string) (rows int64) {
 	}
 
 	return rows
+}
+
+func (gm *GoodsModel) Delete(goodsId []int) error {
+	gm.checkPermission(goodsId, consts.GoodsOperateDELETE)
+	idStr := sql_utils.InSqlStr(goodsId)
+	sqlString := "update es_goods set disabled = -1  where goods_id in (" + idStr + ")"
+	if gm.ExecuteSql(sqlString) == -1 {
+		return errors.New("删除商品失败")
+	}
+
+	/* TODO 发送mq消息
+	GoodsChangeMsg goodsChangeMsg = new GoodsChangeMsg(goodsIds, GoodsChangeMsg.DEL_OPERATION);
+	this.amqpTemplate.convertAndSend(AmqpExchange.GOODS_CHANGE, AmqpExchange.GOODS_CHANGE + "_ROUTING", goodsChangeMsg);
+	*/
+	return nil
+}
+
+func (gm *GoodsModel) Revert(goodsId []int) error {
+	gm.checkPermission(goodsId, consts.GoodsOperateREVRET)
+	idStr := sql_utils.InSqlStr(goodsId)
+	sqlString := "update  es_goods set disabled = 1  where goods_id in (" + idStr + ")"
+	if gm.ExecuteSql(sqlString) == -1 {
+		return errors.New("删除商品失败")
+	}
+
+	/* TODO 发送mq消息
+	GoodsChangeMsg goodsChangeMsg = new GoodsChangeMsg(goodsIds, GoodsChangeMsg.REVERT_OPERATION);
+	        this.amqpTemplate.convertAndSend(AmqpExchange.GOODS_CHANGE, AmqpExchange.GOODS_CHANGE + "_ROUTING", goodsChangeMsg);
+	*/
+	return nil
+}
+
+func (gm *GoodsModel) InRecycle(goodsIds []int) error {
+	gm.checkPermission(goodsIds, consts.GoodsOperateRECYCLE)
+	idStr := sql_utils.InSqlStr(goodsIds)
+	sqlString := "update  es_goods set disabled = 0 ,market_enable=0 , last_modify=?  where goods_id in (" + idStr + ")"
+	if gm.ExecuteSql(sqlString) == -1 {
+		return errors.New("删除商品失败")
+	}
+
+	//清除相关的关联
+	for _, goodsId := range goodsIds {
+		gm.cleanGoodsAssociated(goodsId, 0)
+	}
+
+	/* TODO 发送mq消息
+	GoodsChangeMsg goodsChangeMsg = new GoodsChangeMsg(goodsIds, GoodsChangeMsg.INRECYCLE_OPERATION);
+	this.amqpTemplate.convertAndSend(AmqpExchange.GOODS_CHANGE, AmqpExchange.GOODS_CHANGE + "_ROUTING", goodsChangeMsg);
+	*/
+	return nil
 }

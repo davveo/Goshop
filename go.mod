@@ -15,6 +15,7 @@ require (
 	github.com/onsi/ginkgo v1.14.1 // indirect
 	github.com/onsi/gomega v1.10.2 // indirect
 	github.com/spf13/viper v1.7.1
+	github.com/streadway/amqp v1.0.0 // indirect
 	github.com/willf/pad v0.0.0-20200313202418-172aa767f2a4
 	go.uber.org/zap v1.10.0
 	google.golang.org/appengine v1.6.1

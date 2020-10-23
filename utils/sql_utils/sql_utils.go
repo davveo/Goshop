@@ -239,6 +239,16 @@ func deleteExtraSpace(s string) string {
 	return string(s2)
 }
 
-func GetInSql([]int) string {
-
+func InSqlStr(items []int) string {
+	var (
+		idStr bytes.Buffer
+	)
+	for index, item := range items {
+		if index == 0 {
+			idStr.WriteString(string(item))
+		} else {
+			idStr.WriteString("," + string(item))
+		}
+	}
+	return idStr.String()
 }
