@@ -114,6 +114,7 @@ func (gm *GoodsModel) Up(goodId int) error {
 	disabled := tmp["disabled"].(int64)
 	marketEnable := tmp["market_enable"].(int64)
 	sellerId := tmp["seller_id"].(int64)
+	operateAllowable := NewOperateAllowable(marketEnable, disabled)
 
 	//查询店铺是否是关闭中，若未开启，则不能上架
 	shop, _ := CreateShopFactory("").GetShop(sellerId)
@@ -121,7 +122,7 @@ func (gm *GoodsModel) Up(goodId int) error {
 		return errors.New("店铺关闭中,商品不能上架操作")
 	}
 	//下架未删除才能上架
-	if !(marketEnable == 0 && disabled == 1) {
+	if !operateAllowable.getAllowMarket() {
 		return errors.New("商品不能上架操作")
 	}
 
@@ -163,9 +164,10 @@ func (gm *GoodsModel) Down(ctx *gin.Context, goodIds []int, reason string, permi
 		for _, data := range tableData {
 			disabled := data["disabled"].(int64)
 			marketEnable := data["market_enable"].(int64)
+			operateAllowable := NewOperateAllowable(marketEnable, disabled)
 
 			//上架并且没有删除的可以下架
-			if !(marketEnable == 1 && disabled == 1) {
+			if !operateAllowable.getAllowUnder() {
 				return errors.New("存在不能下架的商品，不能操作")
 			}
 		}
@@ -249,29 +251,30 @@ func (gm *GoodsModel) checkPermission(ctx *gin.Context, goodIds []int, goodsOper
 	for _, data := range tableData {
 		disabled := data["disabled"].(int64)
 		marketEnable := data["market_enable"].(int64)
+		operateAllowable := NewOperateAllowable(marketEnable, disabled)
 
 		switch goodsOperate {
 		case consts.GoodsOperateDELETE:
 			//下架的删除了的才能还原
-			if !(marketEnable == 0 && disabled == 0) {
+			if !operateAllowable.getAllowDelete() {
 				log.Println("存在不能删除的商品，不能操作")
 			}
 			break
 		case consts.GoodsOperateRECYCLE:
 			//下架的商品才能放入回收站
-			if !(marketEnable == 0 && disabled == 1) {
+			if !operateAllowable.getAllowRecycle() {
 				log.Println("存在不能放入回收站的商品，不能操作")
 			}
 			break
 		case consts.GoodsOperateREVRET:
 			//下架的删除了的才能还原
-			if !(marketEnable == 0 && disabled == 0) {
+			if !operateAllowable.getAllowRevert() {
 				log.Println("存在不能还原的商品，不能操作")
 			}
 			break
 		case consts.GoodsOperateUNDER:
 			//上架并且没有删除的可以下架
-			if !(marketEnable == 1 && disabled == 1) {
+			if !operateAllowable.getAllowUnder() {
 				log.Println("存在不能下架的商品，不能操作")
 			}
 			break
