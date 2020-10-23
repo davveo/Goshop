@@ -46,14 +46,14 @@ func GoodsUp(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, nil)
 }
 
-func GoodsDown(ctx *gin.Context) {
+func GoodsUnder(ctx *gin.Context) {
 	var (
 		err        error
 		goodIds, _ = strconv.Atoi(ctx.Param("good_ids"))
 		reason     = ctx.PostForm("reason")
 	)
 
-	err = model.CreateGoodsFactory("").Down(ctx, []int{goodIds}, reason, consts.PermissionADMIN)
+	err = model.CreateGoodsFactory(ctx, "").Under([]int{goodIds}, reason, consts.PermissionADMIN)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, nil)
 		return

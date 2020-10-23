@@ -15,7 +15,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func CreateGoodsFactory(sqlType string) *GoodsModel {
+func CreateGoodsFactory(ctx *gin.Context, sqlType string) *GoodsModel {
 	if len(sqlType) == 0 {
 		sqlType = yml_config.CreateYamlFactory().GetString("UseDbType")
 	}
@@ -23,6 +23,7 @@ func CreateGoodsFactory(sqlType string) *GoodsModel {
 	if dbDriver != nil {
 		return &GoodsModel{
 			BaseModel: dbDriver,
+			ctx:       ctx,
 		}
 	}
 	log.Fatal("goodsModel工厂初始化失败")
@@ -75,6 +76,7 @@ type Goods struct {
 
 type GoodsModel struct {
 	*BaseModel
+	ctx *gin.Context
 }
 
 func (gm *GoodsModel) NewGoods(length int) (allGoodsList []Goods) {
@@ -140,15 +142,15 @@ func (gm *GoodsModel) Up(goodId int) error {
 }
 
 // TODO ctx优化
-func (gm *GoodsModel) Down(ctx *gin.Context, goodIds []int, reason string, permission int) error {
+func (gm *GoodsModel) Under(goodIds []int, reason string, permission int) error {
 	if len(reason) > 500 {
 		return errors.New("下架原因长度不能超过500个字符")
 	}
 	idStr := sql_utils.GetInSql(goodIds)
 
 	if permission == consts.PermissionSELLER {
-		gm.checkPermission(ctx, goodIds, consts.GoodsOperateUNDER)
-		sellerUserName := ctx.GetString("user_name")
+		gm.checkPermission(goodIds, consts.GoodsOperateUNDER)
+		sellerUserName := gm.ctx.GetString("user_name")
 		reason = "店员" + sellerUserName + "下架，原因为：" + reason
 	} else {
 		//查看是否是不能下架的状态
@@ -232,8 +234,8 @@ func (gm *GoodsModel) deleteExchange(goodsId int) {
 }
 
 // 查看商品是否属于当前登录用户
-func (gm *GoodsModel) checkPermission(ctx *gin.Context, goodIds []int, goodsOperate int) {
-	sellerId := ctx.GetString("user_id")
+func (gm *GoodsModel) checkPermission(goodIds []int, goodsOperate int) {
+	sellerId := gm.ctx.GetString("user_id")
 	idStr := sql_utils.GetInSql(goodIds)
 	sqlString := "select disabled,market_enable from es_goods where goods_id in (" + idStr + ") and seller_id = ?"
 	rows := gm.QuerySql(sqlString, sellerId)
