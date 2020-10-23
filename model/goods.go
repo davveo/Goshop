@@ -502,3 +502,37 @@ func (gm *GoodsModel) InRecycle(goodsIds []int) error {
 	*/
 	return nil
 }
+
+func (gm *GoodsModel) UnderShopGoods(sellerID int) {
+	sqlString := "update es_goods set market_enable = 0 where seller_id = ? "
+	if gm.ExecuteSql(sqlString, sellerID) == -1 {
+		log.Println("商品更新失败")
+	}
+
+	//发送商品下架消息
+	sqlString = "select goods_id from es_goods where seller_id = ?"
+	rows := gm.QuerySql(sqlString, sellerID)
+	defer rows.Close()
+
+	ItemData, err := sql_utils.ParseJSON(rows)
+	if err != nil {
+		log.Println("sql_utils.ParseJSON 错误", err.Error())
+	}
+	var goodsIDs []int
+	for _, item := range ItemData {
+		goodsID := item["goods_id"].(int64)
+		goodsIDs = append(goodsIDs, int(goodsID))
+	}
+	idStr := sql_utils.InSqlStr(goodsIDs)
+	if idStr != "" {
+		/*TODO 发送消息
+		GoodsChangeMsg goodsChangeMsg = new GoodsChangeMsg(goodsIds, GoodsChangeMsg.UNDER_OPERATION, "店铺关闭");
+		this.amqpTemplate.convertAndSend(AmqpExchange.GOODS_CHANGE, AmqpExchange.GOODS_CHANGE + "_ROUTING", goodsChangeMsg);
+		*/
+	}
+}
+
+func (gm *GoodsModel) updateGoodsGrade() {
+	goodsList := CreateMemberCommentFactory("").queryGoodsGrade()
+
+}

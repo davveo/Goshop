@@ -65,3 +65,7 @@ func (mcm *MemberCommentModel) count() (rows int64) {
 
 	return rows
 }
+
+func (mcm *MemberCommentModel) queryGoodsGrade() {
+
+}
