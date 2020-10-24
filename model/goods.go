@@ -2,6 +2,7 @@ package model
 
 import (
 	"Goshop/global/consts"
+	"Goshop/utils/rabbitmq"
 	"Goshop/utils/sql_utils"
 	"Goshop/utils/time_utils"
 	"Goshop/utils/yml_config"
@@ -20,10 +21,20 @@ func CreateGoodsFactory(ctx *gin.Context, sqlType string) *GoodsModel {
 		sqlType = yml_config.CreateYamlFactory().GetString("UseDbType")
 	}
 	dbDriver := CreateBaseSqlFactory(sqlType)
+	mq := rabbitmq.GetRabbitmq()
+	if mq == nil {
+		log.Fatal("goodsModel mq初始化失败")
+	}
+	amqpTemplate, err := mq.Producer("goods")
+	if err != nil {
+		log.Fatal("goodsModel producer初始化失败")
+	}
+
 	if dbDriver != nil {
 		return &GoodsModel{
-			BaseModel: dbDriver,
-			ctx:       ctx,
+			BaseModel:    dbDriver,
+			ctx:          ctx,
+			amqpTemplate: amqpTemplate,
 		}
 	}
 	log.Fatal("goodsModel工厂初始化失败")
@@ -76,7 +87,8 @@ type Goods struct {
 
 type GoodsModel struct {
 	*BaseModel
-	ctx *gin.Context
+	ctx          *gin.Context
+	amqpTemplate *rabbitmq.Producer
 }
 
 func (gm *GoodsModel) NewGoods(length int) (allGoodsList []Goods) {
@@ -453,33 +465,43 @@ func (gm *GoodsModel) count(sql string) (rows int64) {
 	return rows
 }
 
-func (gm *GoodsModel) Delete(goodsId []int) error {
-	gm.checkPermission(goodsId, consts.GoodsOperateDELETE)
-	idStr := sql_utils.InSqlStr(goodsId)
+func (gm *GoodsModel) Delete(goodsIds []int) error {
+	gm.checkPermission(goodsIds, consts.GoodsOperateDELETE)
+	idStr := sql_utils.InSqlStr(goodsIds)
 	sqlString := "update es_goods set disabled = -1  where goods_id in (" + idStr + ")"
 	if gm.ExecuteSql(sqlString) == -1 {
 		return errors.New("删除商品失败")
 	}
-
-	/* TODO 发送mq消息
-	GoodsChangeMsg goodsChangeMsg = new GoodsChangeMsg(goodsIds, GoodsChangeMsg.DEL_OPERATION);
-	this.amqpTemplate.convertAndSend(AmqpExchange.GOODS_CHANGE, AmqpExchange.GOODS_CHANGE + "_ROUTING", goodsChangeMsg);
-	*/
+	goodsChangeMsg := rabbitmq.BuildMsg(map[string]interface{}{
+		"message":        "",
+		"goods_ids":      goodsIds,
+		"operation_type": consts.OperationDelOperation,
+	})
+	err := gm.amqpTemplate.Publish(consts.ExchangeGoodsChange,
+		consts.ExchangeGoodsChange+"_ROUTING", goodsChangeMsg)
+	if err != nil {
+		log.Printf("[ERROR] %s\n", err)
+	}
 	return nil
 }
 
-func (gm *GoodsModel) Revert(goodsId []int) error {
-	gm.checkPermission(goodsId, consts.GoodsOperateREVRET)
-	idStr := sql_utils.InSqlStr(goodsId)
+func (gm *GoodsModel) Revert(goodsIds []int) error {
+	gm.checkPermission(goodsIds, consts.GoodsOperateREVRET)
+	idStr := sql_utils.InSqlStr(goodsIds)
 	sqlString := "update  es_goods set disabled = 1  where goods_id in (" + idStr + ")"
 	if gm.ExecuteSql(sqlString) == -1 {
 		return errors.New("删除商品失败")
 	}
-
-	/* TODO 发送mq消息
-	GoodsChangeMsg goodsChangeMsg = new GoodsChangeMsg(goodsIds, GoodsChangeMsg.REVERT_OPERATION);
-	        this.amqpTemplate.convertAndSend(AmqpExchange.GOODS_CHANGE, AmqpExchange.GOODS_CHANGE + "_ROUTING", goodsChangeMsg);
-	*/
+	goodsChangeMsg := rabbitmq.BuildMsg(map[string]interface{}{
+		"message":        "",
+		"goods_ids":      goodsIds,
+		"operation_type": consts.OperationRevertOperation,
+	})
+	err := gm.amqpTemplate.Publish(consts.ExchangeGoodsChange,
+		consts.ExchangeGoodsChange+"_ROUTING", goodsChangeMsg)
+	if err != nil {
+		log.Printf("[ERROR] %s\n", err)
+	}
 	return nil
 }
 
@@ -496,10 +518,16 @@ func (gm *GoodsModel) InRecycle(goodsIds []int) error {
 		gm.cleanGoodsAssociated(goodsId, 0)
 	}
 
-	/* TODO 发送mq消息
-	GoodsChangeMsg goodsChangeMsg = new GoodsChangeMsg(goodsIds, GoodsChangeMsg.INRECYCLE_OPERATION);
-	this.amqpTemplate.convertAndSend(AmqpExchange.GOODS_CHANGE, AmqpExchange.GOODS_CHANGE + "_ROUTING", goodsChangeMsg);
-	*/
+	goodsChangeMsg := rabbitmq.BuildMsg(map[string]interface{}{
+		"message":        "",
+		"goods_ids":      goodsIds,
+		"operation_type": consts.OperationInrecycleOperation,
+	})
+	err := gm.amqpTemplate.Publish(consts.ExchangeGoodsChange,
+		consts.ExchangeGoodsChange+"_ROUTING", goodsChangeMsg)
+	if err != nil {
+		log.Printf("[ERROR] %s\n", err)
+	}
 	return nil
 }
 
@@ -525,23 +553,28 @@ func (gm *GoodsModel) UnderShopGoods(sellerID int) {
 	}
 	idStr := sql_utils.InSqlStr(goodsIDs)
 	if idStr != "" {
-		/*TODO 发送消息
-		GoodsChangeMsg goodsChangeMsg = new GoodsChangeMsg(goodsIds, GoodsChangeMsg.UNDER_OPERATION, "店铺关闭");
-		this.amqpTemplate.convertAndSend(AmqpExchange.GOODS_CHANGE, AmqpExchange.GOODS_CHANGE + "_ROUTING", goodsChangeMsg);
-		*/
+		goodsChangeMsg := rabbitmq.BuildMsg(map[string]interface{}{
+			"message":        "店铺关闭",
+			"goods_ids":      goodsIDs,
+			"operation_type": consts.OperationUnderOperation,
+		})
+		err := gm.amqpTemplate.Publish(consts.ExchangeGoodsChange,
+			consts.ExchangeGoodsChange+"_ROUTING", goodsChangeMsg)
+		if err != nil {
+			log.Printf("[ERROR] %s\n", err)
+		}
 	}
 }
 
 func (gm *GoodsModel) updateGoodsGrade() {
 	goodsList, _ := CreateMemberCommentFactory("").queryGoodsGrade()
 	if goodsList != nil {
-		for _,  goods := range goodsList {
-
+		for _, goods := range goodsList {
 			updateSql := "update es_goods set grade=? where goods_id=?"
 			goodsID := goods["goods_id"].(int64)
 			originGrade := goods["good_rate"].(float64)
 			newGrade := strconv.FormatFloat(
-				originGrade * 100, 'f', 1, 64)
+				originGrade*100, 'f', 1, 64)
 
 			if gm.ExecuteSql(updateSql, newGrade, goodsID) == -1 {
 				log.Println("更新商品等级失败, 商品ID为:", goodsID)
@@ -550,12 +583,16 @@ func (gm *GoodsModel) updateGoodsGrade() {
 			cacheKey := fmt.Sprintf("%s_%d", consts.GOODS_GRADE, goodsID)
 			rds.Put(cacheKey, newGrade, 0)
 			// 发送商品消息变化消息
-
-			/* TODO
-			 GoodsChangeMsg goodsChangeMsg = new GoodsChangeMsg(new Integer[]{goods.getGoodsId()},
-                        GoodsChangeMsg.UPDATE_OPERATION);
-                this.amqpTemplate.convertAndSend(AmqpExchange.GOODS_CHANGE, AmqpExchange.GOODS_CHANGE + "_ROUTING", goodsChangeMsg);
-			*/
+			goodsChangeMsg := rabbitmq.BuildMsg(map[string]interface{}{
+				"message":        "",
+				"goods_id":       goodsID,
+				"operation_type": consts.OperationUpdateOperation,
+			})
+			err := gm.amqpTemplate.Publish(consts.ExchangeGoodsChange,
+				consts.ExchangeGoodsChange+"_ROUTING", goodsChangeMsg)
+			if err != nil {
+				log.Printf("[ERROR] %s\n", err)
+			}
 		}
 	}
 

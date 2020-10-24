@@ -152,9 +152,9 @@ const (
 
 // 审核状态
 const (
-	WAIT_AUDIT   = "WAIT_AUDIT"   // 待审核
-	PASS_AUDIT   = "PASS_AUDIT"   // 审核通过
-	REFUSE_AUDIT = "REFUSE_AUDIT" // 审核拒绝
+	WaitAudit   = "WAIT_AUDIT"   // 待审核
+	PassAudit   = "PASS_AUDIT"   // 审核通过
+	RefuseAudit = "REFUSE_AUDIT" // 审核拒绝
 )
 
 // 删除状态枚举
@@ -242,7 +242,7 @@ const (
 
 // 评论评分枚举
 const (
-	CommentGradeGood = "good"
+	CommentGradeGood    = "good"
 	CommentGradeNeutral = "neutral"
-	CommentGradeBad = "bad"
+	CommentGradeBad     = "bad"
 )

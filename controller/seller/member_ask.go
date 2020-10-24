@@ -17,7 +17,7 @@ func Ask(ctx *gin.Context) {
 	queryParams["page_no"] = pageNo
 	queryParams["page_size"] = pageSize
 	queryParams["status"] = consts.NORMAL
-	queryParams["auth_status"] = consts.PASS_AUDIT
+	queryParams["auth_status"] = consts.PassAudit
 	queryParams["seller_id"] = "" // TODO 从当前登录用户中获取用户id
 	data, dataTotal := model.CreateMemberAskFactory("").List(queryParams)
 

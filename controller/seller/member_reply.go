@@ -17,7 +17,7 @@ func Reply(ctx *gin.Context) {
 
 	queryParams["page_no"] = pageNo
 	queryParams["page_size"] = pageSize
-	queryParams["auth_status"] = consts.PASS_AUDIT
+	queryParams["auth_status"] = consts.PassAudit
 	data, dataTotal := model.CreateMemberAskReplyFactory("").List(queryParams)
 
 	ctx.JSON(http.StatusOK, gin.H{

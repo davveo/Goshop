@@ -1,6 +1,9 @@
 package rabbitmq
 
-import "log"
+import (
+	"encoding/json"
+	"log"
+)
 
 func GetRabbitmq() *MQ {
 	var (
@@ -19,4 +22,9 @@ func GetRabbitmq() *MQ {
 	}
 
 	return mq
+}
+
+func BuildMsg(data interface{}) *PublishMsg {
+	pubData, _ := json.Marshal(data)
+	return NewPublishMsg([]byte(pubData))
 }
