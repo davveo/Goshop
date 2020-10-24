@@ -239,3 +239,10 @@ const (
 	 */
 	PromotionPinTuan = "PINTUAN"
 )
+
+// 评论评分枚举
+const (
+	CommentGradeGood = "good"
+	CommentGradeNeutral = "neutral"
+	CommentGradeBad = "bad"
+)

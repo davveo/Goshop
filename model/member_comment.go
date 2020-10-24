@@ -1,6 +1,7 @@
 package model
 
 import (
+	"Goshop/global/consts"
 	"Goshop/utils/sql_utils"
 	"Goshop/utils/yml_config"
 	"bytes"
@@ -66,6 +67,44 @@ func (mcm *MemberCommentModel) count() (rows int64) {
 	return rows
 }
 
-func (mcm *MemberCommentModel) queryGoodsGrade() {
+func (mcm *MemberCommentModel) queryGoodsGrade() ([]map[string]interface{}, error) {
+	sqlString := " select goods_id, sum( CASE grade WHEN '" + consts.CommentGradeGood +
+		"' THEN 1 ELSE 0  END ) /count(*) good_rate " +
+		" from es_member_comment where status = 1 group by goods_id"
 
+	rows := mcm.QuerySql(sqlString)
+	defer rows.Close()
+
+	tableData, err := sql_utils.ParseJSON(rows)
+	if err != nil {
+		log.Println("sql_utils.ParseJSON 错误", err.Error())
+		return nil, err
+	}
+	return tableData, nil
+}
+
+func (mcm *MemberCommentModel) getModel(commentID int) (map[string]interface{}, error){
+	sqlString := "select * from es_member_comment where comment_id = ?"
+	rows := mcm.QuerySql(sqlString, commentID)
+	defer rows.Close()
+
+	tableData, err := sql_utils.ParseJSON(rows)
+	if err != nil {
+		log.Println("sql_utils.ParseJSON 错误", err.Error())
+		return nil, err
+	}
+	var tmp map[string]interface{}
+	if len(tableData) > 0 {
+		tmp = tableData[0]
+	}
+	return tmp, nil
+}
+
+func (mcm *MemberCommentModel) getGoodsCommentCount(goodsID int) (rows int64) {
+	sqlString :=  "SELECT COUNT(0) FROM es_member_comment where goods_id = ? and status = 1"
+	err := mcm.QueryRow(sqlString).Scan(&rows)
+	if err != nil {
+		log.Println("sql.count 错误", err.Error())
+	}
+	return rows
 }

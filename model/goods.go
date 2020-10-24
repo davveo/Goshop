@@ -100,8 +100,8 @@ func (gm *GoodsModel) NewGoods(length int) (allGoodsList []Goods) {
 }
 
 func (gm *GoodsModel) Up(goodsId int) error {
-	sqlstring := "select disabled,market_enable,seller_id from es_goods where goods_id = ?"
-	rows := gm.QuerySql(sqlstring, goodsId)
+	sqlString := "select disabled,market_enable,seller_id from es_goods where goods_id = ?"
+	rows := gm.QuerySql(sqlString, goodsId)
 	defer rows.Close()
 
 	tableData, err := sql_utils.ParseJSON(rows)
@@ -128,8 +128,8 @@ func (gm *GoodsModel) Up(goodsId int) error {
 		return errors.New("商品不能上架操作")
 	}
 
-	sqlstring = "update es_goods set market_enable = 1 and disabled = 1 where goods_id  = ?"
-	if gm.ExecuteSql(sqlstring, goodsId) == -1 {
+	sqlString = "update es_goods set market_enable = 1 and disabled = 1 where goods_id  = ?"
+	if gm.ExecuteSql(sqlString, goodsId) == -1 {
 		return errors.New("上架商品更新失败")
 	}
 	rds.Remove(fmt.Sprintf("%s_%d", consts.GOODS, goodsId))
@@ -533,6 +533,30 @@ func (gm *GoodsModel) UnderShopGoods(sellerID int) {
 }
 
 func (gm *GoodsModel) updateGoodsGrade() {
-	goodsList := CreateMemberCommentFactory("").queryGoodsGrade()
+	goodsList, _ := CreateMemberCommentFactory("").queryGoodsGrade()
+	if goodsList != nil {
+		for _,  goods := range goodsList {
+
+			updateSql := "update es_goods set grade=? where goods_id=?"
+			goodsID := goods["goods_id"].(int64)
+			originGrade := goods["good_rate"].(float64)
+			newGrade := strconv.FormatFloat(
+				originGrade * 100, 'f', 1, 64)
+
+			if gm.ExecuteSql(updateSql, newGrade, goodsID) == -1 {
+				log.Println("更新商品等级失败, 商品ID为:", goodsID)
+				break
+			}
+			cacheKey := fmt.Sprintf("%s_%d", consts.GOODS_GRADE, goodsID)
+			rds.Put(cacheKey, newGrade, 0)
+			// 发送商品消息变化消息
+
+			/* TODO
+			 GoodsChangeMsg goodsChangeMsg = new GoodsChangeMsg(new Integer[]{goods.getGoodsId()},
+                        GoodsChangeMsg.UPDATE_OPERATION);
+                this.amqpTemplate.convertAndSend(AmqpExchange.GOODS_CHANGE, AmqpExchange.GOODS_CHANGE + "_ROUTING", goodsChangeMsg);
+			*/
+		}
+	}
 
 }
