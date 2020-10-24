@@ -3,6 +3,7 @@ package admin
 import (
 	"Goshop/global/consts"
 	"Goshop/model"
+	"Goshop/model/request"
 	"net/http"
 	"strconv"
 
@@ -55,6 +56,30 @@ func GoodsUnder(ctx *gin.Context) {
 
 	err = model.CreateGoodsFactory(ctx, "").Under([]int{goodsId}, reason, consts.PermissionADMIN)
 	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, nil)
+		return
+	}
+	ctx.JSON(http.StatusOK, nil)
+}
+
+func GoodsBatchAudit(ctx *gin.Context) {
+	var (
+		batchAuditRequest request.BatchAuditRequest
+	)
+	if err := ctx.BindJSON(&batchAuditRequest); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"code":    http.StatusInternalServerError,
+			"message": err.Error(),
+		})
+		return
+	}
+
+	if err := model.CreateGoodsFactory(ctx, "").
+		BatchAuditGoods(map[string]interface{}{
+			"goods_ids": batchAuditRequest.GoodsIds,
+			"message":   batchAuditRequest.Message,
+			"pass":      batchAuditRequest.Pass,
+		}); err != nil {
 		ctx.JSON(http.StatusInternalServerError, nil)
 		return
 	}

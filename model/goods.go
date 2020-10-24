@@ -145,15 +145,22 @@ func (gm *GoodsModel) Up(goodsId int) error {
 		return errors.New("上架商品更新失败")
 	}
 	rds.Remove(fmt.Sprintf("%s_%d", consts.GOODS, goodsId))
-	// TODO
-	/* 后面在完善逻辑
-	GoodsChangeMsg goodsChangeMsg = new GoodsChangeMsg(new Integer[]{goodsId}, GoodsChangeMsg.UPDATE_OPERATION);
-	this.amqpTemplate.convertAndSend(AmqpExchange.GOODS_CHANGE, AmqpExchange.GOODS_CHANGE + "_ROUTING", goodsChangeMsg);
-	*/
+
+	// 发送商品消息变化消息
+	goodsChangeMsg := rabbitmq.BuildMsg(map[string]interface{}{
+		"message":        "",
+		"goods_id":       []int{goodsId},
+		"operation_type": consts.OperationUpdateOperation,
+	})
+	err = gm.amqpTemplate.Publish(consts.ExchangeGoodsChange,
+		consts.ExchangeGoodsChange+"_ROUTING", goodsChangeMsg)
+	if err != nil {
+		log.Printf("[ERROR] %s\n", err)
+	}
+
 	return nil
 }
 
-// TODO ctx优化
 func (gm *GoodsModel) Under(goodsIds []int, reason string, permission int) error {
 	if len(reason) > 500 {
 		return errors.New("下架原因长度不能超过500个字符")
@@ -198,10 +205,17 @@ func (gm *GoodsModel) Under(goodsIds []int, reason string, permission int) error
 		gm.cleanGoodsAssociated(goodsId, 0)
 	}
 
-	/*TODO
-	GoodsChangeMsg goodsChangeMsg = new GoodsChangeMsg(goodsIds, GoodsChangeMsg.UNDER_OPERATION, reason);
-	this.amqpTemplate.convertAndSend(AmqpExchange.GOODS_CHANGE, AmqpExchange.GOODS_CHANGE + "_ROUTING", goodsChangeMsg);
-	*/
+	// 发送商品消息变化消息
+	goodsChangeMsg := rabbitmq.BuildMsg(map[string]interface{}{
+		"message":        reason,
+		"goods_id":       goodsIds,
+		"operation_type": consts.OperationUnderOperation,
+	})
+	err := gm.amqpTemplate.Publish(consts.ExchangeGoodsChange,
+		consts.ExchangeGoodsChange+"_ROUTING", goodsChangeMsg)
+	if err != nil {
+		log.Printf("[ERROR] %s\n", err)
+	}
 	return nil
 }
 
@@ -596,4 +610,89 @@ func (gm *GoodsModel) updateGoodsGrade() {
 		}
 	}
 
+}
+
+func (gm *GoodsModel) getModel(goodsId int) (map[string]interface{}, error) {
+	sqlString := "select * from es_goods where goods_id = ?"
+	rows := gm.QuerySql(sqlString, goodsId)
+	defer rows.Close()
+
+	tableData, err := sql_utils.ParseJSON(rows)
+	if err != nil {
+		log.Println("sql_utils.ParseJSON 错误", err.Error())
+		return nil, err
+	}
+	var tmp map[string]interface{}
+	if len(tableData) > 0 {
+		tmp = tableData[0]
+	}
+	return tmp, nil
+}
+
+func (gm *GoodsModel) BatchAuditGoods(params map[string]interface{}) error {
+	pass := params["pass"].(int)
+	message := params["message"].(string)
+	goodsIds := params["goods_ids"].([]string)
+
+	if len(goodsIds) == 0 {
+		return errors.New("请选择要审核的商品")
+	}
+
+	if !(pass == 0) || pass != 1 {
+		return errors.New("审核状态值不正确")
+	}
+
+	if pass == 0 && message == "" {
+		return errors.New("拒绝原因不能为空")
+	}
+
+	if pass == 0 && len(message) > 200 {
+		return errors.New("拒绝原因不能超过200个字符")
+	}
+
+	for _, goodsId := range goodsIds {
+		intGoodsId, _ := strconv.Atoi(goodsId)
+		goods, _ := gm.getModel(intGoodsId)
+		if goods == nil {
+			return errors.New("要审核的商品【" + goodsId + "】不存在")
+		}
+		// 0 待审核，1 审核通过 2 未通过
+		isAuth := goods["is_auth"].(int)
+		if isAuth != 0 {
+			return errors.New("商品【" + goodsId + "】已审核，请勿重复审核")
+		}
+		sqlString := "update es_goods set is_auth=?,auth_message=?  where goods_id=? "
+		//if isAuth == pass {
+		//	continue
+		//}
+		if gm.ExecuteSql(sqlString, pass, message, goodsId) == -1 {
+			log.Println("审核商品失败, 商品ID为:", goodsId)
+			break
+		}
+		// 发送审核消息
+		var goodsChangeMsg *rabbitmq.PublishMsg
+		if pass == 1 {
+			goodsChangeMsg = rabbitmq.BuildMsg(map[string]interface{}{
+				"message":        message,
+				"goods_id":       []string{goodsId},
+				"operation_type": consts.OperationGoodsVerifySuccess,
+			})
+		} else {
+			goodsChangeMsg = rabbitmq.BuildMsg(map[string]interface{}{
+				"message":        message,
+				"goods_id":       []string{goodsId},
+				"operation_type": consts.OperationGoodsVerifyFail,
+			})
+		}
+
+		err := gm.amqpTemplate.Publish(consts.ExchangeGoodsChange,
+			consts.ExchangeGoodsChange+"_ROUTING", goodsChangeMsg)
+		if err != nil {
+			log.Printf("[ERROR] %s\n", err)
+		}
+
+		// 清除商品缓存
+		rds.Remove(fmt.Sprintf("%s_%s", consts.GOODS, goodsId))
+	}
+	return nil
 }

@@ -45,4 +45,5 @@ func GetDateStr(style string) string {
 	} else if style == consts.TimeFormatStyleV2 {
 		return fmt.Sprintf(currDate.Format(consts.TimeFormatStyleV2))
 	}
+	return ""
 }
