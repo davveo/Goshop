@@ -128,3 +128,16 @@ func GoodsSearchGoodsWord(ctx *gin.Context) {
 	queryParams["page_no"] = pageNo
 	queryParams["page_size"] = pageSize
 }
+
+func Upload(ctx *gin.Context) {
+	/*
+
+	 */
+	file, err := ctx.FormFile("file")
+	fmt.Println(file, err)
+	ctx.JSON(http.StatusOK, gin.H{
+		"name": "4160D841763B46779060985562B266A4.jpeg",
+		"ext":  "jpeg",
+		"url":  "http://javashop-statics.oss-cn-beijing.aliyuncs.com/test/normal/4160D841763B46779060985562B266A4.jpeg",
+	})
+}

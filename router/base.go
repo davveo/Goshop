@@ -29,6 +29,7 @@ func InitRouter() *gin.Engine {
 		ApiGroup.GET("site-show", admin.SiteShow)                      // done
 		ApiGroup.GET("captcha/:uuid/:scene", admin.NewCaptcha)         // done
 		ApiGroup.GET("base/regions/:region_id/children", admin.Region) // wait to do
+		ApiGroup.POST("base/uploaders", admin.Upload)                  // wait to do
 	}
 	AdminApi(ApiGroup)
 	BuyerApi(ApiGroup)

@@ -11,6 +11,7 @@ require (
 	github.com/hashicorp/go-uuid v1.0.1
 	github.com/jinzhu/gorm v1.9.16
 	github.com/json-iterator/go v1.1.10 // indirect
+	github.com/mitchellh/mapstructure v1.1.2
 	github.com/mojocn/base64Captcha v1.3.1
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/onsi/ginkgo v1.14.1 // indirect

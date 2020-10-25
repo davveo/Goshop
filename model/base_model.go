@@ -70,6 +70,22 @@ func (b *BaseModel) ExecuteSql(sql string, args ...interface{}) int64 {
 
 }
 
+func (b *BaseModel) LastInsertId(sql string, args ...interface{}) int64 {
+	if stm, err := b.dbDriverWrite.Prepare(sql); err == nil {
+		if res, err := stm.Exec(args...); err == nil {
+			if lastInsertId, err := res.LastInsertId(); err == nil {
+				return lastInsertId
+			} else {
+				log.Println(enum.ErrorsDbExecuteRunFail, err)
+			}
+		} else {
+			log.Println(enum.ErrorsDbPrepareRunFail, err)
+		}
+	}
+	return -1
+
+}
+
 //  查询类: select， 适合一次性查询完成就结束的操作
 func (b *BaseModel) QuerySql(sql string, args ...interface{}) *sql.Rows {
 	if stm, err := b.dbDriverRead.Prepare(sql); err == nil {

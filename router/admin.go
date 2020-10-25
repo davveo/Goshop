@@ -24,6 +24,7 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/goods/brands", admin.BrandList)                            // done
 		adminGroup.GET("admin/goods/brands/all", admin.BrandAllList)                     // done
 		adminGroup.GET("admin/goods/categories/:parent_id/children", admin.CategoryList) // done
+		adminGroup.POST("admin/goods/categories", admin.CreateCategory)                  // done
 		adminGroup.GET("admin/trade/orders", admin.OrderList)
 		adminGroup.GET("admin/after-sales", admin.AfterSalesList)
 		adminGroup.GET("admin/after-sales/refund", admin.AfterSalesRefundList)
