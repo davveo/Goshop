@@ -3,6 +3,7 @@ module Goshop
 go 1.13
 
 require (
+	github.com/aliyun/aliyun-oss-go-sdk v2.1.4+incompatible
 	github.com/allegro/bigcache v1.2.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.6.3
@@ -20,5 +21,6 @@ require (
 	github.com/streadway/amqp v1.0.0
 	go.uber.org/zap v1.10.0
 	golang.org/x/sys v0.0.0-20200615200032-f1bc736245b1 // indirect
+	gopkg.in/amz.v1 v1.0.0-20150111123259-ad23e96a31d2
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 )

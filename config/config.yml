@@ -173,3 +173,28 @@ RabbitMq:
     QueueName: ""
     OffLineReconnectIntervalSec: 10                       #消费者掉线后,重连间隔的秒数
     RetryCount: 5                                         #消费者掉线后,尝试重连最大次数
+
+Store:
+  Ceph:
+    # Ceph的存储路径prefix
+    CephRootDir: "/ceph"
+    # CephAccessKey: 访问Key
+    CephAccessKey: "PFEA7NXWXSOWVTFA16C9"
+    # CephSecretKey: 访问密钥
+    CephSecretKey: "cf3dwPMeadGbtEgwFUEA6emRVrVfDHpv0pLXFYby"
+    # CephGWEndpoint: gateway地址
+    CephGWEndpoint: "http://<你的rgw_host>:<<你的rgw_port>>"
+  Oss:
+    # OSSRootDir : OSS的存储路径prefix
+    OSSRootDir: "oss/"
+    # OSSBucket: oss bucket名
+    OSSBucket: "buckettest-filestore2"
+    # OSSEndpoint: oss endpoint
+    OSSEndpoint: "oss-cn-shenzhen.aliyuncs.com"
+    #   OSSAccesskeyID: oss访问key
+    OSSAccesskeyID: "<你的AccesskeyId>"
+    # OSSAccessKeySecret: oss访问key secret
+    OSSAccessKeySecret: "<你的AccessKeySecret>"
+
+  # 当前存储服务
+  CurrentStoreType: "oss"

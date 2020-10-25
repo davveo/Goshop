@@ -246,3 +246,9 @@ const (
 	CommentGradeNeutral = "neutral"
 	CommentGradeBad     = "bad"
 )
+
+// StoreType
+const (
+	StoreOssStore  = "oss"
+	StoreCephStore = "ceph"
+)

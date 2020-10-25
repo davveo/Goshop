@@ -3,7 +3,15 @@ package admin
 import (
 	"Goshop/global/consts"
 	"Goshop/model"
+	"Goshop/utils/common"
+	"Goshop/utils/store/ceph"
+	"Goshop/utils/store/oss"
+	"Goshop/utils/yml_config"
+	"bytes"
 	"fmt"
+	"io"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -130,14 +138,71 @@ func GoodsSearchGoodsWord(ctx *gin.Context) {
 }
 
 func Upload(ctx *gin.Context) {
-	/*
+	errCode := 0
+	defer func() {
+		ctx.Header("Access-Control-Allow-Origin", "*")
+		ctx.Header("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+		if errCode < 0 {
+			ctx.JSON(http.StatusOK, gin.H{
+				"code":    errCode,
+				"message": "上传失败",
+			})
+		} else {
+			ctx.JSON(http.StatusOK, gin.H{
+				"code":    errCode,
+				"message": "上传成功",
+			})
+		}
+	}()
+	file, header, err := ctx.Request.FormFile("file")
+	fileName := header.Filename
+	if err != nil {
+		log.Printf("Failed to get form data, err:%s\n", err.Error())
+		errCode = -1
+		return
+	}
+	defer file.Close()
 
-	 */
-	file, err := ctx.FormFile("file")
-	fmt.Println(file, err)
-	ctx.JSON(http.StatusOK, gin.H{
-		"name": "4160D841763B46779060985562B266A4.jpeg",
-		"ext":  "jpeg",
-		"url":  "http://javashop-statics.oss-cn-beijing.aliyuncs.com/test/normal/4160D841763B46779060985562B266A4.jpeg",
-	})
+	buf := bytes.NewBuffer(nil)
+	if _, err := io.Copy(buf, file); err != nil {
+		log.Printf("Failed to get file data, err:%s\n", err.Error())
+		errCode = -2
+		return
+	}
+
+	_, _ = file.Seek(0, 0)
+	storeType := yml_config.CreateYamlFactory().GetString("Store.CurrentStoreType")
+
+	if storeType == consts.StoreCephStore {
+		// 写入ceph存储
+		baseRootDir := yml_config.CreateYamlFactory().GetString("Store.Ceph.CephRootDir")
+		data, _ := ioutil.ReadAll(file)
+		cephPath := baseRootDir + common.Sha1(buf.Bytes())
+		_ = ceph.PutObject("upload", cephPath, data)
+		// ToDO
+		//ceph.GetCephBucket("upload")
+		//ctx.JSON(http.StatusOK, gin.H{
+		//	"name": fileName,
+		//	"ext":  "jpeg", // TODO
+		//	"url": fmt.Sprintf("http://%s/file/download?filehash=%s&username=%s&token=%s",
+		//		c.Request.Host, filehash, username, token),
+		//})
+	} else if storeType == consts.StoreOssStore {
+		// 写入oss存储
+		baseRootDir := yml_config.CreateYamlFactory().GetString("Store.Oss.OSSRootDir")
+		ossPath := baseRootDir + common.Sha1(buf.Bytes())
+		err := oss.Bucket().PutObject(ossPath, file)
+		if err != nil {
+			log.Println(err.Error())
+			errCode = -5
+			return
+		}
+		signUrl := oss.DownloadURL(ossPath)
+		ctx.JSON(http.StatusOK, gin.H{
+			"name": fileName,
+			"ext":  "jpeg", // TODO
+			"url":  signUrl,
+		})
+
+	}
 }
