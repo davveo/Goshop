@@ -19,7 +19,7 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/goods/categories/:parent_id/children", admin.CategoryList) // done
 		adminGroup.POST("admin/goods/categories", admin.CreateCategory)                  // done
 		adminGroup.GET("admin/goods/settings", admin.GoodsSetting)                       // done
-		adminGroup.GET("admin/goodssearch/custom-words", admin.GoodsSearchCustomWord)    // wait to do
+		adminGroup.GET("admin/goodssearch/custom-words", admin.GoodsSearchCustomWord)    // done
 		adminGroup.GET("admin/goodssearch/keywords", admin.GoodsSearchKeyWord)           // wait to do
 		adminGroup.GET("admin/goodssearch/goods-words", admin.GoodsSearchGoodsWord)      // wait to do
 		adminGroup.POST("admin/batch/audit", admin.GoodsBatchAudit)                      // done

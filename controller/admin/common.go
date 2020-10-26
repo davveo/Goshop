@@ -131,11 +131,22 @@ func GoodsSearchCustomWord(ctx *gin.Context) {
 func GoodsSearchKeyWord(ctx *gin.Context) {
 	queryParams := make(map[string]interface{})
 
+	keyWords := ctx.DefaultQuery("keywords", "")
 	pageNo, _ := strconv.Atoi(ctx.DefaultQuery("page_no", "1"))
 	pageSize, _ := strconv.Atoi(ctx.DefaultQuery("page_size", "20"))
 
 	queryParams["page_no"] = pageNo
+	queryParams["keywords"] = keyWords
 	queryParams["page_size"] = pageSize
+
+	data, dataTotal := model.CreateKeyWordSearchHistoryFactory("").List(queryParams)
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data":       data,
+		"data_total": dataTotal,
+		"page_no":    pageNo,
+		"page_size":  pageSize,
+	})
 }
 
 func GoodsSearchGoodsWord(ctx *gin.Context) {
