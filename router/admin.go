@@ -61,7 +61,7 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/promotion/exchange-cats/:cat_id/children", admin.PointCategory)
 		adminGroup.GET("admin/promotion/seckills", admin.SeckillList)
 		adminGroup.GET("admin/promotion/coupons", admin.CouponList)
-		adminGroup.GET("admin/promotion/pintuan", admin.PinTuanList)
+		adminGroup.GET("admin/promotion/pintuan", admin.PinTuanList) // done
 		adminGroup.GET("admin/pages/site-navigations", admin.PageSiteNavigationList)
 		adminGroup.GET("admin/pages/client_type/page_type", admin.Page) // 替换原来admin/admin/pages/PC/INDEX
 		adminGroup.GET("admin/focus-pictures", admin.FocusPicture)

@@ -1,11 +1,13 @@
 package model
 
 import (
+	"Goshop/global/consts"
 	"Goshop/utils/sql_utils"
 	"Goshop/utils/yml_config"
 	"bytes"
 	"fmt"
 	"log"
+	"time"
 )
 
 func CreatePinTuanFactory(sqlType string) *PinTuanModel {
@@ -39,7 +41,7 @@ func (ptm *PinTuanModel) List(params map[string]interface{}) ([]map[string]inter
 	endTime, okEndTime := params["end_time"].(string)
 	sellerId, okSellerId := params["seller_id"].(string)
 	startTime, okStartTime := params["start_time"].(string)
-	promotionName, okPromotionName := params["promotion_name"].(string)
+	promotionName, okPromotionName := params["name"].(string)
 
 	if sellerId != "" && sellerId != "0" && okSellerId {
 		sqlString.WriteString(fmt.Sprintf(" where seller_id = %s", sellerId))
@@ -90,4 +92,24 @@ func (ptm *PinTuanModel) count() (rows int64) {
 	}
 
 	return rows
+}
+
+func (ptm *PinTuanModel) Get(status string) []map[string]interface{} {
+	sqlString := "select * from es_pintuan where status = ?"
+
+	if status == consts.UNDERWAY {
+		now := time.Now().Unix()
+		extra := fmt.Sprintf(" and start_time > %d  and end_time <  %d", now, now)
+		sqlString += extra
+	}
+
+	rows := ptm.QuerySql(sqlString, status)
+	defer rows.Close()
+
+	tableData, err := sql_utils.ParseJSON(rows)
+	if err != nil {
+		log.Println("sql_utils.ParseJSON 错误", err.Error())
+		return nil
+	}
+	return tableData
 }
