@@ -138,6 +138,9 @@ func GoodsSearchGoodsWord(ctx *gin.Context) {
 }
 
 func Upload(ctx *gin.Context) {
+	var (
+		fileName string
+	)
 	errCode := 0
 	defer func() {
 		ctx.Header("Access-Control-Allow-Origin", "*")
@@ -155,7 +158,10 @@ func Upload(ctx *gin.Context) {
 		}
 	}()
 	file, header, err := ctx.Request.FormFile("file")
-	fileName := header.Filename
+	if header != nil {
+		fileName = header.Filename
+	}
+
 	if err != nil {
 		log.Printf("Failed to get form data, err:%s\n", err.Error())
 		errCode = -1
