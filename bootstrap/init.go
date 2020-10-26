@@ -1,10 +1,13 @@
 package bootstrap
 
 import (
-	"log"
 	_ "Goshop/core/destroy"
 	"Goshop/global/my_errors"
 	"Goshop/global/variable"
+	"Goshop/service/sys_log_hook"
+	"Goshop/utils/yml_config"
+	"Goshop/utils/zap_factory"
+	"log"
 	"os"
 )
 
@@ -22,11 +25,25 @@ func checkRequiredFolders() {
 	//3.检查Storage/logs 目录是否存在
 	if _, err := os.Stat(variable.BasePath + "/logs/"); err != nil {
 		if err := os.Mkdir(variable.BasePath+"/logs/", 0666); err != nil {
-			log.Fatal(my_errors.ErrorsStorageLogsMake + err.Error())
+			log.Fatal(my_errors.ErrorsStorageLogsNotExists + err.Error())
 		}
 	}
 }
 
 func init() {
 	checkRequiredFolders()
+
+	// 初始化全局日志具柄, 载入钩子处理函数
+	variable.ZapLog = zap_factory.CreateZapFactory(sys_log_hook.ZapLogHandler)
+
+	ymlConf := yml_config.CreateYamlFactory()
+	ymlConf.ConfigFileChangeListen()
+
+	if ymlConf.GetInt("Websocket.Start") == 1 {
+		// websocket 管理中心hub全局初始化一份
+		//variable.WebsocketHub = core.CreateHubFactory()
+		//if Wh, ok := variable.WebsocketHub.(*core.Hub); ok {
+		//	go Wh.Run()
+		//}
+	}
 }

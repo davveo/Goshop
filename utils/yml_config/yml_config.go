@@ -1,13 +1,21 @@
 package yml_config
 
 import (
-	"log"
+	"Goshop/core/container"
 	"Goshop/global/my_errors"
 	"Goshop/global/variable"
+	"log"
 	"time"
 
+	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 )
+
+var lastChangeTime time.Time
+
+func init() {
+	lastChangeTime = time.Now()
+}
 
 type ymlConfig struct {
 	viper *viper.Viper
@@ -29,6 +37,43 @@ func CreateYamlFactory() *ymlConfig {
 	return &ymlConfig{
 		yamlConfig,
 	}
+}
+
+//监听文件变化
+func (c *ymlConfig) ConfigFileChangeListen() {
+	c.viper.OnConfigChange(func(changeEvent fsnotify.Event) {
+		if time.Now().Sub(lastChangeTime).Seconds() >= 1 {
+			if changeEvent.Op.String() == "WRITE" {
+				c.clearCache()
+				lastChangeTime = time.Now()
+			}
+		}
+	})
+	c.viper.WatchConfig()
+}
+
+// 判断相关键是否已经缓存
+func (c *ymlConfig) keyIsCache(keyName string) bool {
+	if _, exists := container.CreateContainersFactory().KeyIsExists(variable.ConfigKeyPrefix + keyName); exists {
+		return true
+	} else {
+		return false
+	}
+}
+
+// 对键值进行缓存
+func (c *ymlConfig) cache(keyName string, value interface{}) bool {
+	return container.CreateContainersFactory().Set(variable.ConfigKeyPrefix+keyName, value)
+}
+
+// 通过键获取缓存的值
+func (c *ymlConfig) getValueFromCache(keyName string) interface{} {
+	return container.CreateContainersFactory().Get(variable.ConfigKeyPrefix + keyName)
+}
+
+// 清空已经窜换的配置项信息
+func (c *ymlConfig) clearCache() {
+	container.CreateContainersFactory().FuzzyDelete(variable.ConfigKeyPrefix)
 }
 
 // Get 一个原始值
