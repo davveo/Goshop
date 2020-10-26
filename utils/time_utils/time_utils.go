@@ -47,3 +47,14 @@ func GetDateStr(style string) string {
 	}
 	return ""
 }
+
+func StartOfDay() int64 {
+	currentTime := time.Now()
+	return time.Date(currentTime.Year(), currentTime.Month(), currentTime.Day(), 0, 0, 0, 0, currentTime.Location()).Unix()
+}
+
+func EndOfDay() int64 {
+	currentTime := time.Now()
+	return time.Date(currentTime.Year(), currentTime.Month(), currentTime.Day(), 23, 59, 59, 0, currentTime.Location()).Unix()
+
+}
