@@ -1,6 +1,7 @@
 package model
 
 import (
+	"Goshop/global/consts"
 	"Goshop/utils/sql_utils"
 	"Goshop/utils/yml_config"
 	"bytes"
@@ -37,7 +38,7 @@ func (stm *ShopThemeModel) List(params map[string]interface{}) ([]map[string]int
 	pageNo, okPageNo := params["page_no"].(int)
 	pageSize, okPageSize := params["page_size"].(int)
 
-	if _type != "" {
+	if _type != "" && (_type == consts.ThemePc || _type == consts.ThemeWap) {
 		sqlString.WriteString(fmt.Sprintf("where type = %s", _type))
 	}
 

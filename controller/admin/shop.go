@@ -40,7 +40,7 @@ func ShopList(ctx *gin.Context) {
 func ShopThemesList(ctx *gin.Context) {
 	queryParams := make(map[string]interface{})
 
-	_type := ctx.Query("type")
+	_type := ctx.DefaultQuery("type", "")
 	pageNo, _ := strconv.Atoi(ctx.DefaultQuery("page_no", "1"))
 	pageSize, _ := strconv.Atoi(ctx.DefaultQuery("page_size", "20"))
 

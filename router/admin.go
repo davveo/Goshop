@@ -51,9 +51,9 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/members/comments", admin.MemberCommentsList)
 		adminGroup.GET("admin/members/asks", admin.MemberAskList)
 
-		adminGroup.GET("admin/shops/list", admin.AllShopList) // done
-		adminGroup.GET("admin/shops", admin.ShopList)
-		adminGroup.GET("admin/shops/themes", admin.ShopThemesList)
+		adminGroup.GET("admin/shops/list", admin.AllShopList)      // done
+		adminGroup.GET("admin/shops", admin.ShopList)              //
+		adminGroup.GET("admin/shops/themes", admin.ShopThemesList) // done
 
 		adminGroup.GET("admin/order/bills/statistics", admin.OrderBillStatisticList)
 		adminGroup.GET("admin/promotion/group-buy-actives", admin.GroupBuyList)
@@ -105,7 +105,7 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/distribution/member", admin.DistributionMember)                                       // wait to do
 		adminGroup.GET("admin/distribution/bill/total", admin.DistributionBillTotal)                                // wait to do
 		adminGroup.GET("admin/distribution/settings", admin.DistributionSetting)                                    // wait to do
-		adminGroup.GET("admin/distribution/withdraw/apply", admin.DistributionWithdraw)                             // wait to do
+		adminGroup.GET("admin/distribution/withdraw/apply", admin.DistributionWithdraw)                             // done
 
 		// 未发现
 		adminGroup.GET("admin/members/deposit/recharge", admin.MemberDepositRechargeList)
