@@ -34,7 +34,7 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/systems/message-templates", admin.MessageTemplate)  // done
 		adminGroup.GET("admin/systems/wechat-msg-tmp/sync", admin.WechatMsgSync)  // done
 		adminGroup.GET("admin/systems/wechat-msg-tmp", admin.WechatMsg)           // done
-		adminGroup.GET("admin/systems/logi-companies", admin.LogiCompany)         // wait to do
+		adminGroup.GET("admin/systems/logi-companies", admin.LogiCompany)         // done 物流公司相关API
 
 		// 交易相关
 		adminGroup.GET("admin/trade/orders", admin.OrderList)
