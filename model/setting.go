@@ -40,9 +40,9 @@ type SettingModel struct {
 	CfgValue string
 }
 
-func (u *SettingModel) Get(group string) *Setting {
+func (u *SettingModel) Get(group string) map[string]interface{} {
 	var (
-		setting *Setting
+		setting map[string]interface{}
 		sql     = "select cfg_value from es_settings where cfg_group = ?"
 	)
 
@@ -68,6 +68,10 @@ func (u *SettingModel) Get(group string) *Setting {
 		_ = json.Unmarshal([]byte(value), &setting)
 	}
 	return setting
+}
+
+func (u *SettingModel) Save(group string) {
+
 }
 
 func (u *SettingModel) cacheName(prefix string, params ...interface{}) string {
