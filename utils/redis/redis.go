@@ -1,6 +1,7 @@
 package redis
 
 import (
+	"Goshop/utils/yml_config"
 	"fmt"
 	"log"
 	"time"
@@ -20,8 +21,10 @@ func NewRedisClient() error {
 	if Redis != nil {
 		return nil
 	}
+	configFac := yml_config.CreateYamlFactory()
+
 	client := redis.NewClient(&redis.Options{
-		Addr:     "127.0.0.1:6379",
+		Addr:     configFac.GetString("Redis.Host") + ":" + configFac.GetString("Redis.Port"),
 		Password: "",
 		DB:       1,
 		PoolSize: 10, //连接池大小
