@@ -20,8 +20,8 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.POST("admin/goods/categories", admin.CreateCategory)                  // done
 		adminGroup.GET("admin/goods/settings", admin.GoodsSetting)                       // done
 		adminGroup.GET("admin/goodssearch/custom-words", admin.GoodsSearchCustomWord)    // done
-		adminGroup.GET("admin/goodssearch/keywords", admin.GoodsSearchKeyWord)           // wait to do
-		adminGroup.GET("admin/goodssearch/goods-words", admin.GoodsSearchGoodsWord)      // wait to do
+		adminGroup.GET("admin/goodssearch/keywords", admin.GoodsSearchKeyWord)           // done
+		adminGroup.GET("admin/goodssearch/goods-words", admin.GoodsSearchGoodsWord)      // done
 		adminGroup.POST("admin/batch/audit", admin.GoodsBatchAudit)                      // done
 
 		// 系统相关
