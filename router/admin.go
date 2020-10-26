@@ -25,16 +25,16 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.POST("admin/batch/audit", admin.GoodsBatchAudit)                      // done
 
 		// 系统相关
-		adminGroup.GET("systems/admin-users/login", admin.Login)         // done
-		adminGroup.POST("systems/admin-users/logout", admin.Logout)      // done
-		adminGroup.GET("systems/roles/:roleId/checked", admin.RoleCheck) // done
-		adminGroup.GET("admin/systems/messages", admin.MessageList)
-		adminGroup.GET("admin/systems/admin-users/token", admin.Refresh) // done
-		adminGroup.GET("admin/systems/complain-topics", admin.ComplainTopicsList)
-		adminGroup.GET("admin/systems/message-templates", admin.MessageTemplate) // wait to do
-		adminGroup.GET("admin/systems/wechat-msg-tmp/sync", admin.WechatMsgSync) // wait to do
-		adminGroup.GET("admin/systems/wechat-msg-tmp", admin.WechatMsg)          // wait to do
-		adminGroup.GET("admin/systems/logi-companies", admin.LogiCompany)        // wait to do
+		adminGroup.GET("systems/admin-users/login", admin.Login)                  // done
+		adminGroup.POST("systems/admin-users/logout", admin.Logout)               // done
+		adminGroup.GET("systems/roles/:roleId/checked", admin.RoleCheck)          // done
+		adminGroup.GET("admin/systems/messages", admin.MessageList)               // done
+		adminGroup.GET("admin/systems/admin-users/token", admin.Refresh)          // done
+		adminGroup.GET("admin/systems/complain-topics", admin.ComplainTopicsList) // done
+		adminGroup.GET("admin/systems/message-templates", admin.MessageTemplate)  // done
+		adminGroup.GET("admin/systems/wechat-msg-tmp/sync", admin.WechatMsgSync)  // wait to do
+		adminGroup.GET("admin/systems/wechat-msg-tmp", admin.WechatMsg)           // wait to do
+		adminGroup.GET("admin/systems/logi-companies", admin.LogiCompany)         // wait to do
 
 		// 交易相关
 		adminGroup.GET("admin/trade/orders", admin.OrderList)
