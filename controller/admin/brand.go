@@ -2,24 +2,26 @@ package admin
 
 import (
 	"Goshop/model"
+	"Goshop/model/request"
+	"Goshop/utils/transfer"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
 )
 
-func BrandList(context *gin.Context) {
+func BrandList(ctx *gin.Context) {
 	queryParams := make(map[string]interface{})
-	pageNo, _ := strconv.Atoi(context.DefaultQuery("page_no", "1"))
-	pageSize, _ := strconv.Atoi(context.DefaultQuery("page_size", "20"))
+	pageNo, _ := strconv.Atoi(ctx.DefaultQuery("page_no", "1"))
+	pageSize, _ := strconv.Atoi(ctx.DefaultQuery("page_size", "20"))
 
-	name := context.Query("name")
+	name := ctx.DefaultQuery("name", "")
 
 	queryParams["name"] = name
 	queryParams["page_no"] = pageNo
 	queryParams["page_size"] = pageSize
-	data, dataTotal := model.CreateBrandFactory("").List(queryParams, name)
+	data, dataTotal := model.CreateBrandFactory("").List(queryParams)
 
-	context.JSON(http.StatusOK, gin.H{
+	ctx.JSON(http.StatusOK, gin.H{
 		"data":       data,
 		"data_total": dataTotal,
 		"page_no":    pageNo,
@@ -27,8 +29,77 @@ func BrandList(context *gin.Context) {
 	})
 }
 
-func BrandAllList(context *gin.Context) {
-	context.JSON(
+func BrandAllList(ctx *gin.Context) {
+	ctx.JSON(
 		http.StatusOK,
 		model.CreateBrandFactory("").GetALllBrands())
+}
+
+func Brand(ctx *gin.Context) {
+	brandId, _ := strconv.Atoi(ctx.Param("brand_id"))
+	brand, err := model.CreateBrandFactory("").GetModel(brandId)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"code":    http.StatusInternalServerError,
+			"message": err.Error(),
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, brand)
+}
+
+func CreateBrand(ctx *gin.Context) {
+	name := ctx.DefaultPostForm("name", "")
+	logo := ctx.DefaultPostForm("logo", "")
+
+	brandRequest := request.BrandRequest{
+		Name: name, Logo: logo, Disabled: "1",
+	}
+	mapData := transfer.StructToMap(brandRequest)
+	brand, err := model.CreateBrandFactory("").Add(mapData)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"code":    http.StatusInternalServerError,
+			"message": err.Error(),
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, brand)
+}
+
+func UpdateBrand(ctx *gin.Context) {
+	var (
+		err      error
+		logo     = ctx.DefaultPostForm("logo", "")
+		name     = ctx.DefaultPostForm("name", "")
+		disabled = ctx.DefaultPostForm("disabled", "")
+		brandId  = ctx.DefaultPostForm("brand_id", "")
+	)
+
+	brandRequest := request.BrandRequest{
+		Name: name, Logo: logo, BrandId: brandId, Disabled: disabled,
+	}
+	mapData := transfer.StructToMap(brandRequest)
+	brand, err := model.CreateBrandFactory("").Edit(mapData)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"code":    http.StatusInternalServerError,
+			"message": err.Error(),
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, brand)
+}
+
+func DeleteBrand(ctx *gin.Context) {
+	brandId, _ := strconv.Atoi(ctx.Param("brand_id"))
+	err := model.CreateBrandFactory("").Delete([]int{brandId})
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"code":    http.StatusInternalServerError,
+			"message": err.Error(),
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, nil)
 }

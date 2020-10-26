@@ -172,9 +172,9 @@ func (cm *CategoryModel) Add(params map[string]interface{}) (map[string]interfac
 	if categoryId = cm.LastInsertId(sqlString, name, parentId, isShow,
 		categoryOrder, image, advImage, advImageLink); categoryId == -1 {
 		return nil, errors.New("插入分类失败")
-	} else {
-		params["category_id"] = categoryId
 	}
+
+	params["category_id"] = categoryId
 	// 判断是否是顶级类似别，如果parentid为空或为0则为顶级类似别
 	// 注意末尾都要加|，以防止查询子孙时出错
 	// 不是顶级类别，有父

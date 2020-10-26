@@ -32,7 +32,7 @@ func CategoryList(ctx *gin.Context) {
 func CreateCategory(ctx *gin.Context) {
 	name := ctx.DefaultPostForm("name", "")
 	image := ctx.DefaultPostForm("image", "")
-	isShow := ctx.DefaultPostForm("is_show", "")
+	isShow := ctx.DefaultPostForm("isShow", "")
 	advImage := ctx.DefaultPostForm("advImage", "")
 	parentId := ctx.DefaultPostForm("parent_id", "")
 	advImageLink := ctx.DefaultPostForm("advImageLink", "")
