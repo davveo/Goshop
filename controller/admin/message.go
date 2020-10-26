@@ -47,6 +47,11 @@ func MessageTemplate(ctx *gin.Context) {
 }
 
 func WechatMsgSync(ctx *gin.Context) {
+	// 查询微信服务消息模板是否已经同步
+
+	isSync := model.CreateWechatMessageTemplateFactory("").IsSync()
+
+	ctx.JSON(http.StatusOK, isSync)
 
 }
 
@@ -57,6 +62,15 @@ func WechatMsg(ctx *gin.Context) {
 
 	queryParams["page_no"] = pageNo
 	queryParams["page_size"] = pageSize
+
+	data, dataTotal := model.CreateWechatMessageTemplateFactory("").List(queryParams)
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data":       data,
+		"data_total": dataTotal,
+		"page_no":    pageNo,
+		"page_size":  pageSize,
+	})
 }
 
 func LogiCompany(ctx *gin.Context) {
