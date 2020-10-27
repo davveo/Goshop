@@ -2,6 +2,7 @@ package admin
 
 import (
 	"Goshop/model"
+	"Goshop/utils/common"
 	"net/http"
 	"strconv"
 
@@ -9,22 +10,14 @@ import (
 )
 
 func OrderList(ctx *gin.Context) {
-	queryParams := make(map[string]interface{})
-
-	keyWord := ctx.Query("keyword")
-	pageNo, _ := strconv.Atoi(ctx.DefaultQuery("page_no", "1"))
-	pageSize, _ := strconv.Atoi(ctx.DefaultQuery("page_size", "20"))
-
-	queryParams["page_no"] = pageNo
-	queryParams["keyword"] = keyWord
-	queryParams["page_size"] = pageSize
+	queryParams := common.BuildParams(ctx)
 	data, dataTotal := model.CreateOrderFactory("").List(queryParams)
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"data":       data,
 		"data_total": dataTotal,
-		"page_no":    pageNo,
-		"page_size":  pageSize,
+		"page_no":    queryParams["page_no"],
+		"page_size":  queryParams["page_size"],
 	})
 }
 

@@ -38,6 +38,14 @@ func GetToDayOfEnd() string {
 	return fmt.Sprintf(endTime.Format(consts.TimeFormatStyleV1))
 }
 
+func GetDayOfStart(timestamp int64) string {
+	return fmt.Sprintf("%s 00:00:00", time.Unix(timestamp, 0).Format("2006-01-02"))
+}
+
+func GetDayOfEnd(timestamp int64) string {
+	return fmt.Sprintf("%s 23:59:59", time.Unix(timestamp, 0).Format("2006-01-02"))
+}
+
 func GetDateStr(style string) string {
 	currDate := time.Now()
 	if style == consts.TimeFormatStyleV1 {
