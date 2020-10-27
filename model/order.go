@@ -141,9 +141,16 @@ func (om *OrderModel) List(params map[string]string) ([]map[string]interface{}, 
 	rows := om.QuerySql(sqlString.String())
 	defer rows.Close()
 
-	tableData, _ := sql_utils.ParseJSON(rows)
+	orderList, _ := sql_utils.ParseJSON(rows)
 
-	return tableData, om.count()
+	//订单自动取消天数
+	cancelLeftDay := om.getCancelLeftDay()
+	for _, order := range orderList {
+		// TODO 待补充
+		fmt.Println(cancelLeftDay, order)
+	}
+
+	return orderList, om.count()
 }
 
 func (om *OrderModel) count() (rows int64) {
@@ -157,4 +164,8 @@ func (om *OrderModel) count() (rows int64) {
 	}
 
 	return rows
+}
+
+func (om *OrderModel) getCancelLeftDay() int {
+	return 0
 }
