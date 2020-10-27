@@ -4,9 +4,11 @@ import (
 	"Goshop/model"
 	"Goshop/model/request"
 	"Goshop/utils/transfer"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
+	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 func BrandList(ctx *gin.Context) {
@@ -92,8 +94,9 @@ func UpdateBrand(ctx *gin.Context) {
 }
 
 func DeleteBrand(ctx *gin.Context) {
-	brandId, _ := strconv.Atoi(ctx.Param("brand_id"))
-	err := model.CreateBrandFactory("").Delete([]int{brandId})
+	brandIds := ctx.Param("brand_id")
+	brandIdList := strings.Split(brandIds, ",")
+	err := model.CreateBrandFactory("").Delete(transfer.StringToInt(brandIdList))
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"code":    http.StatusInternalServerError,

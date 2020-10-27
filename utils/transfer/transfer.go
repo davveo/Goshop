@@ -2,8 +2,10 @@ package transfer
 
 import (
 	"fmt"
-	"github.com/mitchellh/mapstructure"
 	"reflect"
+	"strconv"
+
+	"github.com/mitchellh/mapstructure"
 )
 
 func StructToMap(obj interface{}) map[string]interface{} {
@@ -23,4 +25,56 @@ func MapToStruct(s map[string]interface{}, obj interface{}) interface{} {
 		fmt.Println(err)
 	}
 	return obj
+}
+
+func StringToInt(slice []string) (rs []int) {
+	if len(slice) <= 0 {
+		return
+	}
+	for _, num := range slice {
+		inum, err := strconv.Atoi(num)
+		if err != nil {
+			rs = append(rs, 0)
+			continue
+		} else {
+			rs = append(rs, inum)
+		}
+	}
+	return
+}
+
+func IntToString(slice []int) (rs []string) {
+	if len(slice) <= 0 {
+		return
+	}
+	for _, num := range slice {
+		rs = append(rs, strconv.Itoa(num))
+	}
+	return
+}
+
+func StringToInt64(slice []string) (rs []int64) {
+	if len(slice) <= 0 {
+		return
+	}
+	for _, num := range slice {
+		inum, err := strconv.ParseInt(num, 10, 64)
+		if err != nil {
+			rs = append(rs, 0)
+			continue
+		} else {
+			rs = append(rs, inum)
+		}
+	}
+	return
+}
+
+func Int64ToString(slice []int64) (rs []string) {
+	if len(slice) <= 0 {
+		return
+	}
+	for _, num := range slice {
+		rs = append(rs, strconv.FormatInt(num, 10))
+	}
+	return
 }
