@@ -6,6 +6,7 @@ import (
 	"Goshop/utils/yml_config"
 	"bytes"
 	"errors"
+	"fmt"
 	"log"
 )
 
@@ -56,62 +57,56 @@ func (svm *SpecValuesModel) ListBySpecId(specId, permission int) []map[string]in
 	return tableData
 }
 
-//func (svm *SpecValuesModel) Add(params map[string]interface{}) (map[string]interface{}, error) {
-//	var (
-//		specId    int64
-//		sqlString string
-//	)
-//
-//	sellerId := params["seller_id"].(string)
-//	disabled := params["disabled"].(int)
-//	specName := params["spec_name"].(string)
-//	specMemo := params["spec_memo"].(string)
-//
-//	sqlString = "insert into `es_spec_values` (`spec_id`, `spec_value`, `seller_id`, `spec_name`) values (?,?,?,?)"
-//
-//	if specId = svm.LastInsertId(sqlString, specName, disabled, specMemo, sellerId); specId == -1 {
-//		return nil, errors.New("插入规格失败")
-//	}
-//
-//	params["spec_id"] = specId
-//	return params, nil
-//}
+func (svm *SpecValuesModel) Add(params map[string]interface{}) (map[string]interface{}, error) {
+	var (
+		specValueId int64
+		sqlString   string
+	)
 
-//
-//func (svm *SpecValuesModel) Edit(params map[string]interface{}) (map[string]interface{}, error) {
-//	var (
-//		sqlString string
-//	)
-//
-//	specId := params["spec_id"].(int)
-//	disabled := params["disabled"].(int)
-//	sellerId := params["seller_id"].(string)
-//	specName := params["spec_name"].(string)
-//	specMemo := params["spec_memo"].(string)
-//
-//	spec, _ := s.GetModel(specId)
-//	if spec == nil {
-//		return nil, errors.New("规格不存在")
-//	}
-//
-//	sqlString = "select * from es_specification  " +
-//		"where disabled = 1 and seller_id = 0 and spec_name = ? and spec_id!=? "
-//
-//	rows := s.QuerySql(sqlString, specName, specId)
-//	defer rows.Close()
-//
-//	specList, _ := sql_utils.ParseJSON(rows)
-//
-//	if len(specList) > 0 {
-//		return nil, errors.New("规格名称重复")
-//	}
-//	sqlString = "update  es_specification set `spec_name` = ?, `disabled` = ?, `spec_memo` = ?, `seller_id` = ? where spec_id = ?"
-//	if affected := s.ExecuteSql(sqlString, specName, disabled, specMemo, sellerId); affected == -1 {
-//		return nil, errors.New("更新失败")
-//	}
-//
-//	return params, nil
-//}
+	specId := params["spec_id"].(string)
+	sellerId := params["seller_id"].(string)
+	specName := params["spec_name"].(string)
+	specValue := params["spec_value"].(string)
+
+	sqlString = "insert into `es_spec_values` (`spec_id`, `spec_value`, `seller_id`, `spec_name`) values (?,?,?,?)"
+
+	if specValueId = svm.LastInsertId(sqlString, specId, specValue, sellerId, specName); specValueId == -1 {
+		return nil, errors.New("插入规格失败")
+	}
+
+	params["spec_id"] = specId
+	return params, nil
+}
+
+func (svm *SpecValuesModel) Edit(params map[string]interface{}, specValueId string) (map[string]interface{}, error) {
+	var (
+		sqlString string
+	)
+
+	sellId, okSellerId := params["seller_id"].(string)
+	specName, okSpecName := params["spec_name"].(string)
+	specValue, okSpecValue := params["spec_value"].(string)
+
+	sqlString = "update  es_spec_values set"
+	if specValue != "" && okSpecValue {
+		sqlString += fmt.Sprintf(" `spec_value` = %s", specValue)
+	}
+
+	if specName != "" && okSpecName {
+		sqlString += fmt.Sprintf(", `spec_name` = %s", specName)
+	}
+	if sellId != "" && okSellerId {
+		sqlString += fmt.Sprintf(", `seller_id` = %s", sellId)
+	}
+
+	sqlString += " where spec_value_id = ?"
+	if affected := svm.ExecuteSql(sqlString, specValueId); affected == -1 {
+		return nil, errors.New("更新失败")
+	}
+
+	params["spec_value_id"] = specValueId
+	return params, nil
+}
 
 func (svm *SpecValuesModel) SaveSpecValue(specId int, valueList []string) ([]map[string]interface{}, error) {
 	var ret []map[string]interface{}
