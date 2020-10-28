@@ -28,7 +28,6 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/goods/brands/all", admin.BrandAllList)                     // done
 		adminGroup.GET("admin/goods/categories/:parent_id/children", admin.CategoryList) // done
 		adminGroup.POST("admin/goods/categories", admin.CreateCategory)                  // done
-		adminGroup.GET("admin/goods/settings", admin.GoodsSetting)                       // done
 		adminGroup.GET("admin/goodssearch/custom-words", admin.GoodsSearchCustomWord)    // done
 		adminGroup.GET("admin/goodssearch/keywords", admin.GoodsSearchKeyWord)           // done
 		adminGroup.GET("admin/goodssearch/goods-words", admin.GoodsSearchGoodsWord)      // done
@@ -48,6 +47,8 @@ func AdminApi(router *gin.RouterGroup) {
 
 		// 交易相关
 		adminGroup.GET("admin/trade/orders", admin.OrderList)
+		adminGroup.GET("admin/trade/orders/:order_id", admin.OrderDetail)
+
 		adminGroup.GET("admin/trade/orders/pay-log", admin.OrderPayLogList)
 		adminGroup.GET("admin/trade/order-complains", admin.OrderComplainsList)
 		adminGroup.GET("admin/payment/payment-methods", admin.PaymentMethod) // wait to do
@@ -98,11 +99,19 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/statistics/order/region/member", admin.StatisticOrderRegionMember)              // wait to do
 		adminGroup.GET("admin/statistics/order/unit/price", admin.StatisticOrderUnitPrice)                    // wait to do
 		adminGroup.GET("admin/statistics/order/return/money", admin.StatisticOrderReturnMoney)                // wait to do
-		adminGroup.GET("admin/settings/site", admin.SiteSetting)                                              // wait to do
-		adminGroup.GET("admin/trade/orders/setting", admin.TradeOrderSetting)                                 // wait to do
-		adminGroup.GET("admin/settings/point", admin.PoingSetting)                                            // wait to do
-		adminGroup.GET("admin/task/:task_type", admin.AdminTask)                                              // wait to do
-		adminGroup.GET("admin/page-create/input", admin.PageCreateInput)                                      // wait to do
+
+		// setting相关
+		adminGroup.GET("admin/settings/site", admin.SiteSetting)                   // done
+		adminGroup.POST("admin/settings/site", admin.SaveSiteSetting)              // done
+		adminGroup.GET("admin/trade/orders/setting", admin.TradeOrderSetting)      // done
+		adminGroup.POST("admin/trade/orders/setting", admin.SaveTradeOrderSetting) // done
+		adminGroup.GET("admin/settings/point", admin.PointSetting)                 // done
+		adminGroup.POST("admin/settings/point", admin.SavePointSetting)            // done
+		adminGroup.GET("admin/goods/settings", admin.GoodsSetting)                 // done
+		adminGroup.POST("admin/goods/settings", admin.SaveGoodsSetting)            // done
+
+		adminGroup.GET("admin/task/:task_type", admin.AdminTask)         // wait to do
+		adminGroup.GET("admin/page-create/input", admin.PageCreateInput) // wait to do
 
 		adminGroup.GET("admin/pages/articles", admin.ArticleList)                                                   // wait to do
 		adminGroup.GET("admin/pages/article-categories", admin.ArticleCategoriesList)                               // wait to do

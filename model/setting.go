@@ -2,8 +2,10 @@ package model
 
 import (
 	"Goshop/global/variable"
+	"Goshop/utils/sql_utils"
 	"Goshop/utils/yml_config"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 )
@@ -70,8 +72,25 @@ func (u *SettingModel) Get(group string) map[string]interface{} {
 	return setting
 }
 
-func (u *SettingModel) Save(group string) {
+func (u *SettingModel) Save(group string, params map[string]interface{}) (map[string]interface{}, error) {
+	sqlString := "select cfg_value from es_settings where cfg_group = ?"
+	rows := u.QuerySql(sqlString, group)
+	defer rows.Close()
 
+	setting, _ := sql_utils.ParseJSON(rows)
+	if len(setting) > 0 {
+		sqlString = "insert into es_settings set cfg_value = ?,cfg_group = ?"
+	} else {
+		sqlString = "update es_settings set cfg_value = ? where cfg_group = ?"
+	}
+
+	paramsJson, _ := json.Marshal(params)
+	if u.ExecuteSql(sqlString, string(paramsJson), group) == -1 {
+		return nil, errors.New("操作配置失败")
+	}
+
+	rds.Remove(u.cacheName(variable.SettingsPrefix, group))
+	return params, nil
 }
 
 func (u *SettingModel) cacheName(prefix string, params ...interface{}) string {

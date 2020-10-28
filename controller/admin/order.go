@@ -3,6 +3,7 @@ package admin
 import (
 	"Goshop/model"
 	"Goshop/utils/common"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -19,6 +20,11 @@ func OrderList(ctx *gin.Context) {
 		"page_no":    queryParams["page_no"],
 		"page_size":  queryParams["page_size"],
 	})
+}
+
+func OrderDetail(ctx *gin.Context) {
+	orderId := ctx.Param("order_id")
+	fmt.Println(orderId)
 }
 
 func OrderComplainsList(ctx *gin.Context) {
