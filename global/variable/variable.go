@@ -11,6 +11,8 @@ import (
 )
 
 var (
+	PageNum                                   = 1  // 默认分页
+	PageSize                                  = 20 // 默认分页个数
 	AccessTokenExpireTime       int64         = 1200
 	RefreshTokenExpireTime      int64         = 1800
 	AccessTokenCacheExpireTime  time.Duration = 1260
