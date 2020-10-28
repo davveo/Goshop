@@ -10,7 +10,7 @@ import (
 )
 
 func OrderList(ctx *gin.Context) {
-	queryParams := common.BuildParams(ctx)
+	queryParams := common.ParseFromQuery(ctx)
 	data, dataTotal := model.CreateOrderFactory("").List(queryParams)
 
 	ctx.JSON(http.StatusOK, gin.H{
