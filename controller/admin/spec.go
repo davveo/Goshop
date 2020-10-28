@@ -31,6 +31,19 @@ func SpecsList(ctx *gin.Context) {
 	})
 }
 
+func Specs(ctx *gin.Context) {
+	specId, _ := strconv.Atoi(ctx.Param("spec_id"))
+	brand, err := model.CreateBrandFactory("").GetModel(specId)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"code":    http.StatusInternalServerError,
+			"message": err.Error(),
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, brand)
+}
+
 func CreateSpecs(ctx *gin.Context) {
 	specName := ctx.DefaultPostForm("spec_name", "")
 	specMemo := ctx.DefaultPostForm("spec_memo", "")
@@ -99,20 +112,4 @@ func DeleteSpecs(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, nil)
-}
-
-func SpecsValues(ctx *gin.Context) {
-	//var (
-	//	err       error
-	//	specId, _ = strconv.Atoi(ctx.Param("spec_id"))
-	//)
-
-}
-
-func UpdateSpecsValues(ctx *gin.Context) {
-	//var (
-	//	err       error
-	//	specId, _ = strconv.Atoi(ctx.Param("spec_id"))
-	//)
-
 }
