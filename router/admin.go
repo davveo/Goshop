@@ -15,8 +15,8 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.PUT("admin/goods/specs/:spec_id", admin.UpdateSpecs)                  // done
 		adminGroup.DELETE("admin/goods/specs/:spec_id", admin.Specs)                     // done
 		adminGroup.GET("admin/goods/specs/:spec_id", admin.DeleteSpecs)                  // done
-		adminGroup.GET("admin/goods/specs/:spec_id/values", admin.SpecsValues)           // wait done
-		adminGroup.POST("admin/goods/specs/:spec_id/values", admin.UpdateSpecsValues)    // wait done
+		adminGroup.GET("admin/goods/specs/:spec_id/values", admin.SpecsValues)           // done
+		adminGroup.POST("admin/goods/specs/:spec_id/values", admin.UpdateSpecsValues)    // done
 		adminGroup.GET("admin/goods", admin.GoodsList)                                   // done
 		adminGroup.PUT("admin/goods/:goods_id/up", admin.GoodsUp)                        // 商品上架
 		adminGroup.PUT("admin/goods/:goods_id/under", admin.GoodsUnder)                  // 商品下架
