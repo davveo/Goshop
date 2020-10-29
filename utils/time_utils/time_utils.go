@@ -4,20 +4,21 @@ import (
 	"Goshop/global/consts"
 	"fmt"
 	"time"
+
+	"gitee.com/go-package/carbon"
 )
 
+/*
+  更多参考: https://gitee.com/go-package/carbon
+*/
+
 func GetStartTimeAndEndTime(tp string) (start, end string) {
-	var (
-		year      = time.Now().Format("2006")
-		month     = time.Now().Format("01")
-		nextMonth = time.Now().AddDate(0, 1, 0).Format("01")
-	)
 	if tp == consts.YEAR {
-		start = fmt.Sprintf("%s-01-01 00:00:00", year)
-		end = fmt.Sprintf("%s-12-31 23:59:59", year)
+		start = carbon.CreateFromTimestamp(time.Now().Unix()).StartOfYear().ToDateTimeString()
+		end = carbon.CreateFromTimestamp(time.Now().Unix()).EndOfYear().ToDateTimeString()
 	} else if tp == consts.MONTH {
-		start = fmt.Sprintf("%s-%s-01 00:00:00", year, month)
-		end = fmt.Sprintf("%s-%s-01 00:00:00", year, nextMonth)
+		start = carbon.CreateFromTimestamp(time.Now().Unix()).StartOfMonth().ToDateTimeString()
+		end = carbon.CreateFromTimestamp(time.Now().Unix()).AddMonth().StartOfMonth().ToDateTimeString()
 	} else {
 		// pass
 	}
@@ -25,25 +26,19 @@ func GetStartTimeAndEndTime(tp string) (start, end string) {
 }
 
 func GetToDayOfStart() string {
-	currentTime := time.Now()
-	startTime := time.Date(currentTime.Year(), currentTime.Month(),
-		currentTime.Day(), 0, 0, 0, 0, currentTime.Location())
-	return fmt.Sprintf(startTime.Format(consts.TimeFormatStyleV1))
+	return carbon.CreateFromTimestamp(time.Now().Unix()).StartOfDay().Format(consts.TimeFormatStyleV1)
 }
 
 func GetToDayOfEnd() string {
-	currentTime := time.Now()
-	endTime := time.Date(currentTime.Year(), currentTime.Month(),
-		currentTime.Day(), 23, 59, 59, 0, currentTime.Location())
-	return fmt.Sprintf(endTime.Format(consts.TimeFormatStyleV1))
+	return carbon.CreateFromTimestamp(time.Now().Unix()).EndOfDay().Format(consts.TimeFormatStyleV1)
 }
 
 func GetDayOfStart(timestamp int64) string {
-	return fmt.Sprintf("%s 00:00:00", time.Unix(timestamp, 0).Format("2006-01-02"))
+	return carbon.CreateFromTimestamp(timestamp).StartOfDay().ToDateTimeString()
 }
 
 func GetDayOfEnd(timestamp int64) string {
-	return fmt.Sprintf("%s 23:59:59", time.Unix(timestamp, 0).Format("2006-01-02"))
+	return carbon.CreateFromTimestamp(timestamp).EndOfDay().ToDateTimeString()
 }
 
 func GetDateStr(style string) string {
@@ -57,12 +52,9 @@ func GetDateStr(style string) string {
 }
 
 func StartOfDay() int64 {
-	currentTime := time.Now()
-	return time.Date(currentTime.Year(), currentTime.Month(), currentTime.Day(), 0, 0, 0, 0, currentTime.Location()).Unix()
+	return carbon.CreateFromTimestamp(time.Now().Unix()).StartOfDay().ToTimestamp()
 }
 
 func EndOfDay() int64 {
-	currentTime := time.Now()
-	return time.Date(currentTime.Year(), currentTime.Month(), currentTime.Day(), 23, 59, 59, 0, currentTime.Location()).Unix()
-
+	return carbon.CreateFromTimestamp(time.Now().Unix()).EndOfDay().ToTimestamp()
 }

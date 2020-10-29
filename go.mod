@@ -3,6 +3,7 @@ module Goshop
 go 1.13
 
 require (
+	gitee.com/go-package/carbon v1.2.2 // indirect
 	github.com/aliyun/aliyun-oss-go-sdk v2.1.4+incompatible
 	github.com/allegro/bigcache v1.2.1
 	github.com/arl/statsviz v0.2.0
