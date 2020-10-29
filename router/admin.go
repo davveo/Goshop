@@ -18,14 +18,14 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/goods/specs/:spec_id/values", admin.SpecsValues)           // done
 		adminGroup.POST("admin/goods/specs/:spec_id/values", admin.UpdateSpecsValues)    // done
 		adminGroup.GET("admin/goods", admin.GoodsList)                                   // done
-		adminGroup.PUT("admin/goods/:goods_id/up", admin.GoodsUp)                        // done
-		adminGroup.PUT("admin/goods/:goods_id/under", admin.GoodsUnder)                  // done
+		adminGroup.PUT("admin/r/goods/:goods_id/up", admin.GoodsUp)                      // done origin: admin/admin/goods/:goods_id/up -> admin/admin/r/goods/:goods_id/up
+		adminGroup.PUT("admin/r/goods/:goods_id/under", admin.GoodsUnder)                // done origin: admin/admin/goods/:goods_id/under -> admin/admin/r/goods/:goods_id/under
 		adminGroup.GET("admin/goods/brands", admin.BrandList)                            // done
 		adminGroup.POST("admin/goods/brands", admin.CreateBrand)                         // done
 		adminGroup.GET("admin/goods/brands/:brand_id", admin.Brand)                      // done
 		adminGroup.PUT("admin/goods/brands/:brand_id", admin.UpdateBrand)                // done
 		adminGroup.DELETE("admin/goods/brands/:brand_id", admin.DeleteBrand)             // done
-		adminGroup.GET("admin/goods/brands/all", admin.BrandAllList)                     // done
+		adminGroup.GET("admin/r/goods/brands/all", admin.BrandAllList)                   // done // origin: admin/admin/goods/brands/all -> admin/admin/r/goods/brands/all
 		adminGroup.GET("admin/goods/categories/:parent_id/children", admin.CategoryList) // done
 		adminGroup.POST("admin/goods/categories", admin.CreateCategory)                  // done
 		adminGroup.GET("admin/goodssearch/custom-words", admin.GoodsSearchCustomWord)    // done
@@ -47,7 +47,7 @@ func AdminApi(router *gin.RouterGroup) {
 
 		// 交易相关
 		adminGroup.GET("admin/trade/orders", admin.OrderList)
-		adminGroup.GET("admin/trade/orders/:order_id", admin.OrderDetail)
+		adminGroup.GET("admin/r/trade/orders/:order_id", admin.OrderDetail) // origin: admin/admin/trade/orders/:order_id -> admin/admin/r/trade/orders/:order_id
 
 		adminGroup.GET("admin/trade/orders/pay-log", admin.OrderPayLogList)
 		adminGroup.GET("admin/trade/order-complains", admin.OrderComplainsList)
