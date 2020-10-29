@@ -155,7 +155,7 @@ func (om *OrderModel) List(params map[string]string) ([]map[string]interface{}, 
 
 func (om *OrderModel) count() (rows int64) {
 	var (
-		sql = "select count(*) from es_specification;"
+		sql = "select count(1) from es_order o where disabled=0 "
 	)
 
 	err := om.QueryRow(sql).Scan(&rows)
@@ -167,5 +167,10 @@ func (om *OrderModel) count() (rows int64) {
 }
 
 func (om *OrderModel) getCancelLeftDay() int {
+	tradeSetting := CreateSettingFactory("").Get(consts.TRADE)
+
+	if cancelOrderDay, ok := tradeSetting["cancel_order_day"].(int); ok {
+		return cancelOrderDay
+	}
 	return 0
 }
