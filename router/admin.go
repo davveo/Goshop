@@ -47,36 +47,61 @@ func AdminApi(router *gin.RouterGroup) {
 
 		// 交易相关
 		adminGroup.GET("admin/trade/orders", admin.OrderList)
-		adminGroup.GET("admin/r/trade/orders/:order_id", admin.OrderDetail) // origin: admin/admin/trade/orders/:order_id -> admin/admin/r/trade/orders/:order_id
-
 		adminGroup.GET("admin/trade/orders/pay-log", admin.OrderPayLogList)
 		adminGroup.GET("admin/trade/order-complains", admin.OrderComplainsList)
-		adminGroup.GET("admin/payment/payment-methods", admin.PaymentMethod) // wait to do
+		adminGroup.GET("admin/r/trade/orders/:order_id", admin.OrderDetail) // origin: admin/admin/trade/orders/:order_id -> admin/admin/r/trade/orders/:order_id
 
-		adminGroup.GET("admin/index/page", admin.Index) // done
-		adminGroup.GET("admin/after-sales", admin.AfterSalesList)
-		adminGroup.GET("admin/after-sales/refund", admin.AfterSalesRefundList)
-		adminGroup.GET("admin/members/receipts", admin.MemberReceiptList)
-		adminGroup.GET("admin/members/zpzz", admin.ZpzzList)
-		adminGroup.GET("admin/members", admin.MemberList)
-		adminGroup.GET("admin/members/comments", admin.MemberCommentsList)
-		adminGroup.GET("admin/members/asks", admin.MemberAskList)
-
-		adminGroup.GET("admin/shops/list", admin.AllShopList)      // done
-		adminGroup.GET("admin/shops", admin.ShopList)              //
-		adminGroup.GET("admin/shops/themes", admin.ShopThemesList) // done
-
-		adminGroup.GET("admin/order/bills/statistics", admin.OrderBillStatisticList)
+		// promotion相关
 		adminGroup.GET("admin/promotion/group-buy-actives", admin.GroupBuyList)
 		adminGroup.GET("admin/promotion/group-buy-cats", admin.GroupBuyCategoryList)
 		adminGroup.GET("admin/promotion/exchange-cats/:cat_id/children", admin.PointCategory)
 		adminGroup.GET("admin/promotion/seckills", admin.SeckillList) // done
 		adminGroup.GET("admin/promotion/coupons", admin.CouponList)   // done
 		adminGroup.GET("admin/promotion/pintuan", admin.PinTuanList)  // done
+
+		// 会员相关
+		adminGroup.GET("admin/members/receipts", admin.MemberReceiptList)
+		adminGroup.GET("admin/members/zpzz", admin.ZpzzList)
+		adminGroup.GET("admin/members", admin.MemberList)
+		adminGroup.GET("admin/members/comments", admin.MemberCommentsList)
+		adminGroup.GET("admin/members/asks", admin.MemberAskList)
+
+		// 店铺相关
+		adminGroup.GET("admin/shops/list", admin.AllShopList)      // done
+		adminGroup.GET("admin/shops", admin.ShopList)              //
+		adminGroup.GET("admin/shops/themes", admin.ShopThemesList) // done
+
+		// setting相关
+		adminGroup.GET("admin/settings/site", admin.SiteSetting)                   // done
+		adminGroup.POST("admin/settings/site", admin.SaveSiteSetting)              // done
+		adminGroup.GET("admin/trade/orders/setting", admin.TradeOrderSetting)      // done
+		adminGroup.POST("admin/trade/orders/setting", admin.SaveTradeOrderSetting) // done
+		adminGroup.GET("admin/settings/point", admin.PointSetting)                 // done
+		adminGroup.POST("admin/settings/point", admin.SavePointSetting)            // done
+		adminGroup.GET("admin/goods/settings", admin.GoodsSetting)                 // done
+		adminGroup.POST("admin/goods/settings", admin.SaveGoodsSetting)            // done
+
+		// 分销相关
+		adminGroup.GET("admin/distribution/commission-tpl", admin.DistributionCommissionTpl) // wait to do
+		adminGroup.GET("admin/distribution/upgradelog", admin.DistributionUpgradeLog)        // wait to do
+		adminGroup.GET("admin/distribution/member", admin.DistributionMember)                // wait to do
+		adminGroup.GET("admin/distribution/bill/total", admin.DistributionBillTotal)         // wait to do
+		adminGroup.GET("admin/distribution/settings", admin.DistributionSetting)             // wait to do
+		adminGroup.GET("admin/distribution/withdraw/apply", admin.DistributionWithdraw)      // done
+
+		adminGroup.GET("admin/payment/payment-methods", admin.PaymentMethod) // wait to do
+		adminGroup.GET("admin/index/page", admin.Index)                      // done
+		adminGroup.GET("admin/after-sales", admin.AfterSalesList)
+		adminGroup.GET("admin/after-sales/refund", admin.AfterSalesRefundList)
+
+		adminGroup.GET("admin/order/bills/statistics", admin.OrderBillStatisticList)
+
 		adminGroup.GET("admin/pages/site-navigations", admin.PageSiteNavigationList)
 		adminGroup.GET("admin/pages/client_type/page_type", admin.Page) // 替换原来admin/admin/pages/PC/INDEX
 		adminGroup.GET("admin/focus-pictures", admin.FocusPicture)
 		adminGroup.GET("admin/pages/hot-keywords", admin.HotKeyWordsList)
+
+		// 数据统计相关
 		adminGroup.GET("admin/statistics/member/order/quantity", admin.StatisticMemberOrderQuantity)          // wait to do
 		adminGroup.GET("admin/statistics/member/order/quantity/page", admin.StatisticMemberOrderQuantityPage) // wait to do
 		adminGroup.GET("admin/statistics/member/increase/member", admin.StatisticMemberIncrease)              // wait to do
@@ -100,31 +125,21 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/statistics/order/unit/price", admin.StatisticOrderUnitPrice)                    // wait to do
 		adminGroup.GET("admin/statistics/order/return/money", admin.StatisticOrderReturnMoney)                // wait to do
 
-		// setting相关
-		adminGroup.GET("admin/settings/site", admin.SiteSetting)                   // done
-		adminGroup.POST("admin/settings/site", admin.SaveSiteSetting)              // done
-		adminGroup.GET("admin/trade/orders/setting", admin.TradeOrderSetting)      // done
-		adminGroup.POST("admin/trade/orders/setting", admin.SaveTradeOrderSetting) // done
-		adminGroup.GET("admin/settings/point", admin.PointSetting)                 // done
-		adminGroup.POST("admin/settings/point", admin.SavePointSetting)            // done
-		adminGroup.GET("admin/goods/settings", admin.GoodsSetting)                 // done
-		adminGroup.POST("admin/goods/settings", admin.SaveGoodsSetting)            // done
-
 		adminGroup.GET("admin/task/:task_type", admin.AdminTask)         // wait to do
 		adminGroup.GET("admin/page-create/input", admin.PageCreateInput) // wait to do
 
-		adminGroup.GET("admin/pages/articles", admin.ArticleList)                                                   // wait to do
-		adminGroup.GET("admin/pages/article-categories", admin.ArticleCategoriesList)                               // wait to do
-		adminGroup.GET("admin/pages/article-categories/childrens", admin.ArticleCategoryChildrenList)               // wait to do
+		adminGroup.GET("admin/pages/articles", admin.ArticleList)                  // todo
+		adminGroup.POST("admin/pages/articles", admin.CreateArticle)               // todo
+		adminGroup.GET("admin/pages/articles/:article_id", admin.GetArticle)       // todo
+		adminGroup.PUT("admin/pages/articles/:article_id", admin.UpdateArticle)    // todo
+		adminGroup.DELETE("admin/pages/articles/:article_id", admin.DeleteArticle) // todo
+
+		adminGroup.GET("admin/pages/article-categories", admin.ArticleCategoriesList)                 // wait to do
+		adminGroup.GET("admin/pages/article-categories/childrens", admin.ArticleCategoryChildrenList) // wait to do
+
 		adminGroup.GET("admin/services", admin.ServiceList)                                                         // wait to do
 		adminGroup.GET("admin/services/live-video-api/instances", admin.ServiceLiveVideo)                           // wait to do
 		adminGroup.GET("admin/services/live-video-api/instances/:instance_id/logs", admin.ServiceLiveVideoInstance) // wait to do
-		adminGroup.GET("admin/distribution/commission-tpl", admin.DistributionCommissionTpl)                        // wait to do
-		adminGroup.GET("admin/distribution/upgradelog", admin.DistributionUpgradeLog)                               // wait to do
-		adminGroup.GET("admin/distribution/member", admin.DistributionMember)                                       // wait to do
-		adminGroup.GET("admin/distribution/bill/total", admin.DistributionBillTotal)                                // wait to do
-		adminGroup.GET("admin/distribution/settings", admin.DistributionSetting)                                    // wait to do
-		adminGroup.GET("admin/distribution/withdraw/apply", admin.DistributionWithdraw)                             // done
 
 		// 未发现
 		adminGroup.GET("admin/members/deposit/recharge", admin.MemberDepositRechargeList)
