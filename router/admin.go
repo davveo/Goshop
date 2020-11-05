@@ -68,7 +68,7 @@ func AdminApi(router *gin.RouterGroup) {
 
 		// 店铺相关
 		adminGroup.GET("admin/shops/list", admin.AllShopList)      // done
-		adminGroup.GET("admin/shops", admin.ShopList)              //
+		adminGroup.GET("admin/shops", admin.ShopList)              // done
 		adminGroup.GET("admin/shops/themes", admin.ShopThemesList) // done
 
 		// setting相关

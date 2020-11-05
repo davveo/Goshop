@@ -144,12 +144,15 @@ func (sm *ShopModel) List(params map[string]interface{}) ([]map[string]interface
 	pageNo, okPageNo := params["page_no"].(int)
 	pageSize, okPageSize := params["page_size"].(int)
 
-	shopType := params["shop_type"].(string)
-	shopDisable := params["shop_disable"].(string)
-	keyword := params["keyword"].(string)
-	shop_name := params["shop_name"].(string)
+	shopType, okShopType := params["shop_type"].(string)
+	shopDisable, okShopDisable := params["shop_disable"].(string)
+	keyword, okKeyword := params["keyword"].(string)
+	shopName, okShopName := params["shop_name"].(string)
+	memberName, okMemberName := params["member_name"].(string)
+	startTime, okStartTime := params["start_time"].(string)
+	endTime, okEndTime := params["end_time"].(string)
 
-	if shopDisable == "" {
+	if shopDisable == "" && okShopDisable {
 		shopDisable = "OPEN"
 	}
 
@@ -161,20 +164,32 @@ func (sm *ShopModel) List(params map[string]interface{}) ([]map[string]interface
 			"s.shop_endtime,sd.* from es_shop s  left join es_shop_detail sd on s.shop_id = sd.shop_id   where  shop_disable = '" + shopDisable + "'")
 	}
 
-	if shopType != "" {
-		// TODO
+	if shopType != "" && okShopType {
+		sqlString.WriteString(fmt.Sprintf("  and s.shop_type = %s ", shopType))
 	}
 
-	if keyword != "" {
+	if keyword != "" && okKeyword {
 		sqlString.WriteString(fmt.Sprintf("  and (s.shop_name like %s or s.member_name like %s) ",
 			"'"+keyword+"'", "'"+keyword+"'"))
 	}
 
-	if shop_name != "" {
-		sqlString.WriteString(fmt.Sprintf("  and s.shop_name like %s ", "'"+shop_name+"'"))
+	if shopName != "" && okShopName {
+		sqlString.WriteString(fmt.Sprintf("  and s.shop_name like %s ", "'"+shopName+"'"))
 	}
 
-	sqlString.WriteString(" order by create_time desc")
+	if memberName != "" && okMemberName {
+		sqlString.WriteString(fmt.Sprintf("  and s.member_name like %s ", "'"+memberName+"'"))
+	}
+
+	if startTime != "" && okStartTime {
+		sqlString.WriteString(fmt.Sprintf("  and s.shop_createtime > %s ", startTime))
+	}
+
+	if endTime != "" && okEndTime {
+		sqlString.WriteString(fmt.Sprintf("  and s.shop_createtime < %s ", endTime))
+	}
+
+	sqlString.WriteString(" order by s.shop_createtime desc")
 
 	if okPageNo && okPageSize {
 		sqlString.WriteString(sql_utils.LimitOffset(pageNo, pageSize))
@@ -211,11 +226,7 @@ func (sm *ShopModel) GetShop(shopId int64) (map[string]interface{}, error) {
 }
 
 func (sm *ShopModel) count() (rows int64) {
-	var (
-		sql = "select count(*) from es_shop"
-	)
-
-	err := sm.QueryRow(sql).Scan(&rows)
+	err := sm.QueryRow("select count(*) from es_shop").Scan(&rows)
 	if err != nil {
 		log.Println("sql.count 错误", err.Error())
 	}
