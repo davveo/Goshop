@@ -2,6 +2,7 @@ package admin
 
 import (
 	"Goshop/model"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -101,7 +102,8 @@ func ShopDetail(ctx *gin.Context) {
 }
 
 func EditShop(ctx *gin.Context) {
-
+	shopId, _ := strconv.Atoi(ctx.Param("shop_id"))
+	fmt.Println(shopId)
 }
 
 func CreateShop(ctx *gin.Context) {

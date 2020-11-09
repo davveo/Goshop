@@ -10,7 +10,7 @@ import (
 
 func CreateMemberCommentFactory(sqlType string) *MemberCommentModel {
 	if len(sqlType) == 0 {
-		sqlType = yml_config.CreateYamlFactory().GetString("UseDbType") //如果系统的某个模块需要使用非默认（mysql）数据库，例如 sqlserver，那么就在这里
+		sqlType = yml_config.CreateYamlFactory().GetString("UseDbType")
 	}
 	dbDriver := CreateBaseSqlFactory(sqlType)
 	if dbDriver != nil {
@@ -83,7 +83,7 @@ func (mcm *MemberCommentModel) queryGoodsGrade() ([]map[string]interface{}, erro
 	return tableData, nil
 }
 
-func (mcm *MemberCommentModel) getModel(commentID int) (map[string]interface{}, error){
+func (mcm *MemberCommentModel) getModel(commentID int) (map[string]interface{}, error) {
 	sqlString := "select * from es_member_comment where comment_id = ?"
 	rows := mcm.QuerySql(sqlString, commentID)
 	defer rows.Close()
@@ -101,7 +101,7 @@ func (mcm *MemberCommentModel) getModel(commentID int) (map[string]interface{}, 
 }
 
 func (mcm *MemberCommentModel) getGoodsCommentCount(goodsID int) (rows int64) {
-	sqlString :=  "SELECT COUNT(0) FROM es_member_comment where goods_id = ? and status = 1"
+	sqlString := "SELECT COUNT(0) FROM es_member_comment where goods_id = ? and status = 1"
 	err := mcm.QueryRow(sqlString).Scan(&rows)
 	if err != nil {
 		log.Println("sql.count 错误", err.Error())

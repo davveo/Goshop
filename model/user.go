@@ -1,13 +1,13 @@
 package model
 
 import (
-	"errors"
-	"fmt"
-	"log"
 	"Goshop/global/variable"
 	ojwt "Goshop/utils/jwt"
 	"Goshop/utils/md5_encrypt"
 	"Goshop/utils/yml_config"
+	"errors"
+	"fmt"
+	"log"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -15,7 +15,7 @@ import (
 
 func CreateUserFactory(sqlType string) *UsersModel {
 	if len(sqlType) == 0 {
-		sqlType = yml_config.CreateYamlFactory().GetString("UseDbType") //如果系统的某个模块需要使用非默认（mysql）数据库，例如 sqlserver，那么就在这里
+		sqlType = yml_config.CreateYamlFactory().GetString("UseDbType")
 	}
 	dbDriver := CreateBaseSqlFactory(sqlType)
 	if dbDriver != nil {
