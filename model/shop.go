@@ -1,24 +1,41 @@
 package model
 
 import (
+	"Goshop/global/consts"
+	"Goshop/utils/rabbitmq"
 	"Goshop/utils/sql_utils"
+	"Goshop/utils/time_utils"
 	"Goshop/utils/yml_config"
 	"bytes"
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
+
+	"github.com/gin-gonic/gin"
 
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
-func CreateShopFactory(sqlType string) *ShopModel {
+func CreateShopFactory(ctx *gin.Context, sqlType string) *ShopModel {
 	if len(sqlType) == 0 {
 		sqlType = yml_config.CreateYamlFactory().GetString("UseDbType")
 	}
 	dbDriver := CreateBaseSqlFactory(sqlType)
+	mq := rabbitmq.GetRabbitmq()
+	if mq == nil {
+		log.Fatal("goodsModel mq初始化失败")
+	}
+	amqpTemplate, err := mq.Producer("goods")
+	if err != nil {
+		log.Fatal("goodsModel producer初始化失败")
+	}
+
 	if dbDriver != nil {
 		return &ShopModel{
-			BaseModel: dbDriver,
+			BaseModel:    dbDriver,
+			ctx:          ctx,
+			amqpTemplate: amqpTemplate,
 		}
 	}
 	log.Fatal("shopModel工厂初始化失败")
@@ -27,6 +44,8 @@ func CreateShopFactory(sqlType string) *ShopModel {
 
 type ShopModel struct {
 	*BaseModel
+	ctx                     *gin.Context
+	amqpTemplate            *rabbitmq.Producer
 	ID                      sql.NullString `json:"-"`
 	MemberId                sql.NullString `json:"member_id"`
 	MemberName              sql.NullString `json:"member_name"`
@@ -144,13 +163,13 @@ func (sm *ShopModel) List(params map[string]interface{}) ([]map[string]interface
 	pageNo, okPageNo := params["page_no"].(int)
 	pageSize, okPageSize := params["page_size"].(int)
 
-	shopType, okShopType := params["shop_type"].(string)
-	shopDisable, okShopDisable := params["shop_disable"].(string)
 	keyword, okKeyword := params["keyword"].(string)
-	shopName, okShopName := params["shop_name"].(string)
-	memberName, okMemberName := params["member_name"].(string)
-	startTime, okStartTime := params["start_time"].(string)
 	endTime, okEndTime := params["end_time"].(string)
+	shopName, okShopName := params["shop_name"].(string)
+	shopType, okShopType := params["shop_type"].(string)
+	startTime, okStartTime := params["start_time"].(string)
+	memberName, okMemberName := params["member_name"].(string)
+	shopDisable, okShopDisable := params["shop_disable"].(string)
 
 	if shopDisable == "" && okShopDisable {
 		shopDisable = "OPEN"
@@ -207,10 +226,10 @@ func (sm *ShopModel) List(params map[string]interface{}) ([]map[string]interface
 	return tableData, sm.count()
 }
 
-func (sm *ShopModel) GetShop(shopId int64) (map[string]interface{}, error) {
+func (sm *ShopModel) GetShop(shopID int) (map[string]interface{}, error) {
 	sqlstring := "select s.member_id,s.member_name,s.shop_name,s.shop_disable,s.shop_createtime,s.shop_endtime,d.* from es_shop s " +
 		"left join es_shop_detail d on  s.shop_id = d.shop_id where s.shop_id = ?"
-	rows := sm.QuerySql(sqlstring, shopId)
+	rows := sm.QuerySql(sqlstring, shopID)
 	defer rows.Close()
 
 	tableData, err := sql_utils.ParseJSON(rows)
@@ -232,4 +251,68 @@ func (sm *ShopModel) count() (rows int64) {
 	}
 
 	return rows
+}
+
+func (sm *ShopModel) DisableShop(shopID int) error {
+	shop, err := sm.GetShop(shopID)
+	if shop == nil || err != nil {
+		return errors.New("不存在此店铺")
+	}
+	shopName := shop["shop_name"].(string)
+
+	sqlString := "update es_shop set shop_disable=?,shop_endtime=? where shop_id = ?"
+	if sm.ExecuteSql(sqlString, consts.ShopStatusCLOSED, time_utils.CurrentTimeStamp(), shopID) == -1 {
+		return errors.New("更新店铺失败")
+	}
+	// 更改统计中店铺的状态
+	sqlString = "update es_sss_shop_data set seller_name = ? shop_disable = ? and  where seller_id=?"
+	if sm.ExecuteSql(sqlString, shopName, consts.ShopStatusCLOSED, shopID) == -1 {
+		return errors.New("更新shop_data店铺失败")
+	}
+	// 下架店铺所有商品
+	CreateGoodsFactory(sm.ctx, "").UnderShopGoods(shopID)
+	shopChangeMsg := rabbitmq.BuildMsg(map[string]interface{}{
+		"message":     "",
+		"seller_id":   shopID,
+		"status_enum": consts.ShopStatusCLOSED,
+	})
+	err = sm.amqpTemplate.Publish(consts.ExchangeCloseStore,
+		consts.ExchangeCloseStore+"_ROUTING", shopChangeMsg)
+	if err != nil {
+		log.Printf("[ERROR] %s\n", err)
+		return err
+	}
+	return nil
+}
+
+func (sm *ShopModel) EnableShop(shopID int) error {
+	shop, err := sm.GetShop(shopID)
+	if shop == nil || err != nil {
+		return errors.New("不存在此店铺")
+	}
+	shopName := shop["shop_name"].(string)
+
+	sqlString := "update es_shop set shop_disable=?,shop_endtime=? where shop_id = ?"
+	if sm.ExecuteSql(sqlString, consts.ShopStatusOPEN, time_utils.CurrentTimeStamp(), shopID) == -1 {
+		return errors.New("更新店铺失败")
+	}
+	// 更改统计中店铺的状态
+	sqlString = "update es_sss_shop_data set seller_name = ? shop_disable = ? and  where seller_id=?"
+	if sm.ExecuteSql(sqlString, shopName, consts.ShopStatusOPEN, shopID) == -1 {
+		return errors.New("更新shop_data店铺失败")
+	}
+	// 下架店铺所有商品
+	CreateGoodsFactory(sm.ctx, "").UpShopGoods(shopID)
+	shopChangeMsg := rabbitmq.BuildMsg(map[string]interface{}{
+		"message":     "",
+		"seller_id":   shopID,
+		"status_enum": consts.ShopStatusOPEN,
+	})
+	err = sm.amqpTemplate.Publish(consts.ExchangeOpenStore,
+		consts.ExchangeOpenStore+"_ROUTING", shopChangeMsg)
+	if err != nil {
+		log.Printf("[ERROR] %s\n", err)
+		return err
+	}
+	return nil
 }

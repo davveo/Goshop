@@ -8,10 +8,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func AllShopList(context *gin.Context) {
-	context.JSON(
+func AllShopList(ctx *gin.Context) {
+	ctx.JSON(
 		http.StatusOK,
-		model.CreateShopFactory("").All())
+		model.CreateShopFactory(ctx, "").All())
 }
 
 func ShopList(ctx *gin.Context) {
@@ -26,7 +26,7 @@ func ShopList(ctx *gin.Context) {
 	queryParams["page_size"] = pageSize
 	queryParams["shop_type"] = shopType
 	queryParams["shop_disable"] = shopDisable
-	data, dataTotal := model.CreateShopFactory("").List(queryParams)
+	data, dataTotal := model.CreateShopFactory(ctx, "").List(queryParams)
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"data":       data,
@@ -55,4 +55,55 @@ func ShopThemesList(ctx *gin.Context) {
 		"page_no":    pageNo,
 		"page_size":  pageSize,
 	})
+}
+
+func DisableShop(ctx *gin.Context) {
+	shopId, _ := strconv.Atoi(ctx.Param("shop_id"))
+	if err := model.CreateShopFactory(ctx, "").DisableShop(shopId); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"code":    http.StatusInternalServerError,
+			"message": err.Error(),
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"seller_id": shopId,
+		"operator":  "管理员禁用店铺",
+	})
+}
+
+func EnableShop(ctx *gin.Context) {
+	shopId, _ := strconv.Atoi(ctx.Param("shop_id"))
+	if err := model.CreateShopFactory(ctx, "").EnableShop(shopId); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"code":    http.StatusInternalServerError,
+			"message": err.Error(),
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"seller_id": shopId,
+		"operator":  "管理员恢复店铺",
+	})
+}
+
+func ShopDetail(ctx *gin.Context) {
+	shopId, _ := strconv.Atoi(ctx.Param("shop_id"))
+	shop, err := model.CreateShopFactory(ctx, "").GetShop(shopId)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"code":    http.StatusInternalServerError,
+			"message": err.Error(),
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, shop)
+}
+
+func EditShop(ctx *gin.Context) {
+
+}
+
+func CreateShop(ctx *gin.Context) {
+
 }

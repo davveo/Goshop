@@ -131,7 +131,7 @@ func (gm *GoodsModel) Up(goodsId int) error {
 	operateAllowable := NewOperateAllowable(marketEnable, disabled)
 
 	//查询店铺是否是关闭中，若未开启，则不能上架
-	shop, _ := CreateShopFactory("").GetShop(sellerId)
+	shop, _ := CreateShopFactory(gm.ctx, "").GetShop(int(sellerId))
 	if shop == nil || shop["shop_disable"] != "OPEN" {
 		return errors.New("店铺关闭中,商品不能上架操作")
 	}
@@ -571,6 +571,41 @@ func (gm *GoodsModel) UnderShopGoods(sellerID int) {
 			"message":        "店铺关闭",
 			"goods_ids":      goodsIDs,
 			"operation_type": consts.OperationUnderOperation,
+		})
+		err := gm.amqpTemplate.Publish(consts.ExchangeGoodsChange,
+			consts.ExchangeGoodsChange+"_ROUTING", goodsChangeMsg)
+		if err != nil {
+			log.Printf("[ERROR] %s\n", err)
+		}
+	}
+}
+
+func (gm *GoodsModel) UpShopGoods(sellerID int) {
+	sqlString := "update es_goods set market_enable = 1 where seller_id = ? "
+	if gm.ExecuteSql(sqlString, sellerID) == -1 {
+		log.Println("商品更新失败")
+	}
+
+	//发送商品下架消息
+	sqlString = "select goods_id from es_goods where seller_id = ?"
+	rows := gm.QuerySql(sqlString, sellerID)
+	defer rows.Close()
+
+	ItemData, err := sql_utils.ParseJSON(rows)
+	if err != nil {
+		log.Println("sql_utils.ParseJSON 错误", err.Error())
+	}
+	var goodsIDs []int
+	for _, item := range ItemData {
+		goodsID := item["goods_id"].(int64)
+		goodsIDs = append(goodsIDs, int(goodsID))
+	}
+	idStr := sql_utils.InSqlStr(goodsIDs)
+	if idStr != "" {
+		goodsChangeMsg := rabbitmq.BuildMsg(map[string]interface{}{
+			"message":        "店铺开启",
+			"goods_ids":      goodsIDs,
+			"operation_type": consts.OperationUpOperation,
 		})
 		err := gm.amqpTemplate.Publish(consts.ExchangeGoodsChange,
 			consts.ExchangeGoodsChange+"_ROUTING", goodsChangeMsg)

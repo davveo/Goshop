@@ -58,3 +58,7 @@ func StartOfDay() int64 {
 func EndOfDay() int64 {
 	return carbon.CreateFromTimestamp(time.Now().Unix()).EndOfDay().ToTimestamp()
 }
+
+func CurrentTimeStamp() int64 {
+	return carbon.CreateFromTimestamp(time.Now().Unix()).ToTimestamp()
+}

@@ -135,6 +135,11 @@ const (
 	ExchangeCloseStore = "CLOSE_STORE"
 
 	/**
+	 * 店铺开启
+	 */
+	ExchangeOpenStore = "OPEN_STORE"
+
+	/**
 	 * 店铺信息发生改变
 	 */
 	ExchangeShopChange = "SHOP_CHANGE"

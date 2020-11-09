@@ -10,22 +10,25 @@ func AdminApi(router *gin.RouterGroup) {
 	adminGroup := router.Group("admin/")
 	{
 		// goods相关
-		adminGroup.GET("admin/goods/specs", admin.SpecsList)                             // done
-		adminGroup.POST("admin/goods/specs", admin.CreateSpecs)                          // done
-		adminGroup.PUT("admin/goods/specs/:spec_id", admin.UpdateSpecs)                  // done
-		adminGroup.DELETE("admin/goods/specs/:spec_id", admin.Specs)                     // done
-		adminGroup.GET("admin/goods/specs/:spec_id", admin.DeleteSpecs)                  // done
-		adminGroup.GET("admin/goods/specs/:spec_id/values", admin.SpecsValues)           // done
-		adminGroup.POST("admin/goods/specs/:spec_id/values", admin.UpdateSpecsValues)    // done
-		adminGroup.GET("admin/goods", admin.GoodsList)                                   // done
-		adminGroup.PUT("admin/r/goods/:goods_id/up", admin.GoodsUp)                      // done origin: admin/admin/goods/:goods_id/up -> admin/admin/r/goods/:goods_id/up
-		adminGroup.PUT("admin/r/goods/:goods_id/under", admin.GoodsUnder)                // done origin: admin/admin/goods/:goods_id/under -> admin/admin/r/goods/:goods_id/under
-		adminGroup.GET("admin/goods/brands", admin.BrandList)                            // done
-		adminGroup.POST("admin/goods/brands", admin.CreateBrand)                         // done
-		adminGroup.GET("admin/goods/brands/:brand_id", admin.Brand)                      // done
-		adminGroup.PUT("admin/goods/brands/:brand_id", admin.UpdateBrand)                // done
-		adminGroup.DELETE("admin/goods/brands/:brand_id", admin.DeleteBrand)             // done
-		adminGroup.GET("admin/r/goods/brands/all", admin.BrandAllList)                   // done // origin: admin/admin/goods/brands/all -> admin/admin/r/goods/brands/all
+		adminGroup.GET("admin/goods/specs", admin.SpecsList)                          // done
+		adminGroup.POST("admin/goods/specs", admin.CreateSpecs)                       // done
+		adminGroup.PUT("admin/goods/specs/:spec_id", admin.UpdateSpecs)               // done
+		adminGroup.DELETE("admin/goods/specs/:spec_id", admin.Specs)                  // done
+		adminGroup.GET("admin/goods/specs/:spec_id", admin.DeleteSpecs)               // done
+		adminGroup.GET("admin/goods/specs/:spec_id/values", admin.SpecsValues)        // done
+		adminGroup.POST("admin/goods/specs/:spec_id/values", admin.UpdateSpecsValues) // done
+		adminGroup.GET("admin/goods", admin.GoodsList)                                // done
+		// done origin: admin/admin/goods/:goods_id/up -> admin/admin/r/goods/:goods_id/up
+		adminGroup.PUT("admin/r/goods/:goods_id/up", admin.GoodsUp)
+		// done origin: admin/admin/goods/:goods_id/under -> admin/admin/r/goods/:goods_id/under
+		adminGroup.PUT("admin/r/goods/:goods_id/under", admin.GoodsUnder)
+		adminGroup.GET("admin/goods/brands", admin.BrandList)                // done
+		adminGroup.POST("admin/goods/brands", admin.CreateBrand)             // done
+		adminGroup.GET("admin/goods/brands/:brand_id", admin.Brand)          // done
+		adminGroup.PUT("admin/goods/brands/:brand_id", admin.UpdateBrand)    // done
+		adminGroup.DELETE("admin/goods/brands/:brand_id", admin.DeleteBrand) // done
+		// done // origin: admin/admin/goods/brands/all -> admin/admin/r/goods/brands/all
+		adminGroup.GET("admin/r/goods/brands/all", admin.BrandAllList)
 		adminGroup.GET("admin/goods/categories/:parent_id/children", admin.CategoryList) // done
 		adminGroup.POST("admin/goods/categories", admin.CreateCategory)                  // done
 		adminGroup.GET("admin/goodssearch/custom-words", admin.GoodsSearchCustomWord)    // done
@@ -49,7 +52,8 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/trade/orders", admin.OrderList)
 		adminGroup.GET("admin/trade/orders/pay-log", admin.OrderPayLogList)
 		adminGroup.GET("admin/trade/order-complains", admin.OrderComplainsList)
-		adminGroup.GET("admin/r/trade/orders/:order_id", admin.OrderDetail) // origin: admin/admin/trade/orders/:order_id -> admin/admin/r/trade/orders/:order_id
+		// origin: admin/admin/trade/orders/:order_id -> admin/admin/r/trade/orders/:order_id
+		adminGroup.GET("admin/r/trade/orders/:order_id", admin.OrderDetail)
 
 		// promotion相关
 		adminGroup.GET("admin/promotion/group-buy-actives", admin.GroupBuyList)
@@ -66,10 +70,22 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/members/comments", admin.MemberCommentsList)
 		adminGroup.GET("admin/members/asks", admin.MemberAskList)
 
-		// 店铺相关
-		adminGroup.GET("admin/shops/list", admin.AllShopList)      // done
-		adminGroup.GET("admin/shops", admin.ShopList)              // done
+		// 分页查询列表
+		adminGroup.GET("admin/shops/list", admin.AllShopList) // done
+		// 分页查询店铺列表
+		adminGroup.GET("admin/shops", admin.ShopList) // done
+		//
 		adminGroup.GET("admin/shops/themes", admin.ShopThemesList) // done
+		//管理员禁用店铺
+		adminGroup.PUT("admin/shops/disable/:shop_id", admin.DisableShop) // done
+		//管理员恢复店铺使用
+		adminGroup.PUT("admin/shops/enable/:shop_id", admin.EnableShop) // done
+		//管理员获取店铺详细
+		adminGroup.GET("admin/shops/:shop_id", admin.ShopDetail) // done
+		//管理员修改审核店铺信息
+		adminGroup.PUT("admin/shops/:shop_id", admin.EditShop)
+		//后台添加店铺
+		adminGroup.POST("admin/shops", admin.CreateShop)
 
 		// setting相关
 		adminGroup.GET("admin/settings/site", admin.SiteSetting)                   // done

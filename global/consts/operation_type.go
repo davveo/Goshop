@@ -17,6 +17,11 @@ const (
 	/**
 	 * 下架
 	 */
+	OperationUpOperation
+
+	/**
+	 * 下架
+	 */
 	OperationUnderOperation
 
 	/**
