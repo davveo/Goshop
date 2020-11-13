@@ -26,16 +26,17 @@ func CreateShopFactory(ctx *gin.Context, sqlType string) *ShopModel {
 	if mq == nil {
 		log.Fatal("goodsModel mq初始化失败")
 	}
-	amqpTemplate, err := mq.Producer("goods")
-	if err != nil {
-		log.Fatal("goodsModel producer初始化失败")
-	}
+	//amqpTemplate, err := mq.Producer("goods")
+	//amqpTemplate, err := mq.Producer("goods")
+	//if err != nil {
+	//	log.Fatal("goodsModel producer初始化失败")
+	//}
 
 	if dbDriver != nil {
 		return &ShopModel{
 			BaseModel:    dbDriver,
 			ctx:          ctx,
-			amqpTemplate: amqpTemplate,
+			amqpTemplate: nil,
 		}
 	}
 	log.Fatal("shopModel工厂初始化失败")
@@ -315,4 +316,8 @@ func (sm *ShopModel) EnableShop(shopID int) error {
 		return err
 	}
 	return nil
+}
+
+func (sm *ShopModel) Edit(shopID int) (map[string]interface{}, error) {
+	return nil, nil
 }

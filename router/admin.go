@@ -81,9 +81,11 @@ func AdminApi(router *gin.RouterGroup) {
 		//管理员恢复店铺使用
 		adminGroup.PUT("admin/shops/enable/:shop_id", admin.EnableShop) // done
 		//管理员获取店铺详细
-		adminGroup.GET("admin/shops/:shop_id", admin.ShopDetail) // done
+		// origin: admin/admin/shops/:shop_id -> admin/admin/r/shops/:shop_id
+		adminGroup.GET("admin/r/shops/:shop_id", admin.ShopDetail) // done
 		//管理员修改审核店铺信息
-		adminGroup.PUT("admin/shops/:shop_id", admin.EditShop)
+		// origin: admin/admin/shops/:shop_id -> admin/admin/r/shops/:shop_id
+		adminGroup.PUT("admin/r/shops/:shop_id", admin.EditShop)
 		//后台添加店铺
 		adminGroup.POST("admin/shops", admin.CreateShop)
 

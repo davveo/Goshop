@@ -2,7 +2,6 @@ package admin
 
 import (
 	"Goshop/model"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -103,7 +102,16 @@ func ShopDetail(ctx *gin.Context) {
 
 func EditShop(ctx *gin.Context) {
 	shopId, _ := strconv.Atoi(ctx.Param("shop_id"))
-	fmt.Println(shopId)
+	// TODO 读取body数据
+	shop, err := model.CreateShopFactory(ctx, "").Edit(shopId)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"code":    http.StatusInternalServerError,
+			"message": err.Error(),
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, shop)
 }
 
 func CreateShop(ctx *gin.Context) {
