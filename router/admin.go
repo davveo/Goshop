@@ -109,6 +109,7 @@ func AdminApi(router *gin.RouterGroup) {
 
 		adminGroup.GET("admin/payment/payment-methods", admin.PaymentMethod) // wait to do
 		adminGroup.GET("admin/index/page", admin.Index)                      // done
+		// 获取申请售后服务记录列表
 		adminGroup.GET("admin/after-sales", admin.AfterSalesList)
 		adminGroup.GET("admin/after-sales/refund", admin.AfterSalesRefundList)
 
