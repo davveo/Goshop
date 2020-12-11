@@ -66,3 +66,7 @@ func AfterSalesRefundList(ctx *gin.Context) {
 		"page_size":  pageSize,
 	})
 }
+
+func AfterSalesDetail(ctx *gin.Context) {
+
+}

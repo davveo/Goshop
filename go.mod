@@ -13,7 +13,7 @@ require (
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/go-sql-driver/mysql v1.5.0
-	github.com/gogf/gf v1.14.5 // indirect
+	github.com/gogf/gf v1.14.5
 	github.com/hashicorp/go-uuid v1.0.1
 	github.com/jinzhu/gorm v1.9.16
 	github.com/mitchellh/mapstructure v1.1.2
