@@ -2,6 +2,7 @@ package model
 
 import (
 	"Goshop/global/consts"
+	"Goshop/model/com"
 	"Goshop/utils/rabbitmq"
 	"Goshop/utils/sql_utils"
 	"Goshop/utils/time_utils"
@@ -177,8 +178,8 @@ func (asfm *AfterSalesRefundModel) AdminRefund(refundPrice float64, serviceSn, r
 	//操作权限验证
 	serviceType := applyAfterSale["service_type"].(string)
 	serviceStatus := applyAfterSale["service_status"].(string)
-	if err = asfm.checkOperate(serviceType, serviceStatus, serviceOperate); err != nil {
-		return err // 当前售后服务单状态不允许进行退款操作
+	if !com.CheckOperate(serviceType, serviceStatus, serviceOperate) {
+		return errors.New("当前售后服务单状态不允许进行退款操作")
 	}
 
 	refund := asfm.getModel(serviceSn)
@@ -233,11 +234,6 @@ func (asfm *AfterSalesRefundModel) checkAdminRefund(refundPrice float64, service
 	if remark != "" && len(remark) > 150 {
 		return errors.New("退款备注不能超过150个字符")
 	}
-	return nil
-}
-
-func (asfm *AfterSalesRefundModel) checkOperate(serviceType, serviceStatus, serviceOperate string) error {
-
 	return nil
 }
 

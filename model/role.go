@@ -1,10 +1,10 @@
 package model
 
 import (
+	"Goshop/utils/yml_config"
 	"encoding/json"
 	"errors"
 	"log"
-	"Goshop/utils/yml_config"
 )
 
 func CreateRoleFactory(sqlType string) *RoleModel {
