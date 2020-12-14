@@ -65,3 +65,19 @@ func (asfm *AfterSalesRefundModel) count() (rows int64) {
 
 	return rows
 }
+
+func (asfm *AfterSalesRefundModel) getAfterSaleRefund(serviceSn string) map[string]interface{} {
+	rows := asfm.QuerySql("select * from es_as_refund where service_sn = ?", serviceSn)
+	defer rows.Close()
+
+	tableData, err := sql_utils.ParseJSON(rows)
+	if err != nil {
+		log.Println("sql_utils.ParseJSON 错误", err.Error())
+		return nil
+	}
+	var tmp map[string]interface{}
+	if len(tableData) > 0 {
+		tmp = tableData[0]
+	}
+	return tmp
+}

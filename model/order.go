@@ -174,3 +174,19 @@ func (om *OrderModel) getCancelLeftDay() int {
 	}
 	return 0
 }
+
+func (om *OrderModel) getOrder(orderId string) map[string]interface{} {
+	rows := om.QuerySql("select * from es_order where sn = ?", orderId)
+	defer rows.Close()
+
+	tableData, err := sql_utils.ParseJSON(rows)
+	if err != nil {
+		log.Println("sql_utils.ParseJSON 错误", err.Error())
+		return nil
+	}
+	var tmp map[string]interface{}
+	if len(tableData) > 0 {
+		tmp = tableData[0]
+	}
+	return tmp
+}

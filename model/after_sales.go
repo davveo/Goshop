@@ -5,6 +5,7 @@ import (
 	"Goshop/utils/sql_utils"
 	"Goshop/utils/yml_config"
 	"bytes"
+	"errors"
 	"fmt"
 	"log"
 
@@ -205,4 +206,163 @@ func (asm *AfterSalesModel) ServiceOperateAllowable(orderSn, serviceType, servic
 	allowAllowable["allow_seller_close"] = (consts.ServiceTypeSupplyAgainGoods == serviceType || consts.ServiceTypeChangeGoods == serviceType) &&
 		consts.ServicestatuserrorException == serviceStatus
 	return allowAllowable
+}
+
+func (asm *AfterSalesModel) Detail(serviceSn string) (map[string]interface{}, error) {
+	if serviceSn == "" {
+		return nil, errors.New("售后服务单信息不存在")
+	}
+	//根据售后服务单号获取服务单信息
+	afterSale := asm.getService(serviceSn)
+	if afterSale == nil {
+		return nil, errors.New("售后服务单信息不存在")
+	}
+	//获取申请售后的订单信息
+	orderSn, _ := afterSale["order_sn"].(string)
+	order := CreateOrderFactory("").getOrder(orderSn)
+	if order == nil {
+		return nil, errors.New("订单信息不存在")
+	}
+
+	//如果售后服务类型为退货或取消订单，则需要获取退款账户相关信息
+	serviceType, _ := afterSale["service_type"].(string)
+	if serviceType == consts.ServiceTypeReturnGoods || serviceType == consts.ServiceTypeOrderCancel {
+		afterSaleRefund := CreateAfterSalesRefundFactory("").getAfterSaleRefund(serviceSn)
+		afterSale["refund_info"] = afterSaleRefund
+	}
+	//获取售后服务单允许操作情况
+	serviceStatus, _ := afterSale["service_status"].(string)
+	allowable := asm.ServiceOperateAllowable(orderSn, serviceType, serviceStatus)
+	afterSale["allowable"] = allowable
+
+	//获取申请售后的商品信息集合
+	goodsList := CreateAfterSaleGoodsFactory("").listGoods(serviceSn)
+	afterSale["goods_list"] = goodsList
+
+	//获取售后服务收货地址相关信息
+	afterSaleChange := CreateAfterSaleChangeFactory("").getModel(serviceSn)
+	afterSale["change_info"] = afterSaleChange
+
+	//获取售后服务物流相关信息
+	express := asm.getExpress(serviceSn)
+	afterSale["express_info"] = express
+
+	//获取售后服务用户上传的图片信息
+	afterSaleImages := CreateAfterSaleGalleryFactory("").listImages(serviceSn)
+	afterSale["images"] = afterSaleImages
+
+	//获取售后服务日志相关信息
+	afterSaleLogs := CreateAfterSaleLogFactory("").listLogs(serviceSn)
+	afterSale["logs"] = afterSaleLogs
+
+	//获取平台所有的正常开启使用的物流公司信息集合
+	logiList := CreateLogisticsCompanyFactory("").listAllNormal()
+	afterSale["logi_list"] = logiList
+
+	shipStatus, _ := order["ship_status"].(string)
+	paymentType, _ := order["payment_type"].(string)
+
+	//获取订单的发货状态
+	afterSale["order_ship_status"] = shipStatus
+	//获取订单的付款类型
+	afterSale["order_payment_type"] = paymentType
+
+	//如果退货地址为空，那么需要获取商家店铺的默认地址作为退货地址
+	returnAddr, okReturnAddr := afterSale["return_addr"].(string)
+	sellerId, _ := afterSale["seller_id"].(string)
+	if returnAddr == "" && okReturnAddr {
+		shopDetail := CreateShopFactory(nil, "").getShopDetail(sellerId)
+		shopAdd, _ := shopDetail["shop_add"].(string)
+		shopCity, _ := shopDetail["shop_city"].(string)
+		shopTown, _ := shopDetail["shop_town"].(string)
+		linkName, _ := shopDetail["link_name"].(string)
+		linkPhone, _ := shopDetail["link_phone"].(string)
+		shopCounty, _ := shopDetail["shop_county"].(string)
+		shopProvince, _ := shopDetail["shop_province"].(string)
+		returnAddr = fmt.Sprintf("收货人: %s, 联系方式: %s, 地址: %s",
+			linkName, linkPhone, shopProvince+shopCity+shopCounty+shopTown+"  "+shopAdd)
+		afterSale["return_addr"] = returnAddr
+	}
+	return afterSale, nil
+}
+
+func (asm *AfterSalesModel) getAfterSaleCount(memberId, sellerId string) int64 {
+	var sqlString bytes.Buffer
+	sqlString.WriteString(fmt.Sprintf("select count(*) from es_as_order where service_status != %s and service_status != %s ",
+		consts.ServiceStatusCOMPLETED, consts.ServiceStatusRefuse))
+
+	if memberId != "" {
+		sqlString.WriteString(fmt.Sprintf(" and member_id = %s", memberId))
+	}
+	if sellerId != "" {
+		sqlString.WriteString(fmt.Sprintf(" and seller_id = %s", sellerId))
+	}
+
+	return sql_utils.Count(sqlString.String(), asm.dbDriverRead)
+}
+
+func (asm *AfterSalesModel) getService(serviceSn string) map[string]interface{} {
+	rows := asm.QuerySql("select * from es_as_order where sn = ?", serviceSn)
+	defer rows.Close()
+
+	tableData, err := sql_utils.ParseJSON(rows)
+	if err != nil {
+		log.Println("sql_utils.ParseJSON 错误", err.Error())
+		return nil
+	}
+	var tmp map[string]interface{}
+	if len(tableData) > 0 {
+		tmp = tableData[0]
+	}
+	return tmp
+}
+
+func (asm *AfterSalesModel) getCancelService(orderSn string) map[string]interface{} {
+	rows := asm.QuerySql(
+		"select * from es_as_order where order_sn = ? and service_type = ? and service_status != ? and service_status != ?",
+		orderSn, consts.ServiceTypeOrderCancel, consts.ServiceStatusRefuse, consts.ServiceStatusCLOSED)
+	defer rows.Close()
+
+	tableData, err := sql_utils.ParseJSON(rows)
+	if err != nil {
+		log.Println("sql_utils.ParseJSON 错误", err.Error())
+		return nil
+	}
+	var tmp map[string]interface{}
+	if len(tableData) > 0 {
+		tmp = tableData[0]
+	}
+	return tmp
+}
+
+func (asm *AfterSalesModel) getExpress(serviceSn string) map[string]interface{} {
+	rows := asm.QuerySql("select * from es_as_express where service_sn = ?", serviceSn)
+	defer rows.Close()
+
+	tableData, err := sql_utils.ParseJSON(rows)
+	if err != nil {
+		log.Println("sql_utils.ParseJSON 错误", err.Error())
+		return nil
+	}
+	var tmp map[string]interface{}
+	if len(tableData) > 0 {
+		tmp = tableData[0]
+	}
+	return tmp
+}
+
+func (asm *AfterSalesModel) getOrderItems(orderSn string, skuId int64) map[string]interface{} {
+	rows := asm.QuerySql("select * from es_order_items where order_sn = ? and product_id = ?", orderSn, skuId)
+	defer rows.Close()
+
+	tableData, err := sql_utils.ParseJSON(rows)
+	if err != nil {
+		log.Println("sql_utils.ParseJSON 错误", err.Error())
+		return nil
+	}
+	var tmp map[string]interface{}
+	if len(tableData) > 0 {
+		tmp = tableData[0]
+	}
+	return tmp
 }

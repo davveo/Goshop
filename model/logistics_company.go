@@ -1,6 +1,7 @@
 package model
 
 import (
+	"Goshop/global/consts"
 	"Goshop/utils/sql_utils"
 	"Goshop/utils/yml_config"
 	"bytes"
@@ -75,4 +76,18 @@ func (lcm *LogisticsCompanyModel) count() (rows int64) {
 	}
 
 	return rows
+}
+
+func (lcm *LogisticsCompanyModel) listAllNormal() []map[string]interface{} {
+	rows := lcm.QuerySql("select * from es_logistics_company where delete_status = ? and disabled = ? order by id desc",
+		consts.DELETED, consts.LogiCompanyOpen)
+	defer rows.Close()
+
+	tableData, err := sql_utils.ParseJSON(rows)
+	if err != nil {
+		log.Println("sql_utils.ParseJSON 错误", err.Error())
+		return nil
+	}
+
+	return tableData
 }

@@ -49,6 +49,19 @@ func AfterSalesList(ctx *gin.Context) {
 	})
 }
 
+func AfterSalesDetail(ctx *gin.Context) {
+	serviceSn := ctx.Param("service_sn")
+	afterSales, err := model.CreateAfterSalesFactory("").Detail(serviceSn)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"code":    http.StatusInternalServerError,
+			"message": err.Error(),
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, afterSales)
+}
+
 func AfterSalesRefundList(ctx *gin.Context) {
 	queryParams := make(map[string]interface{})
 
@@ -65,8 +78,4 @@ func AfterSalesRefundList(ctx *gin.Context) {
 		"page_no":    pageNo,
 		"page_size":  pageSize,
 	})
-}
-
-func AfterSalesDetail(ctx *gin.Context) {
-
 }

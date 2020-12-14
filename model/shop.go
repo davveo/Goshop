@@ -321,3 +321,19 @@ func (sm *ShopModel) EnableShop(shopID int) error {
 func (sm *ShopModel) Edit(shopID int) (map[string]interface{}, error) {
 	return nil, nil
 }
+
+func (sm *ShopModel) getShopDetail(shopId string) map[string]interface{} {
+	rows := sm.QuerySql("select * from es_shop_detail where shop_id = ? ", shopId)
+	defer rows.Close()
+
+	tableData, err := sql_utils.ParseJSON(rows)
+	if err != nil {
+		log.Println("sql_utils.ParseJSON 错误", err.Error())
+		return nil
+	}
+	var tmp map[string]interface{}
+	if len(tableData) > 0 {
+		tmp = tableData[0]
+	}
+	return tmp
+}
