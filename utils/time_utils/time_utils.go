@@ -41,6 +41,10 @@ func GetDayOfEnd(timestamp int64) string {
 	return carbon.CreateFromTimestamp(timestamp).EndOfDay().ToDateTimeString()
 }
 
+func FormatTimestamp(timestamp int64) string {
+	return carbon.CreateFromTimestamp(timestamp).ToDateString()
+}
+
 func GetDateStr(style string) string {
 	currDate := time.Now()
 	if style == consts.TimeFormatStyleV1 {

@@ -113,6 +113,9 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/after-sales", admin.AfterSalesList)
 		// done 获取售后服务详细信息
 		adminGroup.GET("admin/after-sales/detail/:service_sn", admin.AfterSalesDetail)
+		// done 导出售后服务信息
+		adminGroup.GET("admin/after-sales/export", admin.AfterSalesExport)
+
 		adminGroup.GET("admin/after-sales/refund", admin.AfterSalesRefundList)
 
 		adminGroup.GET("admin/order/bills/statistics", admin.OrderBillStatisticList)

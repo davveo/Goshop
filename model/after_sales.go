@@ -3,6 +3,7 @@ package model
 import (
 	"Goshop/global/consts"
 	"Goshop/utils/sql_utils"
+	"Goshop/utils/time_utils"
 	"Goshop/utils/yml_config"
 	"bytes"
 	"errors"
@@ -284,6 +285,138 @@ func (asm *AfterSalesModel) Detail(serviceSn string) (map[string]interface{}, er
 		afterSale["return_addr"] = returnAddr
 	}
 	return afterSale, nil
+}
+
+func (asm *AfterSalesModel) ExportAfterSale(params map[string]interface{}) []map[string]interface{} {
+	var sqlString bytes.Buffer
+	sqlString.WriteString("select ao.sn as service_sn,ao.order_sn,ao.create_time,ao.member_name,ao.seller_name,ao.mobile,ao.service_type,ao.service_status, " +
+		"ao.reason,ao.problem_desc,ao.apply_vouchers,ao.audit_remark,ao.stock_remark,ao.refund_remark,ar.refund_price,ar.agree_price,ar.actual_price,ar.refund_time, " +
+		"ar.refund_way,ar.account_type,ar.return_account,ar.bank_name,ar.bank_account_number,ar.bank_account_name,ar.bank_deposit_name from es_as_order ao left join " +
+		"es_as_refund ar on ao.sn = ar.service_sn where 1=1 ")
+
+	disabled, _ := params["disabled"].(string)
+	endTime, okEndTime := params["end_time"].(string)
+	orderSn, okOrderSn := params["order_sn"].(string)
+	sellerId, okSellerId := params["seller_id"].(string)
+	startTime, okStartTime := params["start_time"].(string)
+	serviceSn, okServiceSn := params["service_sn"].(string)
+	goodsName, okGoodsName := params["goods_name"].(string)
+	serviceType, okServiceType := params["service_type"].(string)
+	serviceStatus, okServiceStatus := params["service_status"].(string)
+
+	if disabled == "" {
+		disabled = "NORMAL"
+	}
+	if disabled != "" {
+		sqlString.WriteString(fmt.Sprintf(" where ao.disabled = '%s'", disabled))
+	}
+
+	if sellerId != "" && okSellerId {
+		sqlString.WriteString(fmt.Sprintf(" and ao.seller_id = %s", sellerId))
+	}
+
+	if serviceSn != "" && okServiceSn {
+		sqlString.WriteString(fmt.Sprintf(" and ao.sn like '%s'", "%"+serviceSn+"%"))
+	}
+
+	if orderSn != "" && okOrderSn {
+		sqlString.WriteString(fmt.Sprintf(" and ao.order_sn like '%s'", "%"+orderSn+"%"))
+	}
+
+	if goodsName != "" && okGoodsName {
+		sqlString.WriteString(fmt.Sprintf(" and ao.goods_json like '%s'", "%"+goodsName+"%"))
+	}
+
+	if serviceType != "" && okServiceType {
+		sqlString.WriteString(fmt.Sprintf(" and ao.service_type = %s", serviceType))
+	}
+
+	if serviceStatus != "" && okServiceStatus {
+		sqlString.WriteString(fmt.Sprintf(" and ao.service_status = %s", serviceStatus))
+	}
+
+	if startTime != "" && okStartTime {
+		sqlString.WriteString(fmt.Sprintf(" and ao.create_time >= %s", startTime))
+	}
+
+	if endTime != "" && okEndTime {
+		sqlString.WriteString(fmt.Sprintf(" and ao.create_time <= %s", endTime))
+	}
+
+	sqlString.WriteString(" order by ao.create_time desc")
+
+	rows := asm.QuerySql(sqlString.String())
+	defer rows.Close()
+	tableData, err := sql_utils.ParseJSON(rows)
+	if err != nil {
+		log.Println("sql_utils.ParseJSON 错误", err.Error())
+		return nil
+	}
+	var recordList []map[string]interface{}
+	for _, item := range tableData {
+		serviceSn := item["service_sn"].(string)
+		refundWay, okRefundWay := item["refund_way"].(string)             // 退款方式
+		serviceType, okServiceType := item["service_type"].(string)       //获取售后服务类型
+		accountType, okAccountType := item["account_type"].(string)       // 账户类型
+		serviceStatus, okServiceStatus := item["service_status"].(string) // 获取售后服务状态
+		if refundWay != "" && okRefundWay {
+			item["refund_way_text"] = consts.RefundWayMap[refundWay]
+		}
+		if accountType != "" && okAccountType {
+			item["account_type_text"] = consts.AccountTypeMap[accountType]
+		}
+		if serviceType != "" && okServiceType {
+			item["service_type_text"] = consts.ServiceTypeMap[serviceType]
+		}
+		if serviceStatus != "" && okServiceStatus {
+			item["service_status_text"] = consts.ServiceTypeMap[serviceStatus]
+		}
+
+		goodsList := CreateAfterSaleGoodsFactory("").listGoods(serviceSn)
+		goodsInfo := ""
+		for _, goods := range goodsList {
+			goodsName := goods["goods_name"].(string)
+			price := goods["price"].(string)
+			shipNum := goods["ship_num"].(string)
+			returnNum := goods["return_num"].(string)
+			storageNum, okStorageNum := goods["storage_num"].(string)
+			if storageNum == "" && okStorageNum {
+				storageNum = "未入库"
+			}
+			goodsInfo += "【商品名称：" + goodsName + "，商品价格：" + price + "，购买数量：" + shipNum +
+				"，申请售后数量：" + returnNum + "，入库数量：" + storageNum + "】"
+		}
+		item["goods_info"] = goodsInfo
+
+		// 组合收货地址信息
+		change := CreateAfterSaleChangeFactory("").getModel(serviceSn)
+		province := change["province"].(string)
+		city := change["city"].(string)
+		county := change["county"].(string)
+		town := change["town"].(string)
+		shipAddr := change["ship_addr"].(string)
+		shipName := change["ship_name"].(string)
+		shipMobile := change["ship_mobile"].(string)
+		rogInfo := "收货地址：" + province + city + county + town + shipAddr + "，收货人：" + shipName + "，联系方式：" + shipMobile
+		item["rog_info"] = rogInfo
+
+		//组合用户退还商品的物流信息
+		express := asm.getExpress(serviceSn)
+		if express != nil {
+			var shipTimeStr string
+			shipTime, okShipTime := express["ship_time"].(int64)
+			courierNumber := express["courier_number"].(string)
+			courierCompany := express["courier_company"].(string)
+			if okShipTime && shipTime != 0 {
+				shipTimeStr = time_utils.FormatTimestamp(shipTime)
+			}
+			expressInfo := "物流公司：" + courierCompany + "，快递单号：" + courierNumber + "，发货时间：" + shipTimeStr
+			item["express_info"] = expressInfo
+		}
+
+		recordList = append(recordList, item)
+	}
+	return tableData
 }
 
 func (asm *AfterSalesModel) getAfterSaleCount(memberId, sellerId string) int64 {

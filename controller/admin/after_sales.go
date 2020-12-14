@@ -8,22 +8,22 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func AfterSalesList(ctx *gin.Context) {
+func buildAfterSaleQueryParam(ctx *gin.Context) map[string]interface{} {
 	queryParams := make(map[string]interface{})
 
 	keyword := ctx.DefaultQuery("keyword", "")
+	pageNo := ctx.DefaultQuery("page_no", "1")
 	endTime := ctx.DefaultQuery("end_time", "")
 	orderSn := ctx.DefaultQuery("order_sn", "")
 	memberId := ctx.DefaultQuery("member_id", "")
 	sellerId := ctx.DefaultQuery("seller_id", "")
+	pageSize := ctx.DefaultQuery("page_size", "20")
 	startTime := ctx.DefaultQuery("start_time", "")
 	goodsName := ctx.DefaultQuery("goods_name", "")
 	serviceSn := ctx.DefaultQuery("service_sn", "")
 	serviceType := ctx.DefaultQuery("service_type", "")
 	serviceStatus := ctx.DefaultQuery("service_status", "")
 	createChannel := ctx.DefaultQuery("create_channel", "")
-	pageNo, _ := strconv.Atoi(ctx.DefaultQuery("page_no", "1"))
-	pageSize, _ := strconv.Atoi(ctx.DefaultQuery("page_size", "20"))
 
 	queryParams["page_no"] = pageNo
 	queryParams["keyword"] = keyword
@@ -39,6 +39,14 @@ func AfterSalesList(ctx *gin.Context) {
 	queryParams["service_status"] = serviceStatus
 	queryParams["create_channel"] = createChannel
 
+	return queryParams
+}
+
+func AfterSalesList(ctx *gin.Context) {
+	queryParams := buildAfterSaleQueryParam(ctx)
+
+	pageNo, _ := queryParams["page_no"].(int)
+	pageSize, _ := queryParams["page_size"].(int)
 	data, dataTotal := model.CreateAfterSalesFactory("").List(queryParams)
 
 	ctx.JSON(http.StatusOK, gin.H{
@@ -60,6 +68,12 @@ func AfterSalesDetail(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, afterSales)
+}
+
+func AfterSalesExport(ctx *gin.Context) {
+	queryParams := buildAfterSaleQueryParam(ctx)
+	dataList := model.CreateAfterSalesFactory("").ExportAfterSale(queryParams)
+	ctx.JSON(http.StatusOK, dataList)
 }
 
 func AfterSalesRefundList(ctx *gin.Context) {
