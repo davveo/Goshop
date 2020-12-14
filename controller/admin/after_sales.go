@@ -1,9 +1,9 @@
 package admin
 
 import (
+	"Goshop/global/consts"
 	"Goshop/model"
 	"Goshop/utils/common"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -129,5 +129,18 @@ func AfterSalesRefundList(ctx *gin.Context) {
 
 func AfterSalesRefund(ctx *gin.Context) {
 	serviceSn := ctx.Param("service_sn")
-	fmt.Println(serviceSn)
+	remark := ctx.DefaultQuery("remark", "")
+	refundPriceStr := ctx.DefaultQuery("refund_price", "0")
+	refundPrice, _ := strconv.ParseFloat(refundPriceStr, 64)
+
+	err := model.CreateAfterSalesRefundFactory("").AdminRefund(
+		refundPrice, serviceSn, remark, consts.ServiceOperateTypeAdminRefund)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"code":    http.StatusInternalServerError,
+			"message": err.Error(),
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, nil)
 }

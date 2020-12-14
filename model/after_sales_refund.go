@@ -2,9 +2,12 @@ package model
 
 import (
 	"Goshop/global/consts"
+	"Goshop/utils/rabbitmq"
 	"Goshop/utils/sql_utils"
+	"Goshop/utils/time_utils"
 	"Goshop/utils/yml_config"
 	"bytes"
+	"errors"
 	"fmt"
 	"log"
 	"strconv"
@@ -17,9 +20,19 @@ func CreateAfterSalesRefundFactory(sqlType string) *AfterSalesRefundModel {
 		sqlType = yml_config.CreateYamlFactory().GetString("UseDbType")
 	}
 	dbDriver := CreateBaseSqlFactory(sqlType)
+	mq := rabbitmq.GetRabbitmq()
+	if mq == nil {
+		log.Fatal("goodsModel mq初始化失败")
+	}
+	amqpTemplate, err := mq.Producer("after-sales-refund")
+	if err != nil {
+		log.Fatal("goodsModel producer初始化失败")
+	}
+
 	if dbDriver != nil {
 		return &AfterSalesRefundModel{
-			BaseModel: dbDriver,
+			BaseModel:    dbDriver,
+			amqpTemplate: amqpTemplate,
 		}
 	}
 	log.Fatal("healthModel工厂初始化失败")
@@ -28,6 +41,7 @@ func CreateAfterSalesRefundFactory(sqlType string) *AfterSalesRefundModel {
 
 type AfterSalesRefundModel struct {
 	*BaseModel
+	amqpTemplate *rabbitmq.Producer
 }
 
 func (asfm *AfterSalesRefundModel) List(params map[string]string) ([]map[string]interface{}, int64) {
@@ -137,6 +151,98 @@ func (asfm *AfterSalesRefundModel) count(SqlString string) (rows int64) {
 
 func (asfm *AfterSalesRefundModel) getAfterSaleRefund(serviceSn string) map[string]interface{} {
 	rows := asfm.QuerySql("select * from es_as_refund where service_sn = ?", serviceSn)
+	defer rows.Close()
+
+	tableData, err := sql_utils.ParseJSON(rows)
+	if err != nil {
+		log.Println("sql_utils.ParseJSON 错误", err.Error())
+		return nil
+	}
+	var tmp map[string]interface{}
+	if len(tableData) > 0 {
+		tmp = tableData[0]
+	}
+	return tmp
+}
+
+func (asfm *AfterSalesRefundModel) AdminRefund(refundPrice float64, serviceSn, remark, serviceOperate string) error {
+	if err := asfm.checkAdminRefund(refundPrice, serviceSn, remark); err != nil {
+		return err
+	}
+	//获取售后服务单详细信息
+	applyAfterSale, err := CreateAfterSalesFactory("").Detail(serviceSn)
+	if err != nil {
+		return err
+	}
+	//操作权限验证
+	serviceType := applyAfterSale["service_type"].(string)
+	serviceStatus := applyAfterSale["service_status"].(string)
+	if err = asfm.checkOperate(serviceType, serviceStatus, serviceOperate); err != nil {
+		return err // 当前售后服务单状态不允许进行退款操作
+	}
+
+	refund := asfm.getModel(serviceSn)
+	if refund == nil {
+		return errors.New("售后退款单信息不存在")
+	}
+	// 获取退款时间
+	refundTime := time_utils.CurrentTimeStamp()
+	if asfm.ExecuteSql("update es_refund set refund_status = ?,refund_time = ?,actual_price = ? where sn = ?",
+		consts.RefundStatusCompleted, refundTime, refundPrice, serviceSn) == -1 {
+		return errors.New("更新退款失败")
+	}
+
+	//修改售后服务退款相关信息
+	if asfm.ExecuteSql("update es_as_refund set actual_price = ?,refund_time = ? where service_sn = ?",
+		refundPrice, refundTime, serviceSn) == -1 {
+		return errors.New("更新退款售后失败")
+	}
+
+	//将售后服务单状态和退款备注
+	if err = CreateAfterSaleOrderFactory("").updateServiceStatus(serviceSn, consts.ServiceStatusCOMPLETED,
+		"", "", remark, ""); err != nil {
+		return err
+	}
+	//发送售后服务完成消息
+	afterSaleMsg := rabbitmq.BuildMsg(map[string]interface{}{
+		"service_sn":     serviceSn,
+		"service_type":   serviceType,
+		"service_status": consts.ServiceStatusCOMPLETED,
+	})
+	err = asfm.amqpTemplate.Publish(consts.ExchangeAsStatusChange,
+		consts.ExchangeAsStatusChange+"_QUEUE", afterSaleMsg)
+	if err != nil {
+		log.Printf("[ERROR] %s\n", err)
+	}
+
+	//新增退款操作日志
+	logStr := "已成功将退款退还给买家，当前售后服务已完成。"
+	if err = CreateAfterSaleLogFactory("").add(serviceSn, logStr, "系统"); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (asfm *AfterSalesRefundModel) checkAdminRefund(refundPrice float64, serviceSn, remark string) error {
+	if serviceSn == "" {
+		return errors.New("退款单编号不能为空")
+	}
+	if refundPrice <= 0 {
+		return errors.New("退款金额不能小于或等于0元")
+	}
+	if remark != "" && len(remark) > 150 {
+		return errors.New("退款备注不能超过150个字符")
+	}
+	return nil
+}
+
+func (asfm *AfterSalesRefundModel) checkOperate(serviceType, serviceStatus, serviceOperate string) error {
+
+	return nil
+}
+
+func (asfm *AfterSalesRefundModel) getModel(serviceSn string) map[string]interface{} {
+	rows := asfm.QuerySql("select * from es_refund where sn = ?", serviceSn)
 	defer rows.Close()
 
 	tableData, err := sql_utils.ParseJSON(rows)

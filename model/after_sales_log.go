@@ -36,3 +36,7 @@ func (asm *AfterSaleLogModel) listLogs(serviceSn string) []map[string]interface{
 
 	return tableData
 }
+
+func (asm *AfterSaleLogModel) add(serviceSn, logDetail, operator string) error {
+	return nil
+}

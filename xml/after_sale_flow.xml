@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flows>
+    <!--取消订单 （订单付款之后，确认收货之前）-->
+    <flow name="ORDER_CANCEL">
+        <!--申请状态，商家可以审核-->
+        <status name="APPLY">
+            <allow>SELLER_AUDIT</allow>
+        </status>
+        <!--审核通过状态，商家可以入库-->
+        <status name="PASS">
+            <allow>STOCK_IN</allow>
+        </status>
+        <!--入库状态，商家可以退款-->
+        <status name="STOCK_IN">
+            <allow>SELLER_REFUND</allow>
+        </status>
+        <!--等待人工处理状态，管理员可以退款-->
+        <status name="WAIT_FOR_MANUAL">
+            <allow>ADMIN_REFUND</allow>
+        </status>
+        <!--异常状态 可以关闭售后服务-->
+        <status name="ERROR_EXCEPTION">
+            <allow>CLOSE</allow>
+        </status>
+        <!--关闭状态不能进行任何操作-->
+        <status name="CLOSED"/>
+        <!--审核未通过状态不能进行任何操作-->
+        <status name="REFUSE"/>
+        <!--完成状态不能进行任何操作-->
+        <status name="COMPLETED"/>
+    </flow>
+
+    <!--退货流程 -->
+    <flow name="RETURN_GOODS">
+        <!--申请状态，商家可以审核-->
+        <status name="APPLY">
+            <allow>SELLER_AUDIT</allow>
+        </status>
+        <!--审核通过状态，买家可以填写物流信息 -->
+        <status name="PASS">
+            <allow>FILL_LOGISTICS_INFO</allow>
+        </status>
+        <!--物流完善状态可以确认入库-->
+        <status name="FULL_COURIER">
+            <allow>STOCK_IN</allow>
+        </status>
+        <!--入库状态，商家可以退款-->
+        <status name="STOCK_IN">
+            <allow>SELLER_REFUND</allow>
+        </status>
+        <!--等待人工处理状态，管理员可以退款-->
+        <status name="WAIT_FOR_MANUAL">
+            <allow>ADMIN_REFUND</allow>
+        </status>
+        <!--异常状态 可以关闭售后服务-->
+        <status name="ERROR_EXCEPTION">
+            <allow>CLOSE</allow>
+        </status>
+        <!--关闭状态不能进行任何操作-->
+        <status name="CLOSED"/>
+        <!--审核未通过状态不能进行任何操作-->
+        <status name="REFUSE"/>
+        <!--完成状态不能进行任何操作-->
+        <status name="COMPLETED"/>
+    </flow>
+
+    <!--换货流程 -->
+    <flow name="CHANGE_GOODS">
+        <!--申请状态，商家可以审核-->
+        <status name="APPLY">
+            <allow>SELLER_AUDIT</allow>
+        </status>
+        <!--审核通过状态，买家可以填写物流信息 -->
+        <status name="PASS">
+            <allow>FILL_LOGISTICS_INFO</allow>
+        </status>
+        <!--物流完善状态可以确认入库-->
+        <status name="FULL_COURIER">
+            <allow>STOCK_IN</allow>
+        </status>
+        <!--异常状态 商家可以手动创建新订单也可以关闭售后服务单-->
+        <status name="ERROR_EXCEPTION">
+            <allow>CREATE_NEW_ORDER</allow>
+            <allow>CLOSE</allow>
+        </status>
+        <!--关闭状态不能进行任何操作-->
+        <status name="CLOSED"/>
+        <!--审核未通过状态不能进行任何操作-->
+        <status name="REFUSE"/>
+        <!--完成状态不能进行任何操作-->
+        <status name="COMPLETED"/>
+    </flow>
+
+    <!--补发商品流程 -->
+    <flow name="SUPPLY_AGAIN_GOODS">
+        <!--申请状态，商家可以审核-->
+        <status name="APPLY">
+            <allow>SELLER_AUDIT</allow>
+        </status>
+        <!--异常状态 商家可以手动创建新订单也可以关闭售后服务单-->
+        <status name="ERROR_EXCEPTION">
+            <allow>CREATE_NEW_ORDER</allow>
+            <allow>CLOSE</allow>
+        </status>
+        <!--关闭状态不能进行任何操作-->
+        <status name="CLOSED"/>
+        <!--审核未通过状态不能进行任何操作-->
+        <status name="REFUSE"/>
+        <!--完成状态不能进行任何操作-->
+        <status name="COMPLETED"/>
+    </flow>
+</flows>

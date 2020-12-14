@@ -211,7 +211,7 @@ func (asm *AfterSalesModel) ServiceOperateAllowable(orderSn, serviceType, servic
 
 func (asm *AfterSalesModel) Detail(serviceSn string) (map[string]interface{}, error) {
 	if serviceSn == "" {
-		return nil, errors.New("售后服务单信息不存在")
+		return nil, errors.New("售后服务单编号不能为空")
 	}
 	//根据售后服务单号获取服务单信息
 	afterSale := asm.getService(serviceSn)

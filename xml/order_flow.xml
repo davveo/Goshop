@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flows>
+    <!--款到发货流程-->
+    <flow name="ONLINE">
+        <!--新订单，可以确认，可以取消-->
+        <status name="NEW">
+            <allow>CONFIRM</allow>
+            <allow>CANCEL</allow>
+        </status>
+        <!--确认的订单，可以支付，可以取消-->
+        <status name="CONFIRM">
+            <allow>PAY</allow>
+            <allow>CANCEL</allow>
+        </status>
+        <!--已经支付，可以发货，可以取消订单-->
+        <status name="PAID_OFF">
+            <allow>SHIP</allow>
+            <allow>SERVICE_CANCEL</allow>
+        </status>
+        <!--发货的订单，可以确认收货，可以取消订单-->
+        <status name="SHIPPED">
+            <allow>ROG</allow>
+            <allow>SERVICE_CANCEL</allow>
+        </status>
+        <!--收货的订单，可以完成,可以评论(此时需要校验评论状态是否完成)-->
+        <status name="ROG">
+            <allow>COMPLETE</allow>
+            <allow>COMMENT</allow>
+        </status>
+        <!--售后的订单，可以完成-->
+        <status name="AFTER_SERVICE">
+            <allow>COMPLETE</allow>
+        </status>
+        <!--取消的的订单不能有任何操作-->
+        <status name="CANCELLED"/>
+        <!--异常的订单不能有任何操作-->
+        <status name="INTODB_ERROR"/>
+        <!--完成的订单不能有任何操作-->
+        <status name="COMPLETE"/>
+
+    </flow>
+
+    <!--货到付款流程-->
+    <flow name="COD">
+        <!--新订单，可以确认，可以取消-->
+        <status name="NEW">
+            <allow>CONFIRM</allow>
+            <allow>CANCEL</allow>
+        </status>
+        <!--确认的订单，可以发货,可取消-->
+        <status name="CONFIRM">
+            <allow>SHIP</allow>
+            <allow>CANCEL</allow>
+        </status>
+        <!--发货的订单，可以确认收货-->
+        <status name="SHIPPED">
+            <allow>ROG</allow>
+        </status>
+        <!--收货的订单，可以支付-->
+        <status name="ROG">
+            <allow>PAY</allow>
+        </status>
+        <!--收货的订单，可以完成-->
+        <status name="PAID_OFF">
+            <allow>COMPLETE</allow>
+        </status>
+        <!--售后的订单，可以完成-->
+        <status name="AFTER_SERVICE">
+            <allow>COMPLETE</allow>
+        </status>
+        <!--取消的的订单不能有任何操作-->
+        <status name="CANCELLED"/>
+        <!--异常的订单不能有任何操作-->
+        <status name="INTODB_ERROR"/>
+        <!--完成的订单不能有任何操作-->
+        <status name="COMPLETE"/>
+    </flow>
+
+    <!--拼团的订单流程-->
+    <flow name="PINTUAN">
+        <!--新订单，可以确认，可以取消-->
+        <status name="NEW">
+            <allow>CONFIRM</allow>
+            <allow>CANCEL</allow>
+        </status>
+        <!--确认的订单，可以支付，可以取消-->
+        <status name="CONFIRM">
+            <allow>PAY</allow>
+            <allow>CANCEL</allow>
+        </status>
+        <!--已经支付，可以发货，可以取消订单-->
+        <status name="PAID_OFF">
+            <allow>SERVICE_CANCEL</allow>
+        </status>
+        <!--已经成团的，可以发货-->
+        <status name="FORMED">
+            <allow>SHIP</allow>
+        </status>
+        <!--发货的订单，可以确认收货-->
+        <status name="SHIPPED">
+            <allow>ROG</allow>
+        </status>
+        <!--收货的订单，可以完成-->
+        <status name="ROG">
+            <allow>COMPLETE</allow>
+        </status>
+        <!--售后的订单，可以完成-->
+        <status name="AFTER_SERVICE">
+            <allow>COMPLETE</allow>
+        </status>
+        <!--取消的的订单不能有任何操作-->
+        <status name="CANCELLED"/>
+        <!--异常的订单不能有任何操作-->
+        <status name="INTODB_ERROR"/>
+        <!--完成的订单不能有任何操作-->
+        <status name="COMPLETE"/>
+
+    </flow>
+
+
+</flows>
