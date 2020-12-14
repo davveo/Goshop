@@ -133,9 +133,9 @@ func (asm *AfterSalesModel) buildData(baseSql string, params map[string]interfac
 
 		p, err := gjson.DecodeToJson(item["goods_json"])
 		if err != nil {
-			item["goods_list"] = goodsList
+			item["goodsList"] = goodsList
 		} else {
-			item["goods_list"] = p.ToArray()
+			item["goodsList"] = p.ToArray()
 		}
 		//获取售后服务生成的新订单编号
 		newOrderSn := item["new_order_sn"].(string)

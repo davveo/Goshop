@@ -2,6 +2,8 @@ package admin
 
 import (
 	"Goshop/model"
+	"Goshop/utils/common"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -42,11 +44,45 @@ func buildAfterSaleQueryParam(ctx *gin.Context) map[string]interface{} {
 	return queryParams
 }
 
+func buildRefundQueryParam(ctx *gin.Context) map[string]interface{} {
+	queryParams := make(map[string]interface{})
+	common.ParseFromQuery(ctx)
+	keyword := ctx.DefaultQuery("keyword", "")
+	pageNo := ctx.DefaultQuery("page_no", "1")
+	endTime := ctx.DefaultQuery("end_time", "")
+	orderSn := ctx.DefaultQuery("order_sn", "")
+	memberId := ctx.DefaultQuery("member_id", "")
+	sellerId := ctx.DefaultQuery("seller_id", "")
+	refundWay := ctx.DefaultQuery("refund_way", "")
+	pageSize := ctx.DefaultQuery("page_size", "20")
+	goodsName := ctx.DefaultQuery("goods_name", "")
+	serviceSn := ctx.DefaultQuery("service_sn", "")
+	startTime := ctx.DefaultQuery("start_time", "")
+	refundStatus := ctx.DefaultQuery("refund_status", "")
+	createChannel := ctx.DefaultQuery("create_channel", "")
+
+	queryParams["page_no"] = pageNo
+	queryParams["keyword"] = keyword
+	queryParams["end_time"] = endTime
+	queryParams["order_sn"] = orderSn
+	queryParams["page_size"] = pageSize
+	queryParams["member_id"] = memberId
+	queryParams["seller_id"] = sellerId
+	queryParams["start_time"] = startTime
+	queryParams["service_sn"] = serviceSn
+	queryParams["goods_name"] = goodsName
+	queryParams["refund_way"] = refundWay
+	queryParams["refund_status"] = refundStatus
+	queryParams["create_channel"] = createChannel
+
+	return queryParams
+}
+
 func AfterSalesList(ctx *gin.Context) {
 	queryParams := buildAfterSaleQueryParam(ctx)
 
-	pageNo, _ := queryParams["page_no"].(int)
-	pageSize, _ := queryParams["page_size"].(int)
+	pageNo := queryParams["page_no"].(int)
+	pageSize := queryParams["page_size"].(int)
 	data, dataTotal := model.CreateAfterSalesFactory("").List(queryParams)
 
 	ctx.JSON(http.StatusOK, gin.H{
@@ -77,13 +113,10 @@ func AfterSalesExport(ctx *gin.Context) {
 }
 
 func AfterSalesRefundList(ctx *gin.Context) {
-	queryParams := make(map[string]interface{})
+	queryParams := common.ParseFromQuery(ctx)
+	pageNo, _ := strconv.Atoi(queryParams["page_no"])
+	pageSize, _ := strconv.Atoi(queryParams["page_size"])
 
-	pageNo, _ := strconv.Atoi(ctx.DefaultQuery("page_no", "1"))
-	pageSize, _ := strconv.Atoi(ctx.DefaultQuery("page_size", "20"))
-
-	queryParams["page_no"] = pageNo
-	queryParams["page_size"] = pageSize
 	data, dataTotal := model.CreateAfterSalesRefundFactory("").List(queryParams)
 
 	ctx.JSON(http.StatusOK, gin.H{
@@ -92,4 +125,9 @@ func AfterSalesRefundList(ctx *gin.Context) {
 		"page_no":    pageNo,
 		"page_size":  pageSize,
 	})
+}
+
+func AfterSalesRefund(ctx *gin.Context) {
+	serviceSn := ctx.Param("service_sn")
+	fmt.Println(serviceSn)
 }
