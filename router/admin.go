@@ -70,34 +70,50 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/members/comments", admin.MemberCommentsList)
 		adminGroup.GET("admin/members/asks", admin.MemberAskList)
 
-		// 分页查询列表
-		adminGroup.GET("admin/shops/list", admin.AllShopList) // done
-		// 分页查询店铺列表
-		adminGroup.GET("admin/shops", admin.ShopList) // done
-		//
-		adminGroup.GET("admin/shops/themes", admin.ShopThemesList) // done
-		//管理员禁用店铺
-		adminGroup.PUT("admin/shops/disable/:shop_id", admin.DisableShop) // done
-		//管理员恢复店铺使用
-		adminGroup.PUT("admin/shops/enable/:shop_id", admin.EnableShop) // done
-		//管理员获取店铺详细
+		// done 分页查询列表
+		adminGroup.GET("admin/shops/list", admin.AllShopList)
+		// done 分页查询店铺列表
+		adminGroup.GET("admin/shops", admin.ShopList)
+		// done 获取商店主题
+		adminGroup.GET("admin/shops/themes", admin.ShopThemesList)
+		// done 管理员禁用店铺
+		adminGroup.PUT("admin/shops/disable/:shop_id", admin.DisableShop)
+		// done 管理员恢复店铺使用
+		adminGroup.PUT("admin/shops/enable/:shop_id", admin.EnableShop)
+		// done 管理员获取店铺详细
 		// origin: admin/admin/shops/:shop_id -> admin/admin/r/shops/:shop_id
-		adminGroup.GET("admin/r/shops/:shop_id", admin.ShopDetail) // done
+		adminGroup.GET("admin/r/shops/:shop_id", admin.ShopDetail)
 		//管理员修改审核店铺信息
 		// origin: admin/admin/shops/:shop_id -> admin/admin/r/shops/:shop_id
 		adminGroup.PUT("admin/r/shops/:shop_id", admin.EditShop)
 		//后台添加店铺
 		adminGroup.POST("admin/shops", admin.CreateShop)
 
-		// setting相关
-		adminGroup.GET("admin/settings/site", admin.SiteSetting)                   // done
-		adminGroup.POST("admin/settings/site", admin.SaveSiteSetting)              // done
-		adminGroup.GET("admin/trade/orders/setting", admin.TradeOrderSetting)      // done
-		adminGroup.POST("admin/trade/orders/setting", admin.SaveTradeOrderSetting) // done
-		adminGroup.GET("admin/settings/point", admin.PointSetting)                 // done
-		adminGroup.POST("admin/settings/point", admin.SavePointSetting)            // done
-		adminGroup.GET("admin/goods/settings", admin.GoodsSetting)                 // done
-		adminGroup.POST("admin/goods/settings", admin.SaveGoodsSetting)            // done
+		// done 获取站点设置
+		adminGroup.GET("admin/settings/site", admin.SiteSetting)
+		// done 修改站点设置
+		adminGroup.POST("admin/settings/site", admin.SaveSiteSetting)
+		// done 交易订单设置
+		adminGroup.GET("admin/trade/orders/setting", admin.TradeOrderSetting)
+		// done 修改交易订单设置
+		adminGroup.POST("admin/trade/orders/setting", admin.SaveTradeOrderSetting)
+		// done 获取积分设置
+		adminGroup.GET("admin/settings/point", admin.PointSetting)
+		// done 修改积分设置
+		adminGroup.POST("admin/settings/point", admin.SavePointSetting)
+		// done 获取商品设置
+		adminGroup.GET("admin/goods/settings", admin.GoodsSetting)
+		// done 修改商品设置
+		adminGroup.POST("admin/goods/settings", admin.SaveGoodsSetting)
+
+		// 分销商分页
+		adminGroup.GET("admin/distribution/bill/member", admin.BillMemberList)
+		// 获取某个业绩详情
+		adminGroup.GET("admin/distribution/bill/member/:id", admin.BillMemberDetail)
+		// 获取某个分销商下级业绩
+		adminGroup.GET("admin/distribution/bill/member/down", admin.DownBillMember)
+		// 导出会员结算单
+		adminGroup.GET("admin/distribution/bill/member/export", admin.ExportBillMember)
 
 		// 分销相关
 		adminGroup.GET("admin/distribution/commission-tpl", admin.DistributionCommissionTpl) // wait to do
