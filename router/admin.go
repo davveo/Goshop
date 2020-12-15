@@ -119,8 +119,12 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/distribution/commission-tpl", admin.DistributionCommissionTplList)
 		// done 获取模版
 		adminGroup.GET("admin/distribution/commission-tpl/:tplId", admin.DistributionCommissionTplDetail)
+		// done 编辑模版
+		adminGroup.PUT("admin/distribution/commission-tpl/:tplId", admin.DistributionCommissionTplEdit)
 		// done 删除模版
 		adminGroup.DELETE("admin/distribution/commission-tpl/:tplId", admin.DistributionCommissionTplDel)
+		// 添加模版
+		adminGroup.POST("admin/distribution/commission-tpl", admin.DistributionCommissionTpl)
 
 		adminGroup.GET("admin/distribution/upgradelog", admin.DistributionUpgradeLog) // wait to do
 		adminGroup.GET("admin/distribution/member", admin.DistributionMember)         // wait to do

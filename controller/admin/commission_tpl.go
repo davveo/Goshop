@@ -49,3 +49,34 @@ func DistributionCommissionTplDel(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, nil)
 }
+
+type DRequest struct {
+	Sex    int    `json:"sex"`
+	Region string `json:"region"`
+}
+
+func DistributionCommissionTpl(ctx *gin.Context) {
+	// body数据获取
+	//data, err := model.CreateCommissionTplFactory("").Add(body)
+	//if err != nil {
+	//	ctx.JSON(http.StatusInternalServerError, gin.H{
+	//		"code":    http.StatusInternalServerError,
+	//		"message": err.Error(),
+	//	})
+	//	return
+	//}
+	//ctx.JSON(http.StatusOK, data)
+}
+
+func DistributionCommissionTplEdit(ctx *gin.Context) {
+	// TODO body数据获取
+	//data, err := model.CreateCommissionTplFactory("").Edit(body)
+	//if err != nil {
+	//	ctx.JSON(http.StatusInternalServerError, gin.H{
+	//		"code":    http.StatusInternalServerError,
+	//		"message": err.Error(),
+	//	})
+	//	return
+	//}
+	//ctx.JSON(http.StatusOK, data)
+}

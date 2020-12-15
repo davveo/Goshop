@@ -95,3 +95,13 @@ func (ctm *CommissionTplModel) Delete(tplId string) error {
 	}
 	return nil
 }
+
+func (ctm *CommissionTplModel) Add(body map[string]interface{}) (map[string]interface{}, error) {
+	// TODO
+	return nil, nil
+}
+
+func (ctm *CommissionTplModel) Edit(body map[string]interface{}) (map[string]interface{}, error) {
+	// TODO
+	return nil, nil
+}
