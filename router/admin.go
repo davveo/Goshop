@@ -106,9 +106,9 @@ func AdminApi(router *gin.RouterGroup) {
 		// done 修改商品设置
 		adminGroup.POST("admin/goods/settings", admin.SaveGoodsSetting)
 
-		// 分销商分页
+		// done 分销商分页
 		adminGroup.GET("admin/distribution/bill/member", admin.BillMemberList)
-		// 获取某个业绩详情  admin/distribution/bill/member/:id->admin/r/distribution/bill/member/:id
+		// done 获取某个业绩详情  admin/distribution/bill/member/:id->admin/r/distribution/bill/member/:id
 		adminGroup.GET("admin/r/distribution/bill/o/member/:id", admin.BillMemberDetail)
 		// 获取某个分销商下级业绩
 		adminGroup.GET("admin/distribution/bill/member/down", admin.DownBillMember)

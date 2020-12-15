@@ -62,3 +62,35 @@ func (bmm *BillMemberModel) count(SqlString string) (rows int64) {
 
 	return rows
 }
+
+func (bmm *BillMemberModel) GetBillMember(billId string) (map[string]interface{}, error) {
+	rows := bmm.QuerySql("select * from es_bill_member where id = ?", billId)
+	defer rows.Close()
+
+	tableData, err := sql_utils.ParseJSON(rows)
+	if err != nil {
+		log.Println("sql_utils.ParseJSON 错误", err.Error())
+		return nil, err
+	}
+	var tmp map[string]interface{}
+	if len(tableData) > 0 {
+		tmp = tableData[0]
+	}
+	return tmp, nil
+}
+
+func (bmm *BillMemberModel) AllDown(billId, memberId string) []map[string]interface{} {
+	rows := bmm.QuerySql("select * from es_bill_member where member_id in "+
+		"(select member_id from es_distribution where member_id_lv1 =? or member_id_lv2 = ?) "+
+		"and total_id = (select total_id from es_bill_member where id = ?)", memberId, memberId, billId)
+	defer rows.Close()
+
+	tableData, err := sql_utils.ParseJSON(rows)
+	if err != nil {
+		log.Println("sql_utils.ParseJSON 错误", err.Error())
+		return nil
+	}
+	// 获取下级 分销商集合
+	// TODO
+	return tableData
+}
