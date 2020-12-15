@@ -108,8 +108,8 @@ func AdminApi(router *gin.RouterGroup) {
 
 		// 分销商分页
 		adminGroup.GET("admin/distribution/bill/member", admin.BillMemberList)
-		// 获取某个业绩详情
-		adminGroup.GET("admin/distribution/bill/member/:id", admin.BillMemberDetail)
+		// 获取某个业绩详情  admin/distribution/bill/member/:id->admin/r/distribution/bill/member/:id
+		adminGroup.GET("admin/r/distribution/bill/o/member/:id", admin.BillMemberDetail)
 		// 获取某个分销商下级业绩
 		adminGroup.GET("admin/distribution/bill/member/down", admin.DownBillMember)
 		// 导出会员结算单
