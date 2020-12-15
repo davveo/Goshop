@@ -24,6 +24,20 @@ func DistributionCommissionTplList(ctx *gin.Context) {
 	})
 }
 
+func DistributionCommissionTplDetail(ctx *gin.Context) {
+	tplId := ctx.Param("tplId")
+
+	commissionTpl, err := model.CreateCommissionTplFactory("").GetModel(tplId)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"code":    http.StatusInternalServerError,
+			"message": err.Error(),
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, commissionTpl)
+}
+
 func DistributionUpgradeLog(ctx *gin.Context) {
 
 }

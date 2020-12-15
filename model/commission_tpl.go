@@ -59,3 +59,19 @@ func (ctm *CommissionTplModel) count(SqlString string) (rows int64) {
 
 	return rows
 }
+
+func (ctm *CommissionTplModel) GetModel(tplId string) (map[string]interface{}, error) {
+	rows := ctm.QuerySql("select * from es_commission_tpl where id = ?", tplId)
+	defer rows.Close()
+
+	tableData, err := sql_utils.ParseJSON(rows)
+	if err != nil {
+		log.Println("sql_utils.ParseJSON 错误", err.Error())
+		return nil, err
+	}
+	var tmp map[string]interface{}
+	if len(tableData) > 0 {
+		tmp = tableData[0]
+	}
+	return tmp, nil
+}
