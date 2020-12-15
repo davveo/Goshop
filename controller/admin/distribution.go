@@ -2,14 +2,26 @@ package admin
 
 import (
 	"Goshop/model"
+	"Goshop/utils/common"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
-func DistributionCommissionTpl(ctx *gin.Context) {
+func DistributionCommissionTplList(ctx *gin.Context) {
+	queryParams := common.ParseFromQuery(ctx)
 
+	pageNo, _ := strconv.Atoi(queryParams["page_no"])
+	pageSize, _ := strconv.Atoi(queryParams["page_size"])
+	data, dataTotal := model.CreateCommissionTplFactory("").List(queryParams)
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data":       data,
+		"data_total": dataTotal,
+		"page_no":    pageNo,
+		"page_size":  pageSize,
+	})
 }
 
 func DistributionUpgradeLog(ctx *gin.Context) {
@@ -20,8 +32,19 @@ func DistributionMember(ctx *gin.Context) {
 
 }
 
-func DistributionBillTotal(ctx *gin.Context) {
+func DistributionBillTotalList(ctx *gin.Context) {
+	queryParams := common.ParseFromQuery(ctx)
 
+	pageNo, _ := strconv.Atoi(queryParams["page_no"])
+	pageSize, _ := strconv.Atoi(queryParams["page_size"])
+	data, dataTotal := model.CreateBillTotalFactory("").List(queryParams)
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data":       data,
+		"data_total": dataTotal,
+		"page_no":    pageNo,
+		"page_size":  pageSize,
+	})
 }
 
 func DistributionSetting(ctx *gin.Context) {

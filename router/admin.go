@@ -115,13 +115,15 @@ func AdminApi(router *gin.RouterGroup) {
 		// done 导出会员结算单
 		adminGroup.GET("admin/distribution/bill/member/export", admin.ExportBillMember)
 
-		// 分销相关
-		adminGroup.GET("admin/distribution/commission-tpl", admin.DistributionCommissionTpl) // wait to do
-		adminGroup.GET("admin/distribution/upgradelog", admin.DistributionUpgradeLog)        // wait to do
-		adminGroup.GET("admin/distribution/member", admin.DistributionMember)                // wait to do
-		adminGroup.GET("admin/distribution/bill/total", admin.DistributionBillTotal)         // wait to do
-		adminGroup.GET("admin/distribution/settings", admin.DistributionSetting)             // wait to do
-		adminGroup.GET("admin/distribution/withdraw/apply", admin.DistributionWithdraw)      // done
+		// done 模板列表
+		adminGroup.GET("admin/distribution/commission-tpl", admin.DistributionCommissionTplList)
+		adminGroup.GET("admin/distribution/upgradelog", admin.DistributionUpgradeLog) // wait to do
+		adminGroup.GET("admin/distribution/member", admin.DistributionMember)         // wait to do
+		// done 结算单分页
+		adminGroup.GET("admin/distribution/bill/total", admin.DistributionBillTotalList)
+
+		adminGroup.GET("admin/distribution/settings", admin.DistributionSetting)        // wait to do
+		adminGroup.GET("admin/distribution/withdraw/apply", admin.DistributionWithdraw) // done
 
 		adminGroup.GET("admin/payment/payment-methods", admin.PaymentMethod) // wait to do
 		adminGroup.GET("admin/index/page", admin.Index)                      // done
