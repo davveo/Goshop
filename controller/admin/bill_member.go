@@ -44,5 +44,10 @@ func DownBillMember(ctx *gin.Context) {
 }
 
 func ExportBillMember(ctx *gin.Context) {
+	queryParams := buildAfterSaleQueryParam(ctx)
 
+	queryParams["page_no"] = 1
+	queryParams["page_size"] = 99999
+	data, _ := model.CreateBillMemberFactory("").List(queryParams)
+	ctx.JSON(http.StatusOK, data)
 }
