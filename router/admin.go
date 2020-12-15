@@ -112,7 +112,7 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/r/distribution/bill/o/member/:id", admin.BillMemberDetail)
 		// 获取某个分销商下级业绩
 		adminGroup.GET("admin/distribution/bill/member/down", admin.DownBillMember)
-		// 导出会员结算单
+		// done 导出会员结算单
 		adminGroup.GET("admin/distribution/bill/member/export", admin.ExportBillMember)
 
 		// 分销相关

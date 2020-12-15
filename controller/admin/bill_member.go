@@ -39,8 +39,7 @@ func BillMemberDetail(ctx *gin.Context) {
 func DownBillMember(ctx *gin.Context) {
 	id := ctx.Query("id")
 	memberId := ctx.Query("member_id")
-	// TODO
-	model.CreateBillMemberFactory("").AllDown(id, memberId)
+	ctx.JSON(http.StatusOK, model.CreateBillMemberFactory("").AllDown(id, memberId))
 }
 
 func ExportBillMember(ctx *gin.Context) {
