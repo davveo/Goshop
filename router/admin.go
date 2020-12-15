@@ -119,6 +119,8 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/distribution/commission-tpl", admin.DistributionCommissionTplList)
 		// done 获取模版
 		adminGroup.GET("admin/distribution/commission-tpl/:tplId", admin.DistributionCommissionTplDetail)
+		// done 删除模版
+		adminGroup.DELETE("admin/distribution/commission-tpl/:tplId", admin.DistributionCommissionTplDel)
 
 		adminGroup.GET("admin/distribution/upgradelog", admin.DistributionUpgradeLog) // wait to do
 		adminGroup.GET("admin/distribution/member", admin.DistributionMember)         // wait to do

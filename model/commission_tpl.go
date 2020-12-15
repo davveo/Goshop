@@ -4,6 +4,8 @@ import (
 	"Goshop/utils/sql_utils"
 	"Goshop/utils/yml_config"
 	"bytes"
+	"errors"
+	"fmt"
 	"log"
 	"strconv"
 )
@@ -74,4 +76,22 @@ func (ctm *CommissionTplModel) GetModel(tplId string) (map[string]interface{}, e
 		tmp = tableData[0]
 	}
 	return tmp, nil
+}
+
+func (ctm *CommissionTplModel) Delete(tplId string) error {
+	commissionTpl, err := ctm.GetModel(tplId)
+	if err != nil {
+		return err
+	}
+	if isDefault, ok := commissionTpl["is_default"].(int); ok && isDefault == 1 {
+		return errors.New("默认模版不允许删除")
+	}
+	sqlString := fmt.Sprintf("select count(0) from es_distribution where current_tpl_id = %s", tplId)
+	if ctm.count(sqlString) > 0 {
+		return errors.New("模版不允许删除，有分销商使用")
+	}
+	if ctm.ExecuteSql("delete from es_commission_tpl where id = ?", tplId) == -1 {
+		return errors.New("删除模版失败")
+	}
+	return nil
 }

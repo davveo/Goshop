@@ -36,3 +36,16 @@ func DistributionCommissionTplDetail(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, commissionTpl)
 }
+
+func DistributionCommissionTplDel(ctx *gin.Context) {
+	tplId := ctx.Param("tplId")
+	err := model.CreateCommissionTplFactory("").Delete(tplId)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"code":    http.StatusInternalServerError,
+			"message": err.Error(),
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, nil)
+}
