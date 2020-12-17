@@ -304,13 +304,44 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/after-sales/refund", admin.AfterSalesRefundList)
 		// done 平台退款操作
 		adminGroup.GET("admin/after-sales/refund/:service_sn", admin.AfterSalesRefund)
-
-		adminGroup.GET("admin/order/bills/statistics", admin.OrderBillStatisticList)
+		// 管理员查询某周期结算列表
+		adminGroup.GET("admin/order/bills", admin.ListOrderBill)
+		// 初始化账单
+		adminGroup.GET("admin/order/bills/init", admin.InitOrderBill)
+		// 查看某账单详细
+		adminGroup.GET("admin/order/bills/:bill_id", admin.FindOneOrderBill)
+		// 导出某账单详细
+		adminGroup.GET("admin/order/bills/:bill_id/export", admin.ExportOrderBill)
+		// 对账单进行下一步操作
+		adminGroup.GET("admin/order/bills/:bill_id/next", admin.NextOrderBill)
+		// 查看账单中的订单列表或者退款单列表
+		adminGroup.GET("admin/order/bills/:bill_id/:bill_type", admin.QueryBillItems)
+		// 管理员查询所有周期结算单列表统计
+		adminGroup.GET("admin/order/bills/statistics", admin.ListOrderBillStatistic)
 
 		adminGroup.GET("admin/pages/site-navigations", admin.PageSiteNavigationList)
-		adminGroup.GET("admin/pages/client_type/page_type", admin.Page) // 替换原来admin/admin/pages/PC/INDEX
-		adminGroup.GET("admin/focus-pictures", admin.FocusPicture)
+		// 替换原来admin/admin/pages/PC/INDEX
+		adminGroup.GET("admin/pages/client_type/page_type", admin.Page)
+		// 查询焦点图列表
+		adminGroup.GET("admin/focus-pictures", admin.ListFocusPicture)
+		// 添加焦点图
+		adminGroup.POST("admin/focus-pictures", admin.CreateFocusPicture)
+		// 修改焦点图
+		adminGroup.PUT("admin/focus-pictures/:id", admin.UpdateFocusPicture)
+		// 删除焦点图
+		adminGroup.DELETE("admin/focus-pictures/:id", admin.DelFocusPicture)
+		// 获取焦点图
+		adminGroup.GET("admin/focus-pictures/:id", admin.FindOneFocusPicture)
+		// 查询热门关键字列表
 		adminGroup.GET("admin/pages/hot-keywords", admin.HotKeyWordsList)
+		// 增加热门关键字
+		adminGroup.POST("admin/pages/hot-keywords", admin.CreateHotKeyWords)
+		// 获取一个热门关键字
+		adminGroup.GET("admin/pages/hot-keywords/:id", admin.FindOneHotKeyWords)
+		// 更新一个热门关键字
+		adminGroup.PUT("admin/pages/hot-keywords/:id", admin.UpdateHotKeyWords)
+		// 删除一个热门关键字
+		adminGroup.DELETE("admin/pages/hot-keywords/:Id", admin.DelHotKeyWords)
 
 		// 数据统计相关
 		adminGroup.GET("admin/statistics/member/order/quantity", admin.StatisticMemberOrderQuantity)          // wait to do
@@ -336,16 +367,36 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/statistics/order/unit/price", admin.StatisticOrderUnitPrice)                    // wait to do
 		adminGroup.GET("admin/statistics/order/return/money", admin.StatisticOrderReturnMoney)                // wait to do
 
-		adminGroup.GET("admin/task/:task_type", admin.AdminTask)         // wait to do
-		adminGroup.GET("admin/page-create/input", admin.PageCreateInput) // wait to do
-
-		adminGroup.GET("admin/pages/articles", admin.ArticleList)                  // todo
-		adminGroup.POST("admin/pages/articles", admin.CreateArticle)               // todo
-		adminGroup.GET("admin/pages/articles/:article_id", admin.GetArticle)       // todo
-		adminGroup.PUT("admin/pages/articles/:article_id", admin.UpdateArticle)    // todo
-		adminGroup.DELETE("admin/pages/articles/:article_id", admin.DeleteArticle) // todo
-
-		adminGroup.GET("admin/pages/article-categories", admin.ArticleCategoriesList)                 // wait to do
+		adminGroup.GET("admin/task/:task_type", admin.AdminTask) // wait to do
+		// 获取当前静态页面设置参数
+		adminGroup.GET("admin/page-create/input", admin.PageCreateInput)
+		// 页面生成
+		adminGroup.POST("admin/page-create/create", admin.CreatePageCreate)
+		// 参数保存
+		adminGroup.POST("admin/page-create/save", admin.SavePageCreate)
+		// 查询文章列表
+		adminGroup.GET("admin/pages/articles", admin.ListArticle)
+		// 创建文章
+		adminGroup.POST("admin/pages/articles", admin.CreateArticle)
+		// 获取文章
+		adminGroup.GET("admin/pages/articles/:article_id", admin.FindOneArticle)
+		// 更新文章
+		adminGroup.PUT("admin/pages/articles/:article_id", admin.UpdateArticle)
+		// 删除文章
+		adminGroup.DELETE("admin/pages/articles/:article_id", admin.DelArticle)
+		// 查询文章一级分类列表
+		adminGroup.GET("admin/pages/article-categories", admin.ArticleCategoriesList)
+		// 添加文章分类
+		adminGroup.POST("admin/pages/article-categories", admin.CreateArticleCategories)
+		// 修改文章分类
+		adminGroup.PUT("admin/pages/article-categories/:id", admin.UpdateArticleCategories)
+		// 删除文章分类
+		adminGroup.DELETE("admin/pages/article-categories/:id", admin.DelArticleCategories)
+		// 获取文章分类
+		adminGroup.GET("admin/pages/article-categories/:id", admin.FindOneArticleCategories)
+		// 查询文章二级分类列表
+		adminGroup.GET("admin/pages/article-categories/:id/children", admin.ArticleCategoriesList)
+		// 查询文章分类树
 		adminGroup.GET("admin/pages/article-categories/childrens", admin.ArticleCategoryChildrenList) // wait to do
 
 		adminGroup.GET("admin/services", admin.ServiceList)                                                         // wait to do

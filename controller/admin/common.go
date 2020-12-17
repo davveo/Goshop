@@ -30,7 +30,7 @@ func SiteShow(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, config)
 }
 
-func FocusPicture(ctx *gin.Context) {
+func ListFocusPicture(ctx *gin.Context) {
 	clientType := ctx.Query("client_type") //APP/WAP/PC
 
 	data, err := model.CreateFocusPictureFactory("").List(clientType)
@@ -43,6 +43,22 @@ func FocusPicture(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, data)
+}
+
+func CreateFocusPicture(ctx *gin.Context) {
+
+}
+
+func UpdateFocusPicture(ctx *gin.Context) {
+
+}
+
+func FindOneFocusPicture(ctx *gin.Context) {
+
+}
+
+func DelFocusPicture(ctx *gin.Context) {
+
 }
 
 func Page(ctx *gin.Context) {
@@ -98,13 +114,25 @@ func HotKeyWordsList(ctx *gin.Context) {
 	})
 }
 
+func CreateHotKeyWords(ctx *gin.Context) {
+
+}
+
+func FindOneHotKeyWords(ctx *gin.Context) {
+
+}
+
+func UpdateHotKeyWords(ctx *gin.Context) {
+
+}
+
+func DelHotKeyWords(ctx *gin.Context) {
+
+}
+
 func AdminTask(ctx *gin.Context) {
 	taskType := ctx.Param("task_type") // PAGE_CREATE/GOODS_INDEX_INIT
 	fmt.Println(taskType)
-}
-
-func PageCreateInput(ctx *gin.Context) {
-
 }
 
 func GoodsSearchCustomWord(ctx *gin.Context) {

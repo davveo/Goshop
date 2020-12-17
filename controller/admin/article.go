@@ -3,12 +3,13 @@ package admin
 import (
 	"Goshop/model"
 	"Goshop/utils/common"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
-func ArticleList(ctx *gin.Context) {
+func ListArticle(ctx *gin.Context) {
 	queryParams := common.ParseFromQuery(ctx)
 	data, dataTotal := model.CreateArticleFactory("").List(queryParams)
 
@@ -46,7 +47,7 @@ func UpdateArticle(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, article)
 }
 
-func DeleteArticle(ctx *gin.Context) {
+func DelArticle(ctx *gin.Context) {
 	articleId, _ := strconv.Atoi(ctx.Param("article_id"))
 	err := model.CreateArticleFactory("").Delete(articleId)
 	if err != nil {
@@ -59,7 +60,7 @@ func DeleteArticle(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, "")
 }
 
-func GetArticle(ctx *gin.Context) {
+func FindOneArticle(ctx *gin.Context) {
 	articleId, _ := strconv.Atoi(ctx.Param("article_id"))
 	article, err := model.CreateArticleFactory("").GetModel(articleId)
 	if err != nil {

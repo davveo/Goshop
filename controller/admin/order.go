@@ -69,7 +69,7 @@ func OrderPayLogList(ctx *gin.Context) {
 	})
 }
 
-func OrderBillStatisticList(ctx *gin.Context) {
+func ListOrderBillStatistic(ctx *gin.Context) {
 	queryParams := make(map[string]interface{})
 
 	pageNo, _ := strconv.Atoi(ctx.DefaultQuery("page_no", "1"))
@@ -85,4 +85,28 @@ func OrderBillStatisticList(ctx *gin.Context) {
 		"page_no":    pageNo,
 		"page_size":  pageSize,
 	})
+}
+
+func InitOrderBill(ctx *gin.Context) {
+
+}
+
+func ListOrderBill(ctx *gin.Context) {
+
+}
+
+func FindOneOrderBill(ctx *gin.Context) {
+
+}
+
+func ExportOrderBill(ctx *gin.Context) {
+
+}
+
+func NextOrderBill(ctx *gin.Context) {
+
+}
+
+func QueryBillItems(ctx *gin.Context) {
+
 }
