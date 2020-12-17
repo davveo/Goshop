@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func PinTuanList(ctx *gin.Context) {
+func ListPinTuan(ctx *gin.Context) {
 	queryParams := make(map[string]interface{})
 
 	name := ctx.DefaultQuery("name", "")
@@ -34,4 +34,20 @@ func PinTuanList(ctx *gin.Context) {
 		"page_no":    pageNo,
 		"page_size":  pageSize,
 	})
+}
+
+func ListPinTuanGoods(ctx *gin.Context) {
+
+}
+
+func FindOnePinTuan(ctx *gin.Context) {
+
+}
+
+func ClosePinTuan(ctx *gin.Context) {
+
+}
+
+func OpenPinTuan(ctx *gin.Context) {
+
 }

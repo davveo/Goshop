@@ -15,3 +15,19 @@ func PointCategory(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, data)
 }
+
+func CreatePointCategory(ctx *gin.Context) {
+
+}
+
+func UpdatePointCategory(ctx *gin.Context) {
+
+}
+
+func DelPointCategory(ctx *gin.Context) {
+
+}
+
+func FindOnePointCategory(ctx *gin.Context) {
+
+}

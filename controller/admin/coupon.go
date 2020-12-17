@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func CouponList(ctx *gin.Context) {
+func ListCoupon(ctx *gin.Context) {
 	queryParams := make(map[string]interface{})
 
 	keyword := ctx.DefaultQuery("keyword", "0")
@@ -32,4 +32,20 @@ func CouponList(ctx *gin.Context) {
 		"page_no":    pageNo,
 		"page_size":  pageSize,
 	})
+}
+
+func CreateCoupon(ctx *gin.Context) {
+
+}
+
+func UpdateCoupon(ctx *gin.Context) {
+
+}
+
+func DelCoupon(ctx *gin.Context) {
+
+}
+
+func FindOneCoupon(ctx *gin.Context) {
+
 }

@@ -127,13 +127,82 @@ func AdminApi(router *gin.RouterGroup) {
 		// origin: admin/admin/trade/orders/:order_id -> admin/admin/r/trade/orders/:order_id
 		adminGroup.GET("admin/r/trade/orders/:order_id", admin.OrderDetail)
 
-		// promotion相关
-		adminGroup.GET("admin/promotion/group-buy-actives", admin.GroupBuyList)
-		adminGroup.GET("admin/promotion/group-buy-cats", admin.GroupBuyCategoryList)
+		// 查询团购活动表列表
+		adminGroup.GET("admin/promotion/group-buy-actives", admin.ListGroupBuy)
+		// 添加团购活动表
+		adminGroup.POST("admin/promotion/group-buy-actives", admin.CreateGroupBuy)
+		// 编辑团购活动表
+		adminGroup.PUT("admin/promotion/group-buy-actives/:id", admin.UpdateGroupBuy)
+		// 删除团购活动表
+		adminGroup.DELETE("admin/promotion/group-buy-actives/:id", admin.DelGroupBuy)
+		// 查找团购活动表
+		adminGroup.GET("admin/promotion/group-buy-actives/:id", admin.FindOneGroupBuy)
+		// 批量审核商品
+		adminGroup.GET("admin/promotion/group-buy-actives/batch/audit", admin.BatchAuditGoods)
+		// 查询团购分类列表
+		adminGroup.GET("admin/promotion/group-buy-cats", admin.ListGroupBuyCategory)
+		// 添加团购分类
+		adminGroup.POST("admin/promotion/group-buy-cats", admin.CreateGroupBuyCategory)
+		// 修改团购分类
+		adminGroup.PUT("admin/promotion/group-buy-cats/:id", admin.UpdateGroupBuyCategory)
+		// 删除团购分类
+		adminGroup.DELETE("admin/promotion/group-buy-cats/:id", admin.DelGroupBuyCategory)
+		// 查找团购分类
+		adminGroup.GET("admin/promotion/group-buy-cats/:id", admin.FindOneGroupBuyCategory)
+		// 查询团购商品列表
+		adminGroup.GET("admin/promotion/group-buy-goods", admin.ListGroupBuyGoods)
+		// 查询团购商品信息
+		adminGroup.GET("admin/promotion/group-buy-goods/:gb_id", admin.FindOneGroupBuyGoods)
+		// 查询积分商品列表
+		adminGroup.GET("admin/promotion/exchange-goods", admin.ListExchangeGoods)
+		// 查询某分类下的子分类列表
 		adminGroup.GET("admin/promotion/exchange-cats/:cat_id/children", admin.PointCategory)
-		adminGroup.GET("admin/promotion/seckills", admin.SeckillList) // done
-		adminGroup.GET("admin/promotion/coupons", admin.CouponList)   // done
-		adminGroup.GET("admin/promotion/pintuan", admin.PinTuanList)  // done
+		// 添加积分兑换分类
+		adminGroup.POST("admin/promotion/exchange-cats", admin.CreatePointCategory)
+		// 修改积分兑换分类
+		adminGroup.PUT("admin/promotion/exchange-cats/:cat_id", admin.UpdatePointCategory)
+		// 山吹积分兑换分类
+		adminGroup.DELETE("admin/promotion/exchange-cats/:cat_id", admin.DelPointCategory)
+		// 获取积分兑换分类
+		adminGroup.GET("admin/promotion/exchange-cats/:cat_id", admin.FindOnePointCategory)
+		// done 查询拼团列表
+		adminGroup.GET("admin/promotion/pintuan", admin.ListPinTuan)
+		// 获取活动参与的商品
+		adminGroup.GET("admin/promotion/pintuan/goods/:id", admin.ListPinTuanGoods)
+		// 查询一个拼团入库
+		adminGroup.PUT("admin/promotion/pintuan/:id", admin.FindOnePinTuan)
+		// 关闭拼团
+		adminGroup.PUT("admin/promotion/pintuan/:id/close", admin.ClosePinTuan)
+		// 开启拼团
+		adminGroup.PUT("admin/promotion/pintuan/:id/open", admin.OpenPinTuan)
+		// done 查询优惠券列表
+		adminGroup.GET("admin/promotion/coupons", admin.ListCoupon)
+		// done 查询限时抢购列表
+		adminGroup.GET("admin/promotion/seckills", admin.ListSeckill)
+		// 添加限时抢购入库
+		adminGroup.POST("admin/promotion/seckills", admin.CreateSeckill)
+		// 批量审核商品
+		adminGroup.POST("admin/promotion/seckills/batch/audit", admin.BatchAuditSeckill)
+		// 修改限时抢购入库
+		adminGroup.PUT("admin/promotion/seckills/:id", admin.UpdateSeckill)
+		// 发布限时抢购活动
+		adminGroup.POST("admin/promotion/seckills/:id/release", admin.ReleaseSeckill)
+		// 删除限时抢购入库
+		adminGroup.DELETE("admin/promotion/seckills/:id", admin.DelSeckill)
+		// 关闭限时抢购
+		adminGroup.DELETE("admin/promotion/seckills/:id/close", admin.CloseSeckill)
+		// 查询一个限时抢购入库
+		adminGroup.GET("admin/promotion/seckills/:id", admin.FindOneSeckill)
+		// 查询限时抢购商品列表
+		adminGroup.GET("admin/promotion/seckill-applys", admin.ListSeckillApply)
+		// 添加优惠券
+		adminGroup.POST("admin/promotion/coupons", admin.CreateCoupon)
+		// 编辑优惠券
+		adminGroup.PUT("admin/promotion/coupons/:coupon_id", admin.UpdateCoupon)
+		// 删除优惠券
+		adminGroup.DELETE("admin/promotion/coupons/:coupon_id", admin.DelCoupon)
+		// 获取优惠券
+		adminGroup.GET("admin/promotion/coupons/:coupon_id", admin.FindOneCoupon)
 		// 查询会员开票历史记录信息列表
 		adminGroup.GET("admin/members/receipts", admin.ListMemberReceipt)
 		// 查询会员开票历史记录详细
@@ -291,9 +360,14 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.POST("admin/distribution/withdraw/batch/auditing", admin.DistributionWithdrawBatchAuditing)
 		// 批量设为已转账
 		adminGroup.POST("admin/distribution/withdraw/batch/account/paid", admin.DistributionWithdrawBatchAccountPaid)
-
-		adminGroup.GET("admin/payment/payment-methods", admin.PaymentMethod) // wait to do
-		adminGroup.GET("admin/index/page", admin.Index)                      // done
+		// 查询支付方式列表
+		adminGroup.GET("admin/payment/payment-methods", admin.ListPaymentMethod)
+		// 修改支付方式
+		adminGroup.PUT("admin/payment/payment-methods/:payment_plugin_id", admin.UpdatePaymentMethod)
+		// 查询支付方式
+		adminGroup.GET("admin/payment/payment-methods/:plugin_id", admin.FindOnePaymentMethod)
+		// done 首页响应
+		adminGroup.GET("admin/index/page", admin.Index)
 		// done 获取申请售后服务记录列表
 		adminGroup.GET("admin/after-sales", admin.AfterSalesList)
 		// done 获取售后服务详细信息

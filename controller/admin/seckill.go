@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SeckillList(ctx *gin.Context) {
+func ListSeckill(ctx *gin.Context) {
 	queryParams := make(map[string]interface{})
 
 	status := ctx.DefaultQuery("status", "")
@@ -34,4 +34,36 @@ func SeckillList(ctx *gin.Context) {
 		"page_no":    pageNo,
 		"page_size":  pageSize,
 	})
+}
+
+func CreateSeckill(ctx *gin.Context) {
+
+}
+
+func BatchAuditSeckill(ctx *gin.Context) {
+
+}
+
+func UpdateSeckill(ctx *gin.Context) {
+
+}
+
+func ReleaseSeckill(ctx *gin.Context) {
+
+}
+
+func DelSeckill(ctx *gin.Context) {
+
+}
+
+func CloseSeckill(ctx *gin.Context) {
+
+}
+
+func FindOneSeckill(ctx *gin.Context) {
+
+}
+
+func ListSeckillApply(ctx *gin.Context) {
+
 }
