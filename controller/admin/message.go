@@ -54,7 +54,7 @@ func UpdateMessageTemplate(ctx *gin.Context) {
 
 }
 
-func WechatMsgSync(ctx *gin.Context) {
+func Sync(ctx *gin.Context) {
 	// 查询微信服务消息模板是否已经同步
 
 	isSync := model.CreateWechatMessageTemplateFactory("").IsSync()
@@ -63,7 +63,11 @@ func WechatMsgSync(ctx *gin.Context) {
 
 }
 
-func WechatMsg(ctx *gin.Context) {
+func SyncMsgTmp(ctx *gin.Context) {
+
+}
+
+func ListWechatMsg(ctx *gin.Context) {
 	queryParams := make(map[string]interface{})
 	pageNo, _ := strconv.Atoi(ctx.DefaultQuery("page_no", "1"))
 	pageSize, _ := strconv.Atoi(ctx.DefaultQuery("page_size", "20"))
@@ -79,4 +83,16 @@ func WechatMsg(ctx *gin.Context) {
 		"page_no":    pageNo,
 		"page_size":  pageSize,
 	})
+}
+
+func FindOneWechatMsg(ctx *gin.Context) {
+
+}
+
+func UpdateWechatMsg(ctx *gin.Context) {
+
+}
+
+func DelWechatMsg(ctx *gin.Context) {
+
 }

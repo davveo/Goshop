@@ -2,11 +2,30 @@ package admin
 
 import (
 	"Goshop/model"
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
-
-	"github.com/gin-gonic/gin"
 )
+
+func ListRoles(ctx *gin.Context) {
+
+}
+
+func CreateRoles(ctx *gin.Context) {
+
+}
+
+func UpdateRoles(ctx *gin.Context) {
+
+}
+
+func DelRoles(ctx *gin.Context) {
+
+}
+
+func FindOneRoles(ctx *gin.Context) {
+
+}
 
 func RoleCheck(context *gin.Context) {
 	var (

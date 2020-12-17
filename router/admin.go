@@ -125,8 +125,6 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.DELETE("admin/systems/manager/admin-users/:id", admin.DelAdminUser)
 		// 查询一个平台管理员
 		adminGroup.GET("admin/systems/manager/admin-users/:id", admin.FindOneAdminUser)
-
-		adminGroup.GET("systems/roles/:roleId/checked", admin.RoleCheck) // done
 		// done 查询站内消息列表
 		adminGroup.GET("admin/systems/messages", admin.MessageList)
 		// 添加站内消息
@@ -165,9 +163,18 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/systems/message-templates", admin.MessageTemplate)
 		// 修改消息模版
 		adminGroup.PUT("admin/systems/message-templates/:id", admin.UpdateMessageTemplate)
-
-		adminGroup.GET("admin/systems/wechat-msg-tmp/sync", admin.WechatMsgSync) // done
-		adminGroup.GET("admin/systems/wechat-msg-tmp", admin.WechatMsg)          // done
+		// done 查询微信服务消息模板是否已经同步
+		adminGroup.GET("admin/systems/wechat-msg-tmp/sync", admin.Sync)
+		// 同步微信服务消息模板
+		adminGroup.POST("admin/systems/wechat-msg-tmp/sync", admin.SyncMsgTmp)
+		// done 查询微信服务消息模板列表
+		adminGroup.GET("admin/systems/wechat-msg-tmp", admin.ListWechatMsg)
+		// 查询一个微信服务消息模板
+		adminGroup.GET("admin/systems/wechat-msg-tmp/:id", admin.FindOneWechatMsg)
+		// 修改微信服务消息模板
+		adminGroup.PUT("admin/systems/wechat-msg-tmp/:id", admin.UpdateWechatMsg)
+		// 删除微信服务消息模板
+		adminGroup.DELETE("admin/systems/wechat-msg-tmp/:id", admin.DelWechatMsg)
 		// done 查询物流公司列表
 		adminGroup.GET("admin/systems/logi-companies", admin.ListLogiCompany)
 		// 添加物流公司
@@ -630,13 +637,70 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/systems/push", admin.AppPushSetting)
 		// 修改推送设置
 		adminGroup.PUT("admin/systems/push", admin.SaveAppPushSetting)
-
-		adminGroup.GET("admin/services", admin.ServiceList)                                                         // wait to do
-		adminGroup.GET("admin/services/live-video-api/instances", admin.ServiceLiveVideo)                           // wait to do
-		adminGroup.GET("admin/services/live-video-api/instances/:instance_id/logs", admin.ServiceLiveVideoInstance) // wait to do
+		// 添加地区
+		adminGroup.POST("admin/systems/regions", admin.CreateRegions)
+		// 修改地区
+		adminGroup.PUT("admin/systems/regions/:id", admin.UpdateRegions)
+		// 删除地区
+		adminGroup.DELETE("admin/systems/regions/:id", admin.DelRegions)
+		// 查询一个地区
+		adminGroup.GET("admin/systems/regions/:id", admin.FindOneRegions)
+		// 获取某地区的子地区
+		adminGroup.GET("admin/systems/regions/:id/children", admin.FindChildrenRegions)
+		// 查询角色列表
+		adminGroup.GET("admin/systems/roles", admin.ListRoles)
+		// 添加角色
+		adminGroup.POST("admin/systems/roles", admin.CreateRoles)
+		// 修改角色表
+		adminGroup.PUT("admin/systems/roles/:id", admin.UpdateRoles)
+		// 删除角色
+		adminGroup.DELETE("admin/systems/roles/:id", admin.DelRoles)
+		// 查询一个角色表
+		adminGroup.GET("admin/systems/roles/:id", admin.FindOneRoles)
+		// done 根据角色id查询所拥有的菜单权限
+		adminGroup.GET("admin/systems/roles/:roleId/checked", admin.RoleCheck)
+		// 查询敏感词列表
+		adminGroup.GET("admin/sensitive-words", admin.ListSensitiveWords)
+		// 添加敏感词
+		adminGroup.POST("admin/sensitive-words", admin.CreateSensitiveWords)
+		// 删除敏感词
+		adminGroup.DELETE("admin/sensitive-words/:id", admin.DelSensitiveWords)
+		// 查询一个敏感词
+		adminGroup.GET("admin/sensitive-words/:id", admin.FindOneSensitiveWords)
+		// 查询邮件列表
+		adminGroup.GET("admin/systems/smtps", admin.ListSmtp)
+		// 添加smtp
+		adminGroup.POST("admin/systems/smtps", admin.CreateSmtp)
+		// 修改smtp
+		adminGroup.PUT("admin/systems/smtps/:id", admin.UpdateSmtp)
+		// 删除smtp
+		adminGroup.DELETE("admin/systems/smtps/:id", admin.DelSmtp)
+		// 查询一个smtp
+		adminGroup.GET("admin/systems/smtps/:id", admin.FindOneSmtp)
+		// 测试发送邮件
+		adminGroup.POST("admin/systems/smtps/send", admin.SendSmtp)
+		// 查询存储方案列表
+		adminGroup.GET("admin/systems/uploaders", admin.ListUploader)
+		// 修改存储方案参数
+		adminGroup.PUT("admin/systems/uploaders/:bean", admin.UpdateUploader)
+		// 获取存储方案的配置
+		adminGroup.GET("admin/systems/uploaders/:bean", admin.FindOneUploader)
+		// 开启某个存储方案
+		adminGroup.GET("admin/systems/uploaders/:bean/open", admin.OpenUploader)
+		// 查询电子面单列表
+		adminGroup.GET("admin/systems/waybills", admin.ListWayBill)
+		// 修改电子面单
+		adminGroup.PUT("admin/systems/waybills/:bean", admin.UpdateWayBill)
+		// 获取电子面单配置
+		adminGroup.GET("admin/systems/waybills/:bean", admin.FindOneWayBill)
+		// 开启电子面单
+		adminGroup.GET("admin/systems/waybills/:bean/open", admin.OpenWayBill)
 
 		// 未发现
-		adminGroup.GET("admin/members/deposit/recharge", admin.MemberDepositRechargeList)
-		adminGroup.GET("admin/members/deposit/log", admin.MemberDepositLogList)
+		// adminGroup.GET("admin/members/deposit/recharge", admin.MemberDepositRechargeList)
+		// adminGroup.GET("admin/members/deposit/log", admin.MemberDepositLogList)
+		// adminGroup.GET("admin/services", admin.ServiceList)
+		// adminGroup.GET("admin/services/live-video-api/instances", admin.ServiceLiveVideo)
+		// adminGroup.GET("admin/services/live-video-api/instances/:instance_id/logs", admin.ServiceLiveVideoInstance)
 	}
 }
