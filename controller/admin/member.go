@@ -29,7 +29,7 @@ func MemberList(ctx *gin.Context) {
 	})
 }
 
-func MemberCommentsList(ctx *gin.Context) {
+func ListMemberComments(ctx *gin.Context) {
 	queryParams := make(map[string]interface{})
 
 	pageNo, _ := strconv.Atoi(ctx.DefaultQuery("page_no", "1"))
@@ -47,7 +47,19 @@ func MemberCommentsList(ctx *gin.Context) {
 	})
 }
 
-func MemberAskList(ctx *gin.Context) {
+func BatchAuditMemberComments(ctx *gin.Context) {
+
+}
+
+func DelMemberComments(ctx *gin.Context) {
+
+}
+
+func FindOneMemberComments(ctx *gin.Context) {
+
+}
+
+func ListMemberAsk(ctx *gin.Context) {
 	queryParams := make(map[string]interface{})
 
 	disabled := ctx.Query("disabled")
@@ -66,6 +78,18 @@ func MemberAskList(ctx *gin.Context) {
 		"page_no":    pageNo,
 		"page_size":  pageSize,
 	})
+}
+
+func BatchAuditMemberAsk(ctx *gin.Context) {
+
+}
+
+func DelMemberAsk(ctx *gin.Context) {
+
+}
+
+func FindOneMemberAsk(ctx *gin.Context) {
+
 }
 
 func MemberDepositRechargeList(ctx *gin.Context) {

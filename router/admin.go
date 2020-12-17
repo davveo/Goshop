@@ -104,6 +104,16 @@ func AdminApi(router *gin.RouterGroup) {
 		// 修改提示词排序
 		adminGroup.PUT("admin/goodssearch/goods-words/:id/sort", admin.SortGoodsSearchGoodsWord)
 
+		// 查询会员商品咨询回复列表
+		adminGroup.GET("admin/members/reply", admin.ListMemberReply)
+		// 批量审核会员商品咨询回复
+		adminGroup.POST("admin/members/reply/batch/audit", admin.BatchAuditMemberReply)
+		// 删除会员商品咨询回复
+		adminGroup.DELETE("admin/members/reply/:id", admin.DelMemberReply)
+
+		// 查询指定会员的地址列表
+		adminGroup.GET("admin/members/addresses/:member_id", admin.ListMemberAddress)
+
 		// 系统相关
 		adminGroup.GET("systems/admin-users/login", admin.Login)                  // done
 		adminGroup.POST("systems/admin-users/logout", admin.Logout)               // done
@@ -135,8 +145,24 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/members/receipts", admin.MemberReceiptList)
 		adminGroup.GET("admin/members/zpzz", admin.ZpzzList)
 		adminGroup.GET("admin/members", admin.MemberList)
-		adminGroup.GET("admin/members/comments", admin.MemberCommentsList)
-		adminGroup.GET("admin/members/asks", admin.MemberAskList)
+
+		// 查询评论列表
+		adminGroup.GET("admin/members/comments", admin.ListMemberComments)
+		// 批量审核商品评论
+		adminGroup.POST("admin/members/comments/batch/audit", admin.BatchAuditMemberComments)
+		// 删除评论
+		adminGroup.DELETE("admin/members/comments/:comment_id", admin.DelMemberComments)
+		// 查询会员商品评论详请
+		adminGroup.GET("admin/members/comments/:comment_id", admin.FindOneMemberComments)
+
+		// 查询咨询列表
+		adminGroup.GET("admin/members/asks", admin.ListMemberAsk)
+		// 批量审核会员商品咨询
+		adminGroup.POST("admin/members/asks/batch/audit", admin.BatchAuditMemberAsk)
+		// 删除咨询
+		adminGroup.DELETE("admin/members/asks/:ask_id", admin.DelMemberAsk)
+		// 查询会员商品咨询详请
+		adminGroup.GET("admin/members/asks/:ask_id", admin.FindOneMemberAsk)
 
 		// done 分页查询列表
 		adminGroup.GET("admin/shops/list", admin.AllShopList)
@@ -213,6 +239,15 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.DELETE("admin/distribution/commission-tpl/:tplId", admin.DistributionCommissionTplDel)
 		// 添加模版
 		adminGroup.POST("admin/distribution/commission-tpl", admin.DistributionCommissionTpl)
+		// 获取信任登录配置参数
+		adminGroup.GET("admin/members/connect", admin.ListConnectSetting)
+		// 修改信任登录参数
+		adminGroup.PUT("admin/members/connect/:type", admin.EditConnectSetting)
+
+		// 查询某优惠券领取列表
+		adminGroup.GET("admin/members/coupon", admin.ListMemberCoupon)
+		// 废弃某优惠券
+		adminGroup.PUT("admin/members/coupon/:member_coupon_id/cancel", admin.CancelMemberCoupon)
 
 		// 分销商列表
 		adminGroup.GET("admin/distribution/member", admin.DistributionMember)
