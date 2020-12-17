@@ -167,6 +167,14 @@ func AdminTask(ctx *gin.Context) {
 	fmt.Println(taskType)
 }
 
+func AdminTaskProgress(ctx *gin.Context) {
+
+}
+
+func DelAdminTask(ctx *gin.Context) {
+
+}
+
 func GoodsSearchCustomWord(ctx *gin.Context) {
 	queryParams := make(map[string]interface{})
 

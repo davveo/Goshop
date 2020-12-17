@@ -107,18 +107,79 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.DELETE("admin/members/reply/:id", admin.DelMemberReply)
 		// 查询指定会员的地址列表
 		adminGroup.GET("admin/members/addresses/:member_id", admin.ListMemberAddress)
+		// 修改管理员密码及头像
+		adminGroup.PUT("admin/systems/admin-users", admin.UpdateAdminUserBase)
+		// done 用户名（手机号）/密码登录API
+		adminGroup.GET("systems/admin-users/login", admin.Login)
+		// done 刷新token
+		adminGroup.POST("systems/admin-users/token", admin.Refresh)
+		// done 注销管理员登录
+		adminGroup.POST("systems/admin-users/logout", admin.Logout)
+		// 查询平台管理员列表
+		adminGroup.GET("admin/systems/manager/admin-users", admin.ListAdminUser)
+		// 添加平台管理员
+		adminGroup.POST("admin/systems/manager/admin-users", admin.CreateAdminUser)
+		// 修改平台管理员
+		adminGroup.PUT("admin/systems/manager/admin-users/:id", admin.UpdateAdminUser)
+		// 删除平台管理员
+		adminGroup.DELETE("admin/systems/manager/admin-users/:id", admin.DelAdminUser)
+		// 查询一个平台管理员
+		adminGroup.GET("admin/systems/manager/admin-users/:id", admin.FindOneAdminUser)
 
-		// 系统相关
-		adminGroup.GET("systems/admin-users/login", admin.Login)                  // done
-		adminGroup.POST("systems/admin-users/logout", admin.Logout)               // done
-		adminGroup.GET("systems/roles/:roleId/checked", admin.RoleCheck)          // done
-		adminGroup.GET("admin/systems/messages", admin.MessageList)               // done
-		adminGroup.GET("admin/systems/admin-users/token", admin.Refresh)          // done
-		adminGroup.GET("admin/systems/complain-topics", admin.ComplainTopicsList) // done
-		adminGroup.GET("admin/systems/message-templates", admin.MessageTemplate)  // done
-		adminGroup.GET("admin/systems/wechat-msg-tmp/sync", admin.WechatMsgSync)  // done
-		adminGroup.GET("admin/systems/wechat-msg-tmp", admin.WechatMsg)           // done
-		adminGroup.GET("admin/systems/logi-companies", admin.LogiCompany)         // done 物流公司相关API
+		adminGroup.GET("systems/roles/:roleId/checked", admin.RoleCheck) // done
+		// done 查询站内消息列表
+		adminGroup.GET("admin/systems/messages", admin.MessageList)
+		// 添加站内消息
+		adminGroup.POST("admin/systems/messages", admin.CreateMessage)
+		// done 查询投诉主题列表
+		adminGroup.GET("admin/systems/complain-topics", admin.ComplainTopicsList)
+		// 添加投诉主题
+		adminGroup.POST("admin/systems/complain-topics", admin.CreateComplainTopics)
+		// 修改投诉主题
+		adminGroup.PUT("admin/systems/complain-topics/:id", admin.UpdateComplainTopics)
+		// 删除投诉主题
+		adminGroup.DELETE("admin/systems/complain-topics/:id", admin.DelComplainTopics)
+		// 查询一个投诉主题
+		adminGroup.GET("admin/systems/complain-topics/:id", admin.FindOneComplainTopics)
+		// 查询快递平台列表
+		adminGroup.GET("admin/systems/express-platforms", admin.ListExpressPlatform)
+		// 修改快递平台
+		adminGroup.PUT("admin/systems/express-platforms/:bean", admin.UpdateExpressPlatform)
+		// 获取快递平台的配置
+		adminGroup.GET("admin/systems/express-platforms/:bean", admin.FindOneExpressPlatform)
+		// 开启某个快递平台方案
+		adminGroup.GET("admin/systems/express-platforms/:bean/open", admin.OpenExpressPlatform)
+		// 查询物流详细
+		adminGroup.GET("admin/systems/express-platforms/express", admin.FindExpressPlatform)
+		// 添加菜单
+		adminGroup.POST("admin/systems/menus", admin.CreateSystemMenu)
+		// 修改菜单
+		adminGroup.PUT("admin/systems/menus/:parent_id", admin.UpdateSystemMenu)
+		// 删除菜单
+		adminGroup.DELETE("admin/systems/menus/:parent_id", admin.DelSystemMenu)
+		// 查询一个菜单
+		adminGroup.GET("admin/systems/menus/:parent_id", admin.FindOneSystemMenu)
+		// 根据父id查询所有菜单
+		adminGroup.GET("admin/systems/menus/:parent_id/children", admin.ListSystemMenuById)
+		// done 查询消息模版列表
+		adminGroup.GET("admin/systems/message-templates", admin.MessageTemplate)
+		// 修改消息模版
+		adminGroup.PUT("admin/systems/message-templates/:id", admin.UpdateMessageTemplate)
+
+		adminGroup.GET("admin/systems/wechat-msg-tmp/sync", admin.WechatMsgSync) // done
+		adminGroup.GET("admin/systems/wechat-msg-tmp", admin.WechatMsg)          // done
+		// done 查询物流公司列表
+		adminGroup.GET("admin/systems/logi-companies", admin.ListLogiCompany)
+		// 添加物流公司
+		adminGroup.POST("admin/systems/logi-companies", admin.CreateLogiCompany)
+		// 修改物流公司
+		adminGroup.PUT("admin/systems/logi-companies/:id", admin.UpdateLogiCompany)
+		// 删除物流公司
+		adminGroup.DELETE("admin/systems/logi-companies/:id", admin.DelLogiCompany)
+		// 查询一个物流公司
+		adminGroup.GET("admin/systems/logi-companies/:id", admin.FindOneLogiCompany)
+		// 开启或禁用物流公司
+		adminGroup.POST("admin/systems/logi-companies/:id", admin.OpenCloseLogiCompany)
 		// 查询付款单列表
 		adminGroup.GET("admin/trade/orders/pay-log", admin.OrderPayLogList)
 		// 收款单导出Excel
@@ -365,7 +426,6 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/distribution/settings", admin.DistributionSetting)
 		// done 修改分销设置
 		adminGroup.PUT("admin/distribution/settings", admin.SaveDistributionSetting)
-
 		// 订单金额统计
 		adminGroup.GET("admin/distribution/statistic/order", admin.DistributionStatisticOrder)
 		// 订单数量统计
@@ -374,10 +434,8 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/distribution/statistic/push", admin.DistributionStatisticPush)
 		// 店铺返现统计
 		adminGroup.GET("admin/distribution/statistic/push/seller", admin.DistributionStatisticPushSeller)
-
 		// 获取升级日志
 		adminGroup.GET("admin/distribution/upgradelog", admin.DistributionUpgradeLog)
-
 		// done 提现申请审核列表
 		adminGroup.GET("admin/distribution/withdraw/apply", admin.DistributionWithdraw)
 		// 导出提现申请
@@ -522,8 +580,12 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/statistics/order/unit/time", admin.StatisticOrderUnitTime)
 		// 退款统计
 		adminGroup.GET("admin/statistics/order/return/money", admin.StatisticOrderReturnMoney)
-
-		adminGroup.GET("admin/task/:task_type", admin.AdminTask) // wait to do
+		// 检测是否有任务正在进行,有任务返回任务id,无任务返回404
+		adminGroup.GET("admin/task/:task_type", admin.AdminTask)
+		// 查看任务进度
+		adminGroup.GET("admin/task/:task_type/progress", admin.AdminTaskProgress)
+		// 清除某任务
+		adminGroup.DELETE("admin/task/:task_type", admin.DelAdminTask)
 		// 获取当前静态页面设置参数
 		adminGroup.GET("admin/page-create/input", admin.PageCreateInput)
 		// 页面生成
@@ -562,6 +624,12 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/pages/client_type/page_type", admin.FindOneClientPage)
 		// 使用客户端类型和页面类型查询一个楼层
 		adminGroup.PUT("admin/pages/client_type/page_type", admin.UpdateClientPage)
+		// 商品推送
+		adminGroup.GET("admin/systems/push/:goods_id", admin.PushGoods)
+		// 获取推送设置
+		adminGroup.GET("admin/systems/push", admin.AppPushSetting)
+		// 修改推送设置
+		adminGroup.PUT("admin/systems/push", admin.SaveAppPushSetting)
 
 		adminGroup.GET("admin/services", admin.ServiceList)                                                         // wait to do
 		adminGroup.GET("admin/services/live-video-api/instances", admin.ServiceLiveVideo)                           // wait to do

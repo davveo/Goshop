@@ -25,3 +25,19 @@ func ComplainTopicsList(ctx *gin.Context) {
 		"page_size":  pageSize,
 	})
 }
+
+func CreateComplainTopics(ctx *gin.Context) {
+
+}
+
+func UpdateComplainTopics(ctx *gin.Context) {
+
+}
+
+func DelComplainTopics(ctx *gin.Context) {
+
+}
+
+func FindOneComplainTopics(ctx *gin.Context) {
+
+}

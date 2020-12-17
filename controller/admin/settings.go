@@ -135,3 +135,27 @@ func SaveDistributionSetting(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, config)
 }
+
+func AppPushSetting(ctx *gin.Context) {
+	config := model.CreateSettingFactory("").Get(consts.PUSH)
+	if config == nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"code":    http.StatusInternalServerError,
+			"message": "获取数据失败",
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, config)
+}
+
+func SaveAppPushSetting(ctx *gin.Context) {
+	config := model.CreateSettingFactory("").Get(consts.PUSH)
+	if config == nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"code":    http.StatusInternalServerError,
+			"message": "获取数据失败",
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, config)
+}

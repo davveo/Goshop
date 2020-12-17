@@ -8,17 +8,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Login(context *gin.Context) {
+func Login(ctx *gin.Context) {
 	var (
-		uuid      = context.Query("uuid")
-		captcha   = context.Query("captcha")
-		username  = context.Query("username")
-		password  = context.Query("password")
+		uuid      = ctx.Query("uuid")
+		captcha   = ctx.Query("captcha")
+		username  = ctx.Query("username")
+		password  = ctx.Query("password")
 		uniqueKey = fmt.Sprintf("%s_%s", "LOGIN", uuid)
 	)
 
 	if !Store.Verify(uniqueKey, captcha, true) {
-		context.JSON(http.StatusOK, gin.H{
+		ctx.JSON(http.StatusOK, gin.H{
 			"code":    -1,
 			"message": "图片验证码不正确",
 		})
@@ -26,41 +26,65 @@ func Login(context *gin.Context) {
 	}
 	user := model.CreateUserFactory("").Login(uuid, username, password)
 	if user == nil {
-		context.JSON(http.StatusOK, gin.H{
+		ctx.JSON(http.StatusOK, gin.H{
 			"code":    -1,
 			"message": "管理员账号密码错误",
 		})
 		return
 	}
-	context.Header("uuid", uuid)
-	context.Header("Authorization", user.AccessToken)
-	context.JSON(http.StatusOK, user)
+	ctx.Header("uuid", uuid)
+	ctx.Header("Authorization", user.AccessToken)
+	ctx.JSON(http.StatusOK, user)
 }
 
-func Logout(context *gin.Context) {
-	uid := context.Query("uid")
-	uuid := context.GetHeader("uuid")
+func Logout(ctx *gin.Context) {
+	uid := ctx.Query("uid")
+	uuid := ctx.GetHeader("uuid")
 
 	if uid == "" {
-		context.JSON(http.StatusInternalServerError, gin.H{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"code":    http.StatusInternalServerError,
 			"message": "会员id不能为空",
 		})
 		return
 	}
 	model.CreateUserFactory("").Logout(uuid, uid)
-	context.JSON(http.StatusOK, gin.H{})
+	ctx.JSON(http.StatusOK, gin.H{})
 }
 
-func Refresh(context *gin.Context) {
-	refreshToken := context.PostForm("refresh_token")
+func Refresh(ctx *gin.Context) {
+	refreshToken := ctx.PostForm("refresh_token")
 	err, m := model.CreateUserFactory("").ExchangeToken(refreshToken)
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"code":    http.StatusInternalServerError,
 			"message": err.Error(),
 		})
 		return
 	}
-	context.JSON(http.StatusOK, m)
+	ctx.JSON(http.StatusOK, m)
+}
+
+func UpdateAdminUserBase(ctx *gin.Context) {
+
+}
+
+func ListAdminUser(ctx *gin.Context) {
+
+}
+
+func CreateAdminUser(ctx *gin.Context) {
+
+}
+
+func UpdateAdminUser(ctx *gin.Context) {
+
+}
+
+func DelAdminUser(ctx *gin.Context) {
+
+}
+
+func FindOneAdminUser(ctx *gin.Context) {
+
 }

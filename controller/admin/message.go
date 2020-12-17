@@ -1,7 +1,6 @@
 package admin
 
 import (
-	"Goshop/global/consts"
 	"Goshop/model"
 	"net/http"
 	"strconv"
@@ -27,6 +26,10 @@ func MessageList(ctx *gin.Context) {
 	})
 }
 
+func CreateMessage(ctx *gin.Context) {
+
+}
+
 func MessageTemplate(ctx *gin.Context) {
 	queryParams := make(map[string]interface{})
 	messageType := ctx.DefaultQuery("type", "SHOP") //MEMBER/SHOP
@@ -47,6 +50,10 @@ func MessageTemplate(ctx *gin.Context) {
 	})
 }
 
+func UpdateMessageTemplate(ctx *gin.Context) {
+
+}
+
 func WechatMsgSync(ctx *gin.Context) {
 	// 查询微信服务消息模板是否已经同步
 
@@ -65,27 +72,6 @@ func WechatMsg(ctx *gin.Context) {
 	queryParams["page_size"] = pageSize
 
 	data, dataTotal := model.CreateWechatMessageTemplateFactory("").List(queryParams)
-
-	ctx.JSON(http.StatusOK, gin.H{
-		"data":       data,
-		"data_total": dataTotal,
-		"page_no":    pageNo,
-		"page_size":  pageSize,
-	})
-}
-
-func LogiCompany(ctx *gin.Context) {
-	queryParams := make(map[string]interface{})
-	name := ctx.DefaultQuery("name", "")
-	pageNo, _ := strconv.Atoi(ctx.DefaultQuery("page_no", "1"))
-	pageSize, _ := strconv.Atoi(ctx.DefaultQuery("page_size", "20"))
-
-	queryParams["name"] = name
-	queryParams["page_no"] = pageNo
-	queryParams["page_size"] = pageSize
-	queryParams["status"] = consts.NORMAL
-
-	data, dataTotal := model.CreateLogisticsCompanyFactory("").List(queryParams)
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"data":       data,
