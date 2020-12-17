@@ -91,8 +91,8 @@ func AdminApi(router *gin.RouterGroup) {
 		// 修改商品优先级
 		adminGroup.PUT("admin/goodssearch/priority", admin.UpdateGoodsSearchPriority)
 
-		// done
-		adminGroup.GET("admin/goodssearch/keywords", admin.GoodsSearchKeyWord)
+		// done 查询关键字历史列表
+		adminGroup.GET("admin/goodssearch/keywords", admin.ListGoodsSearchKeyWord)
 		// done 查询提示词列表
 		adminGroup.GET("admin/goodssearch/goods-words", admin.GoodsSearchGoodsWord)
 		// 添加自定义提示词
