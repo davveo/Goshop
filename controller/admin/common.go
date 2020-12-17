@@ -61,7 +61,7 @@ func DelFocusPicture(ctx *gin.Context) {
 
 }
 
-func Page(ctx *gin.Context) {
+func FindOneClientPage(ctx *gin.Context) {
 	pageType := ctx.Query("page_type")     // APP/WAP/PC
 	clientType := ctx.Query("client_type") // INDEX/SPECIAL
 	data, err := model.CreatePageFactory("").GetByType(clientType, pageType)
@@ -76,7 +76,19 @@ func Page(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, data)
 }
 
-func PageSiteNavigationList(ctx *gin.Context) {
+func UpdateClientPage(ctx *gin.Context) {
+
+}
+
+func UpdatePage(ctx *gin.Context) {
+
+}
+
+func FindOnePage(ctx *gin.Context) {
+
+}
+
+func ListSiteNavigation(ctx *gin.Context) {
 	queryParams := make(map[string]interface{})
 
 	clientType := ctx.Query("client_type")
@@ -94,6 +106,26 @@ func PageSiteNavigationList(ctx *gin.Context) {
 		"page_no":    pageNo,
 		"page_size":  pageSize,
 	})
+}
+
+func CreateSiteNavigation(ctx *gin.Context) {
+
+}
+
+func UpdateSiteNavigation(ctx *gin.Context) {
+
+}
+
+func DelSiteNavigation(ctx *gin.Context) {
+
+}
+
+func FindOneSiteNavigation(ctx *gin.Context) {
+
+}
+
+func UpdateSiteNavigationSort(ctx *gin.Context) {
+
 }
 
 func HotKeyWordsList(ctx *gin.Context) {

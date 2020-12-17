@@ -318,10 +318,18 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/order/bills/:bill_id/:bill_type", admin.QueryBillItems)
 		// 管理员查询所有周期结算单列表统计
 		adminGroup.GET("admin/order/bills/statistics", admin.ListOrderBillStatistic)
-
-		adminGroup.GET("admin/pages/site-navigations", admin.PageSiteNavigationList)
-		// 替换原来admin/admin/pages/PC/INDEX
-		adminGroup.GET("admin/pages/client_type/page_type", admin.Page)
+		// done 查询导航栏列表
+		adminGroup.GET("admin/pages/site-navigations", admin.ListSiteNavigation)
+		// 添加导航栏
+		adminGroup.POST("admin/pages/site-navigations", admin.CreateSiteNavigation)
+		// 编辑导航栏
+		adminGroup.PUT("admin/pages/site-navigations/:id", admin.UpdateSiteNavigation)
+		// 删除导航栏
+		adminGroup.DELETE("admin/pages/site-navigations/:id", admin.DelSiteNavigation)
+		// 获取导航栏
+		adminGroup.GET("admin/pages/site-navigations/:id", admin.FindOneSiteNavigation)
+		// 上下移动导航栏菜单
+		adminGroup.PUT("admin/pages/site-navigations/:id/:sort", admin.UpdateSiteNavigationSort)
 		// 查询焦点图列表
 		adminGroup.GET("admin/focus-pictures", admin.ListFocusPicture)
 		// 添加焦点图
@@ -398,6 +406,14 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/pages/article-categories/:id/children", admin.ArticleCategoriesList)
 		// 查询文章分类树
 		adminGroup.GET("admin/pages/article-categories/childrens", admin.ArticleCategoryChildrenList) // wait to do
+		// 修改楼层
+		adminGroup.PUT("admin/pages/:page_id", admin.UpdatePage)
+		// 查询楼层
+		adminGroup.GET("admin/pages/:page_id", admin.FindOnePage)
+		// 使用客户端类型和页面类型修改楼层 替换原来admin/admin/:client_type/:page_type
+		adminGroup.GET("admin/pages/client_type/page_type", admin.FindOneClientPage)
+		// 使用客户端类型和页面类型查询一个楼层
+		adminGroup.PUT("admin/pages/client_type/page_type", admin.UpdateClientPage)
 
 		adminGroup.GET("admin/services", admin.ServiceList)                                                         // wait to do
 		adminGroup.GET("admin/services/live-video-api/instances", admin.ServiceLiveVideo)                           // wait to do
