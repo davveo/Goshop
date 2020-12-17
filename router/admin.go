@@ -33,7 +33,6 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/goods/:goods_id/detail", admin.GoodsListDetail)
 		// done 管理员批量审核商品
 		adminGroup.POST("admin/goods/batch/audit", admin.GoodsBatchAudit)
-
 		// done 查询品牌列表
 		adminGroup.GET("admin/goods/brands", admin.BrandList)
 		// done 添加品牌
@@ -46,7 +45,6 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.DELETE("admin/goods/brands/:brand_id", admin.DeleteBrand)
 		// done 查询所有品牌 // origin: admin/admin/goods/brands/all -> admin/admin/r/goods/brands/all
 		adminGroup.GET("admin/r/goods/brands/all", admin.BrandAllList)
-
 		// done 查询某分类下的子分类列表
 		adminGroup.GET("admin/goods/categories/:parent_id/children", admin.CategoryList)
 		// 查询某分类下的全部子分类列表
@@ -71,7 +69,6 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/goods/categories/:category_id/param", admin.CategoryParam)
 		// 商品索引初始化
 		adminGroup.GET("admin/goods/search", admin.GoodsSearchCreate)
-
 		// done 查询自定义分词列表
 		adminGroup.GET("admin/goodssearch/custom-words", admin.GoodsSearchCustomWord)
 		// 添加自定义分词
@@ -90,7 +87,6 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/goodssearch/priority", admin.ListGoodsSearchPriority)
 		// 修改商品优先级
 		adminGroup.PUT("admin/goodssearch/priority", admin.UpdateGoodsSearchPriority)
-
 		// done 查询关键字历史列表
 		adminGroup.GET("admin/goodssearch/keywords", admin.ListGoodsSearchKeyWord)
 		// done 查询提示词列表
@@ -103,14 +99,12 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.PUT("admin/goodssearch/goods-words/:id/words", admin.EditGoodsSearchGoodsWord)
 		// 修改提示词排序
 		adminGroup.PUT("admin/goodssearch/goods-words/:id/sort", admin.SortGoodsSearchGoodsWord)
-
 		// 查询会员商品咨询回复列表
 		adminGroup.GET("admin/members/reply", admin.ListMemberReply)
 		// 批量审核会员商品咨询回复
 		adminGroup.POST("admin/members/reply/batch/audit", admin.BatchAuditMemberReply)
 		// 删除会员商品咨询回复
 		adminGroup.DELETE("admin/members/reply/:id", admin.DelMemberReply)
-
 		// 查询指定会员的地址列表
 		adminGroup.GET("admin/members/addresses/:member_id", admin.ListMemberAddress)
 
@@ -140,7 +134,6 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/promotion/seckills", admin.SeckillList) // done
 		adminGroup.GET("admin/promotion/coupons", admin.CouponList)   // done
 		adminGroup.GET("admin/promotion/pintuan", admin.PinTuanList)  // done
-
 		// 查询会员开票历史记录信息列表
 		adminGroup.GET("admin/members/receipts", admin.ListMemberReceipt)
 		// 查询会员开票历史记录详细
@@ -151,7 +144,6 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/members/zpzz/:id", admin.FindOneZpzz)
 		// 平台审核会员增票资质申请
 		adminGroup.POST("admin/members/zpzz/audit/:id/:status", admin.AuditZpzz)
-
 		//查询会员列表
 		adminGroup.GET("admin/members", admin.ListMember)
 		// 创建会员
@@ -166,7 +158,6 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.PUT("admin/members/:id", admin.UpdateMember)
 		// 恢复会员
 		adminGroup.POST("admin/members/:id", admin.RecoveryMember)
-
 		// 查询评论列表
 		adminGroup.GET("admin/members/comments", admin.ListMemberComments)
 		// 批量审核商品评论
@@ -179,7 +170,6 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/members/point/:member_id", admin.ListMemberPoint)
 		// 修改会消费积分
 		adminGroup.PUT("admin/members/point/:member_id", admin.UpdateMemberPoint)
-
 		// 查询咨询列表
 		adminGroup.GET("admin/members/asks", admin.ListMemberAsk)
 		// 批量审核会员商品咨询
@@ -188,7 +178,6 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.DELETE("admin/members/asks/:ask_id", admin.DelMemberAsk)
 		// 查询会员商品咨询详请
 		adminGroup.GET("admin/members/asks/:ask_id", admin.FindOneMemberAsk)
-
 		// done 分页查询列表
 		adminGroup.GET("admin/shops/list", admin.AllShopList)
 		// done 分页查询店铺列表
@@ -199,15 +188,12 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.PUT("admin/shops/disable/:shop_id", admin.DisableShop)
 		// done 管理员恢复店铺使用
 		adminGroup.PUT("admin/shops/enable/:shop_id", admin.EnableShop)
-		// done 管理员获取店铺详细
-		// origin: admin/admin/shops/:shop_id -> admin/admin/r/shops/:shop_id
+		// done 管理员获取店铺详细 origin: admin/admin/shops/:shop_id -> admin/admin/r/shops/:shop_id
 		adminGroup.GET("admin/r/shops/:shop_id", admin.ShopDetail)
-		//管理员修改审核店铺信息
-		// origin: admin/admin/shops/:shop_id -> admin/admin/r/shops/:shop_id
+		// 管理员修改审核店铺信息 origin: admin/admin/shops/:shop_id -> admin/admin/r/shops/:shop_id
 		adminGroup.PUT("admin/r/shops/:shop_id", admin.EditShop)
 		//后台添加店铺
 		adminGroup.POST("admin/shops", admin.CreateShop)
-
 		// done 获取站点设置
 		adminGroup.GET("admin/settings/site", admin.SiteSetting)
 		// done 修改站点设置
@@ -244,7 +230,6 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/goods/parameters/:id", admin.FindParameters)
 		// 参数上移或者下移
 		adminGroup.PUT("admin/goods/parameters/:param_id/sort", admin.SortParameters)
-
 		// done 分销商分页
 		adminGroup.GET("admin/distribution/bill/member", admin.BillMemberList)
 		// done 获取某个业绩详情  admin/distribution/bill/member/:id->admin/r/distribution/bill/member/:id
@@ -253,7 +238,6 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/distribution/bill/member/down", admin.DownBillMember)
 		// done 导出会员结算单
 		adminGroup.GET("admin/distribution/bill/member/export", admin.ExportBillMember)
-
 		// done 模板列表
 		adminGroup.GET("admin/distribution/commission-tpl", admin.DistributionCommissionTplList)
 		// done 获取模版
@@ -268,28 +252,22 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/members/connect", admin.ListConnectSetting)
 		// 修改信任登录参数
 		adminGroup.PUT("admin/members/connect/:type", admin.EditConnectSetting)
-
 		// 查询某优惠券领取列表
 		adminGroup.GET("admin/members/coupon", admin.ListMemberCoupon)
 		// 废弃某优惠券
 		adminGroup.PUT("admin/members/coupon/:member_coupon_id/cancel", admin.CancelMemberCoupon)
-
 		// 分销商列表
 		adminGroup.GET("admin/distribution/member", admin.DistributionMember)
 		// 修改分销商模版
 		adminGroup.PUT("admin/distribution/tpl", admin.DistributionMemberChangeTpl)
-
 		// 结算单 分销订单查询
 		adminGroup.GET("admin/distribution/order", admin.DistributionBillOrder)
 		// 结算单 分销退款订单查询
 		adminGroup.GET("admin/distribution/order/sellback", admin.DistributionBillSellbackOrder)
-
 		// done 结算单分页
 		adminGroup.GET("admin/distribution/bill/total", admin.DistributionBillTotalList)
-
 		// done 分销设置
 		adminGroup.GET("admin/distribution/settings", admin.DistributionSetting)
-
 		// done 修改分销设置
 		adminGroup.PUT("admin/distribution/settings", admin.SaveDistributionSetting)
 
