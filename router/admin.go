@@ -144,7 +144,21 @@ func AdminApi(router *gin.RouterGroup) {
 		// 会员相关
 		adminGroup.GET("admin/members/receipts", admin.MemberReceiptList)
 		adminGroup.GET("admin/members/zpzz", admin.ZpzzList)
-		adminGroup.GET("admin/members", admin.MemberList)
+
+		//查询会员列表
+		adminGroup.GET("admin/members", admin.ListMember)
+		// 创建会员
+		adminGroup.POST("admin/members", admin.CreateMember)
+		// 删除会员
+		adminGroup.DELETE("admin/members/:id", admin.DelMember)
+		// 查询会员
+		adminGroup.GET("admin/members/:id", admin.FindOneMember)
+		// 查询多个会员的基本信息
+		adminGroup.GET("admin/members/:member_ids/list", admin.FindMoreMember)
+		// 修改会员
+		adminGroup.PUT("admin/members/:id", admin.UpdateMember)
+		// 恢复会员
+		adminGroup.POST("admin/members/:id", admin.RecoveryMember)
 
 		// 查询评论列表
 		adminGroup.GET("admin/members/comments", admin.ListMemberComments)

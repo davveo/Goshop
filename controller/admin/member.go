@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func MemberList(ctx *gin.Context) {
+func ListMember(ctx *gin.Context) {
 	queryParams := make(map[string]interface{})
 
 	disabled := ctx.Query("disabled")
@@ -27,6 +27,30 @@ func MemberList(ctx *gin.Context) {
 		"page_no":    pageNo,
 		"page_size":  pageSize,
 	})
+}
+
+func CreateMember(ctx *gin.Context) {
+
+}
+
+func DelMember(ctx *gin.Context) {
+
+}
+
+func UpdateMember(ctx *gin.Context) {
+
+}
+
+func RecoveryMember(ctx *gin.Context) {
+
+}
+
+func FindOneMember(ctx *gin.Context) {
+
+}
+
+func FindMoreMember(ctx *gin.Context) {
+
 }
 
 func ListMemberComments(ctx *gin.Context) {
