@@ -85,3 +85,7 @@ func GoodsBatchAudit(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, nil)
 }
+
+func GoodsListDetail(ctx *gin.Context) {
+
+}

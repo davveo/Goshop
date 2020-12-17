@@ -128,6 +128,30 @@ func GoodsSearchCustomWord(ctx *gin.Context) {
 	})
 }
 
+func CreateGoodsSearchCustomWord(ctx *gin.Context) {
+
+}
+
+func EditGoodsSearchCustomWord(ctx *gin.Context) {
+
+}
+
+func DelGoodsSearchCustomWord(ctx *gin.Context) {
+
+}
+
+func FindOneGoodsSearchCustomWord(ctx *gin.Context) {
+
+}
+
+func CreateEsCustomWordSecretKey(ctx *gin.Context) {
+
+}
+
+func FindEsCustomWordSecretKey(ctx *gin.Context) {
+
+}
+
 func GoodsSearchKeyWord(ctx *gin.Context) {
 	queryParams := make(map[string]interface{})
 
@@ -168,6 +192,26 @@ func GoodsSearchGoodsWord(ctx *gin.Context) {
 		"page_no":    pageNo,
 		"page_size":  pageSize,
 	})
+}
+
+func CreateGoodsSearchGoodsWord(ctx *gin.Context) {
+
+}
+
+func DelGoodsSearchGoodsWord(ctx *gin.Context) {
+
+}
+
+func EditGoodsSearchGoodsWord(ctx *gin.Context) {
+
+}
+
+func SortGoodsSearchGoodsWord(ctx *gin.Context) {
+
+}
+
+func GoodsSearchCreate(ctx *gin.Context) {
+
 }
 
 func Upload(ctx *gin.Context) {
@@ -244,4 +288,12 @@ func Upload(ctx *gin.Context) {
 		})
 
 	}
+}
+
+func ListGoodsSearchPriority(ctx *gin.Context) {
+
+}
+
+func UpdateGoodsSearchPriority(ctx *gin.Context) {
+
 }

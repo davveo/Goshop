@@ -4,9 +4,10 @@ import (
 	"Goshop/model"
 	"Goshop/model/request"
 	"Goshop/utils/transfer"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
 func CategoryList(ctx *gin.Context) {
@@ -27,6 +28,10 @@ func CategoryList(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, categoryList)
+}
+
+func CategoryAllList(ctx *gin.Context) {
+
 }
 
 func CreateCategory(ctx *gin.Context) {
@@ -55,4 +60,36 @@ func CreateCategory(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, category)
+}
+
+func EditCategory(ctx *gin.Context) {
+
+}
+
+func DelCategory(ctx *gin.Context) {
+
+}
+
+func Category(ctx *gin.Context) {
+
+}
+
+func CategoryBrand(ctx *gin.Context) {
+
+}
+
+func SaveCategoryBrand(ctx *gin.Context) {
+
+}
+
+func CategorySpecs(ctx *gin.Context) {
+
+}
+
+func SaveCategorySpecs(ctx *gin.Context) {
+
+}
+
+func CategoryParam(ctx *gin.Context) {
+
 }

@@ -9,32 +9,100 @@ import (
 func AdminApi(router *gin.RouterGroup) {
 	adminGroup := router.Group("admin/")
 	{
-		// goods相关
-		adminGroup.GET("admin/goods/specs", admin.SpecsList)                          // done
-		adminGroup.POST("admin/goods/specs", admin.CreateSpecs)                       // done
-		adminGroup.PUT("admin/goods/specs/:spec_id", admin.UpdateSpecs)               // done
-		adminGroup.DELETE("admin/goods/specs/:spec_id", admin.Specs)                  // done
-		adminGroup.GET("admin/goods/specs/:spec_id", admin.DeleteSpecs)               // done
-		adminGroup.GET("admin/goods/specs/:spec_id/values", admin.SpecsValues)        // done
-		adminGroup.POST("admin/goods/specs/:spec_id/values", admin.UpdateSpecsValues) // done
-		adminGroup.GET("admin/goods", admin.GoodsList)                                // done
+		// done 查询规格项列表
+		adminGroup.GET("admin/goods/specs", admin.SpecsList)
+		// done 添加规格项
+		adminGroup.POST("admin/goods/specs", admin.CreateSpecs)
+		// done 修改规格项
+		adminGroup.PUT("admin/goods/specs/:spec_id", admin.UpdateSpecs)
+		// done 删除规格项
+		adminGroup.DELETE("admin/goods/specs/:spec_id", admin.DeleteSpecs)
+		// done 查询一个规格项
+		adminGroup.GET("admin/goods/specs/:spec_id", admin.Specs)
+		// done 查询规格值列表
+		adminGroup.GET("admin/goods/specs/:spec_id/values", admin.SpecsValues)
+		// done 添加某规格的规格值
+		adminGroup.POST("admin/goods/specs/:spec_id/values", admin.UpdateSpecsValues)
+		// done 商品列表
+		adminGroup.GET("admin/goods", admin.GoodsList)
 		// done origin: admin/admin/goods/:goods_id/up -> admin/admin/r/goods/:goods_id/up
 		adminGroup.PUT("admin/r/goods/:goods_id/up", admin.GoodsUp)
 		// done origin: admin/admin/goods/:goods_id/under -> admin/admin/r/goods/:goods_id/under
 		adminGroup.PUT("admin/r/goods/:goods_id/under", admin.GoodsUnder)
-		adminGroup.GET("admin/goods/brands", admin.BrandList)                // done
-		adminGroup.POST("admin/goods/brands", admin.CreateBrand)             // done
-		adminGroup.GET("admin/goods/brands/:brand_id", admin.Brand)          // done
-		adminGroup.PUT("admin/goods/brands/:brand_id", admin.UpdateBrand)    // done
-		adminGroup.DELETE("admin/goods/brands/:brand_id", admin.DeleteBrand) // done
-		// done // origin: admin/admin/goods/brands/all -> admin/admin/r/goods/brands/all
+		// done 查询多个商品的基本信息
+		adminGroup.GET("admin/goods/:goods_id/detail", admin.GoodsListDetail)
+		// done 管理员批量审核商品
+		adminGroup.POST("admin/goods/batch/audit", admin.GoodsBatchAudit)
+
+		// done 查询品牌列表
+		adminGroup.GET("admin/goods/brands", admin.BrandList)
+		// done 添加品牌
+		adminGroup.POST("admin/goods/brands", admin.CreateBrand)
+		// done 查询一个品牌
+		adminGroup.GET("admin/goods/brands/:brand_id", admin.Brand)
+		// done 修改品牌
+		adminGroup.PUT("admin/goods/brands/:brand_id", admin.UpdateBrand)
+		// done 删除品牌
+		adminGroup.DELETE("admin/goods/brands/:brand_id", admin.DeleteBrand)
+		// done 查询所有品牌 // origin: admin/admin/goods/brands/all -> admin/admin/r/goods/brands/all
 		adminGroup.GET("admin/r/goods/brands/all", admin.BrandAllList)
-		adminGroup.GET("admin/goods/categories/:parent_id/children", admin.CategoryList) // done
-		adminGroup.POST("admin/goods/categories", admin.CreateCategory)                  // done
-		adminGroup.GET("admin/goodssearch/custom-words", admin.GoodsSearchCustomWord)    // done
-		adminGroup.GET("admin/goodssearch/keywords", admin.GoodsSearchKeyWord)           // done
-		adminGroup.GET("admin/goodssearch/goods-words", admin.GoodsSearchGoodsWord)      // done
-		adminGroup.POST("admin/batch/audit", admin.GoodsBatchAudit)                      // done
+
+		// done 查询某分类下的子分类列表
+		adminGroup.GET("admin/goods/categories/:parent_id/children", admin.CategoryList)
+		// 查询某分类下的全部子分类列表
+		adminGroup.GET("admin/goods/categories/:parent_id/all-children", admin.CategoryAllList)
+		// done 添加商品分类
+		adminGroup.POST("admin/goods/categories", admin.CreateCategory)
+		// 修改商品分类
+		adminGroup.PUT("admin/goods/categories/:id", admin.EditCategory)
+		// 删除商品分类
+		adminGroup.DELETE("admin/goods/categories/:id", admin.DelCategory)
+		// 查询商品分类
+		adminGroup.GET("admin/goods/categories/:id", admin.Category)
+		// 查询分类品牌
+		adminGroup.GET("admin/goods/categories/:category_id/brands", admin.CategoryBrand)
+		// 管理员操作分类绑定品牌
+		adminGroup.PUT("admin/goods/categories/:category_id/brands", admin.SaveCategoryBrand)
+		// 查询分类规格
+		adminGroup.GET("admin/goods/categories/:category_id/specs", admin.CategorySpecs)
+		// 管理员操作分类绑定规格
+		adminGroup.PUT("admin/goods/categories/:category_id/specs", admin.SaveCategorySpecs)
+		// 查询分类参数
+		adminGroup.GET("admin/goods/categories/:category_id/param", admin.CategoryParam)
+		// 商品索引初始化
+		adminGroup.GET("admin/goods/search", admin.GoodsSearchCreate)
+
+		// done 查询自定义分词列表
+		adminGroup.GET("admin/goodssearch/custom-words", admin.GoodsSearchCustomWord)
+		// 添加自定义分词
+		adminGroup.POST("admin/goodssearch/custom-words", admin.CreateGoodsSearchCustomWord)
+		// 修改自定义分词
+		adminGroup.PUT("admin/goodssearch/custom-words/:id", admin.EditGoodsSearchCustomWord)
+		// 删除自定义分词
+		adminGroup.DELETE("admin/goodssearch/custom-words/:id", admin.DelGoodsSearchCustomWord)
+		// 查询一个自定义分词
+		adminGroup.GET("admin/goodssearch/custom-words/:id", admin.FindOneGoodsSearchCustomWord)
+		// 设置ES分词库秘钥
+		adminGroup.PUT("admin/goodssearch/custom-words/secret-key", admin.CreateEsCustomWordSecretKey)
+		// 获取ES分词库秘钥
+		adminGroup.GET("admin/goodssearch/custom-words/secret-key", admin.FindEsCustomWordSecretKey)
+		// 查询商品优先级列表
+		adminGroup.GET("admin/goodssearch/priority", admin.ListGoodsSearchPriority)
+		// 修改商品优先级
+		adminGroup.PUT("admin/goodssearch/priority", admin.UpdateGoodsSearchPriority)
+
+		// done
+		adminGroup.GET("admin/goodssearch/keywords", admin.GoodsSearchKeyWord)
+		// done 查询提示词列表
+		adminGroup.GET("admin/goodssearch/goods-words", admin.GoodsSearchGoodsWord)
+		// 添加自定义提示词
+		adminGroup.POST("admin/goodssearch/goods-words", admin.CreateGoodsSearchGoodsWord)
+		// 删除提示词
+		adminGroup.POST("admin/goodssearch/goods-words/:id", admin.DelGoodsSearchGoodsWord)
+		// 修改自定义提示词
+		adminGroup.PUT("admin/goodssearch/goods-words/:id/words", admin.EditGoodsSearchGoodsWord)
+		// 修改提示词排序
+		adminGroup.PUT("admin/goodssearch/goods-words/:id/sort", admin.SortGoodsSearchGoodsWord)
 
 		// 系统相关
 		adminGroup.GET("systems/admin-users/login", admin.Login)                  // done
@@ -105,6 +173,26 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/goods/settings", admin.GoodsSetting)
 		// done 修改商品设置
 		adminGroup.POST("admin/goods/settings", admin.SaveGoodsSetting)
+		// 添加参数组
+		adminGroup.POST("admin/goods/parameter-groups", admin.CreateParameterGroups)
+		// 修改参数组
+		adminGroup.PUT("admin/goods/parameter-groups/:id", admin.EditParameterGroups)
+		// 删除参数组
+		adminGroup.DELETE("admin/goods/parameter-groups/:id", admin.DelParameterGroups)
+		// 查询参数组
+		adminGroup.GET("admin/goods/parameter-groups/:id", admin.FindParameterGroups)
+		// 参数组上移或者下移
+		adminGroup.PUT("admin/goods/parameter-groups/:group_id/sort", admin.SortParameterGroups)
+		// 添加参数
+		adminGroup.POST("admin/goods/parameters", admin.CreateParameters)
+		// 修改参数
+		adminGroup.PUT("admin/goods/parameters/:id", admin.EditParameters)
+		// 删除参数
+		adminGroup.DELETE("admin/goods/parameters/:id", admin.DelParameters)
+		// 查询参数
+		adminGroup.GET("admin/goods/parameters/:id", admin.FindParameters)
+		// 参数上移或者下移
+		adminGroup.PUT("admin/goods/parameters/:param_id/sort", admin.SortParameters)
 
 		// done 分销商分页
 		adminGroup.GET("admin/distribution/bill/member", admin.BillMemberList)
