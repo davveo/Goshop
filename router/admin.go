@@ -141,9 +141,16 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/promotion/coupons", admin.CouponList)   // done
 		adminGroup.GET("admin/promotion/pintuan", admin.PinTuanList)  // done
 
-		// 会员相关
-		adminGroup.GET("admin/members/receipts", admin.MemberReceiptList)
-		adminGroup.GET("admin/members/zpzz", admin.ZpzzList)
+		// 查询会员开票历史记录信息列表
+		adminGroup.GET("admin/members/receipts", admin.ListMemberReceipt)
+		// 查询会员开票历史记录详细
+		adminGroup.GET("admin/members/receipts/:history_id", admin.FindOneMemberReceipt)
+		// 查询会员增票资质信息列表
+		adminGroup.GET("admin/members/zpzz", admin.ListZpzz)
+		// 查询会员增票资质详细
+		adminGroup.GET("admin/members/zpzz/:id", admin.FindOneZpzz)
+		// 平台审核会员增票资质申请
+		adminGroup.POST("admin/members/zpzz/audit/:id/:status", admin.AuditZpzz)
 
 		//查询会员列表
 		adminGroup.GET("admin/members", admin.ListMember)
@@ -168,6 +175,10 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.DELETE("admin/members/comments/:comment_id", admin.DelMemberComments)
 		// 查询会员商品评论详请
 		adminGroup.GET("admin/members/comments/:comment_id", admin.FindOneMemberComments)
+		// 查询会员积分列表
+		adminGroup.GET("admin/members/point/:member_id", admin.ListMemberPoint)
+		// 修改会消费积分
+		adminGroup.PUT("admin/members/point/:member_id", admin.UpdateMemberPoint)
 
 		// 查询咨询列表
 		adminGroup.GET("admin/members/asks", admin.ListMemberAsk)

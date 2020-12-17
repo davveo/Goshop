@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func ZpzzList(ctx *gin.Context) {
+func ListZpzz(ctx *gin.Context) {
 	queryParams := make(map[string]interface{})
 
 	pageNo, _ := strconv.Atoi(ctx.DefaultQuery("page_no", "1"))
@@ -24,4 +24,12 @@ func ZpzzList(ctx *gin.Context) {
 		"page_no":    pageNo,
 		"page_size":  pageSize,
 	})
+}
+
+func FindOneZpzz(ctx *gin.Context) {
+
+}
+
+func AuditZpzz(ctx *gin.Context) {
+
 }

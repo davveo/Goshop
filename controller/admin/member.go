@@ -152,7 +152,7 @@ func MemberDepositLogList(ctx *gin.Context) {
 	})
 }
 
-func MemberReceiptList(ctx *gin.Context) {
+func ListMemberReceipt(ctx *gin.Context) {
 	queryParams := make(map[string]interface{})
 
 	pageNo, _ := strconv.Atoi(ctx.DefaultQuery("page_no", "1"))
@@ -168,4 +168,8 @@ func MemberReceiptList(ctx *gin.Context) {
 		"page_no":    pageNo,
 		"page_size":  pageSize,
 	})
+}
+
+func FindOneMemberReceipt(ctx *gin.Context) {
+
 }
