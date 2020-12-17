@@ -57,6 +57,22 @@ func ShopThemesList(ctx *gin.Context) {
 	})
 }
 
+func CreateShopThemes(ctx *gin.Context) {
+
+}
+
+func UpdateShopThemes(ctx *gin.Context) {
+
+}
+
+func DelShopThemes(ctx *gin.Context) {
+
+}
+
+func FindOneShopThemes(ctx *gin.Context) {
+
+}
+
 func DisableShop(ctx *gin.Context) {
 	shopId, _ := strconv.Atoi(ctx.Param("shop_id"))
 	if err := model.CreateShopFactory(ctx, "").DisableShop(shopId); err != nil {

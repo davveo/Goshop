@@ -22,6 +22,22 @@ func OrderList(ctx *gin.Context) {
 	})
 }
 
+func ExportOrderList(ctx *gin.Context) {
+
+}
+
+func ConfirmOrder(ctx *gin.Context) {
+
+}
+
+func CancelOrder(ctx *gin.Context) {
+
+}
+
+func ListOrderLog(ctx *gin.Context) {
+
+}
+
 func OrderDetail(ctx *gin.Context) {
 	orderId := ctx.Param("order_id")
 	fmt.Println(orderId)
@@ -47,6 +63,22 @@ func OrderComplainsList(ctx *gin.Context) {
 	})
 }
 
+func FindOneOrderComplains(ctx *gin.Context) {
+
+}
+
+func OrderComplainsAuth(ctx *gin.Context) {
+
+}
+
+func OrderComplainsComplete(ctx *gin.Context) {
+
+}
+
+func OrderComplainsCommunication(ctx *gin.Context) {
+
+}
+
 func OrderPayLogList(ctx *gin.Context) {
 	queryParams := make(map[string]interface{})
 
@@ -67,6 +99,10 @@ func OrderPayLogList(ctx *gin.Context) {
 		"page_no":    pageNo,
 		"page_size":  pageSize,
 	})
+}
+
+func ExportOrderPayLogList(ctx *gin.Context) {
+
 }
 
 func ListOrderBillStatistic(ctx *gin.Context) {

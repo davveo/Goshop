@@ -11,6 +11,22 @@ func StatisticMemberOrderQuantity(ctx *gin.Context) {
 
 }
 
+func StatisticMemberOrderMoney(ctx *gin.Context) {
+
+}
+
+func StatisticMemberOrderMoneyPage(ctx *gin.Context) {
+
+}
+
+func StatisticMemberOrderGoodsNum(ctx *gin.Context) {
+
+}
+
+func StatisticMemberOrderGoodsNumPage(ctx *gin.Context) {
+
+}
+
 func StatisticMemberOrderQuantityPage(ctx *gin.Context) {
 	year := ctx.Query("year")
 	month := ctx.Query("month")
@@ -67,6 +83,26 @@ func StatisticGoodsHotPage(ctx *gin.Context) {
 	fmt.Println(year, month, cycleType, sellerId, categoryId)
 }
 
+func StatisticGoodsHotNum(ctx *gin.Context) {
+	sellerId := ctx.Query("seller_id")
+	categoryId := ctx.Query("category_id")
+	year := ctx.Query("year")
+	month := ctx.Query("month")
+	cycleType := ctx.Query("cycle_type")
+
+	fmt.Println(year, month, cycleType, sellerId, categoryId)
+}
+
+func StatisticGoodsHotNumPage(ctx *gin.Context) {
+	sellerId := ctx.Query("seller_id")
+	categoryId := ctx.Query("category_id")
+	year := ctx.Query("year")
+	month := ctx.Query("month")
+	cycleType := ctx.Query("cycle_type")
+
+	fmt.Println(year, month, cycleType, sellerId, categoryId)
+}
+
 func StatisticGoodsSaleDetail(ctx *gin.Context) {
 	queryParams := make(map[string]interface{})
 
@@ -102,15 +138,6 @@ func StatisticGoodsCollectPage(ctx *gin.Context) {
 	fmt.Println(year, month, cycleType, sellerId, categoryId)
 }
 
-func StatisticIndustry(ctx *gin.Context) {
-	sellerId := ctx.Query("seller_id")
-	year := ctx.Query("year")
-	month := ctx.Query("month")
-	cycleType := ctx.Query("cycle_type")
-
-	fmt.Println(year, month, cycleType, sellerId)
-}
-
 func StatisticIndustryOverView(ctx *gin.Context) {
 	queryParams := make(map[string]interface{})
 
@@ -124,6 +151,18 @@ func StatisticIndustryOverView(ctx *gin.Context) {
 	cycleType := ctx.Query("cycle_type")
 
 	fmt.Println(year, month, cycleType, sellerId, categoryId, queryParams, pageSize, pageNo)
+}
+
+func StatisticIndustryOrderQuantity(ctx *gin.Context) {
+
+}
+
+func StatisticIndustryOrderMoney(ctx *gin.Context) {
+
+}
+
+func StatisticIndustryGoodsNum(ctx *gin.Context) {
+
 }
 
 func StatisticPageViewShop(ctx *gin.Context) {
@@ -144,11 +183,35 @@ func StatisticPageViewGoods(ctx *gin.Context) {
 	fmt.Println(year, month, cycleType, sellerId)
 }
 
-func StatisticPageOrder(ctx *gin.Context) {
+func StatisticOrderPage(ctx *gin.Context) {
 
 }
 
-func StatisticPageMoney(ctx *gin.Context) {
+func StatisticOrderMoney(ctx *gin.Context) {
+
+}
+
+func StatisticOrderNum(ctx *gin.Context) {
+
+}
+
+func StatisticOrderAfterSalesMoney(ctx *gin.Context) {
+
+}
+
+func StatisticOrderRegionNum(ctx *gin.Context) {
+
+}
+
+func StatisticOrderRegionMoney(ctx *gin.Context) {
+
+}
+
+func StatisticOrderUnitNum(ctx *gin.Context) {
+
+}
+
+func StatisticOrderUnitTime(ctx *gin.Context) {
 
 }
 

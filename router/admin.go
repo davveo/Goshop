@@ -119,14 +119,32 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/systems/wechat-msg-tmp/sync", admin.WechatMsgSync)  // done
 		adminGroup.GET("admin/systems/wechat-msg-tmp", admin.WechatMsg)           // done
 		adminGroup.GET("admin/systems/logi-companies", admin.LogiCompany)         // done 物流公司相关API
-
-		// 交易相关
-		adminGroup.GET("admin/trade/orders", admin.OrderList)
+		// 查询付款单列表
 		adminGroup.GET("admin/trade/orders/pay-log", admin.OrderPayLogList)
+		// 收款单导出Excel
+		adminGroup.GET("admin/trade/orders/pay-log/list", admin.ExportOrderPayLogList)
+		// 查询交易投诉表列表
 		adminGroup.GET("admin/trade/order-complains", admin.OrderComplainsList)
-		// origin: admin/admin/trade/orders/:order_id -> admin/admin/r/trade/orders/:order_id
+		// 查询一个交易投诉
+		adminGroup.GET("admin/trade/order-complains/:id", admin.FindOneOrderComplains)
+		// 审核并交由商家申诉
+		adminGroup.PUT("admin/trade/order-complains/:id/to-appeal", admin.OrderComplainsAuth)
+		// 直接仲裁结束流程
+		adminGroup.PUT("admin/trade/order-complains/:id/complete", admin.OrderComplainsComplete)
+		// 提交对话
+		adminGroup.PUT("admin/trade/order-complains/:id/communication", admin.OrderComplainsCommunication)
+		// 查询订单列表
+		adminGroup.GET("admin/trade/orders", admin.OrderList)
+		// 导出订单列表
+		adminGroup.GET("admin/trade/orders/export", admin.ExportOrderList)
+		// 查询单个订单明细 origin: admin/admin/trade/orders/:order_id -> admin/admin/r/trade/orders/:order_id
 		adminGroup.GET("admin/r/trade/orders/:order_id", admin.OrderDetail)
-
+		// 确认收款
+		adminGroup.POST("admin/trade/orders/:order_id/pay", admin.ConfirmOrder)
+		// 取消订单
+		adminGroup.POST("admin/trade/orders/:order_id/cancelled", admin.CancelOrder)
+		// 查询订单日志
+		adminGroup.GET("admin/trade/orders/:order_id/log", admin.ListOrderLog)
 		// 查询团购活动表列表
 		adminGroup.GET("admin/promotion/group-buy-actives", admin.ListGroupBuy)
 		// 添加团购活动表
@@ -253,6 +271,14 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/shops", admin.ShopList)
 		// done 获取商店主题
 		adminGroup.GET("admin/shops/themes", admin.ShopThemesList)
+		// 添加店铺模版
+		adminGroup.POST("admin/shops/themes", admin.CreateShopThemes)
+		// 修改店铺模版
+		adminGroup.PUT("admin/shops/themes/:id", admin.UpdateShopThemes)
+		// 删除店铺模版
+		adminGroup.DELETE("admin/shops/themes/:id", admin.DelShopThemes)
+		// 查找店铺模版
+		adminGroup.GET("admin/shops/themes/:id", admin.FindOneShopThemes)
 		// done 管理员禁用店铺
 		adminGroup.PUT("admin/shops/disable/:shop_id", admin.DisableShop)
 		// done 管理员恢复店铺使用
@@ -424,30 +450,78 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.PUT("admin/pages/hot-keywords/:id", admin.UpdateHotKeyWords)
 		// 删除一个热门关键字
 		adminGroup.DELETE("admin/pages/hot-keywords/:Id", admin.DelHotKeyWords)
-
-		// 数据统计相关
-		adminGroup.GET("admin/statistics/member/order/quantity", admin.StatisticMemberOrderQuantity)          // wait to do
-		adminGroup.GET("admin/statistics/member/order/quantity/page", admin.StatisticMemberOrderQuantityPage) // wait to do
-		adminGroup.GET("admin/statistics/member/increase/member", admin.StatisticMemberIncrease)              // wait to do
-		adminGroup.GET("admin/statistics/member/increase/member/page", admin.StatisticMemberIncreasePage)     // wait to do
-		adminGroup.GET("admin/statistics/goods/price/sales", admin.StatisticGoodsPrice)                       // wait to do
-		adminGroup.GET("admin/statistics/goods/hot/money", admin.StatisticGoodsHot)                           // wait to do
-		adminGroup.GET("admin/statistics/goods/hot/money/page", admin.StatisticGoodsHotPage)                  // wait to do
-		adminGroup.GET("admin/statistics/goods/sale/details", admin.StatisticGoodsSaleDetail)                 // wait to do
-		adminGroup.GET("admin/statistics/goods/collect", admin.StatisticGoodsCollect)                         // wait to do
-		adminGroup.GET("admin/statistics/goods/collect/page", admin.StatisticGoodsCollectPage)                // wait to do
-		adminGroup.GET("admin/statistics/industry/order/quantity", admin.StatisticIndustry)                   // wait to do
-		adminGroup.GET("admin/statistics/industry/overview", admin.StatisticIndustryOverView)                 // wait to do
-		adminGroup.GET("admin/statistics/page_view/shop", admin.StatisticPageViewShop)                        // wait to do
-		adminGroup.GET("admin/statistics/page_view/goods", admin.StatisticPageViewGoods)                      // wait to do
-		adminGroup.GET("admin/statistics/order/order/page", admin.StatisticPageOrder)                         // wait to do
-		adminGroup.GET("admin/statistics/order/order/money", admin.StatisticPageMoney)                        // wait to do
-		adminGroup.GET("admin/statistics/order/sales/money", admin.StatisticOrderSalesMoney)                  // wait to do
-		adminGroup.GET("admin/statistics/order/sales/total", admin.StatisticOrderSalesTotal)                  // wait to do
-		adminGroup.GET("admin/statistics/order/region/form", admin.StatisticOrderRegionForm)                  // wait to do
-		adminGroup.GET("admin/statistics/order/region/member", admin.StatisticOrderRegionMember)              // wait to do
-		adminGroup.GET("admin/statistics/order/unit/price", admin.StatisticOrderUnitPrice)                    // wait to do
-		adminGroup.GET("admin/statistics/order/return/money", admin.StatisticOrderReturnMoney)                // wait to do
+		// 会员下单量统计-》下单量
+		adminGroup.GET("admin/statistics/member/order/quantity", admin.StatisticMemberOrderQuantity)
+		// 会员下单量统计-》下单金额
+		adminGroup.GET("admin/statistics/member/order/money", admin.StatisticMemberOrderMoney)
+		// 下单金额page
+		adminGroup.GET("admin/statistics/member/order/money/page", admin.StatisticMemberOrderMoneyPage)
+		// 会员下单量统计-》下单商品数
+		adminGroup.GET("admin/statistics/member/order/goods/num", admin.StatisticMemberOrderGoodsNum)
+		// 会员下单量统计-》下单商品数page
+		adminGroup.GET("admin/statistics/member/order/goods/num/page", admin.StatisticMemberOrderGoodsNumPage)
+		// 会员下单量统计-》下单量 page
+		adminGroup.GET("admin/statistics/member/order/quantity/page", admin.StatisticMemberOrderQuantityPage)
+		// 新增会员统计
+		adminGroup.GET("admin/statistics/member/increase/member", admin.StatisticMemberIncrease)
+		// 新增会员统计 page
+		adminGroup.GET("admin/statistics/member/increase/member/page", admin.StatisticMemberIncreasePage)
+		// 价格销量统计
+		adminGroup.GET("admin/statistics/goods/price/sales", admin.StatisticGoodsPrice)
+		// 热卖商品按金额统计
+		adminGroup.GET("admin/statistics/goods/hot/money", admin.StatisticGoodsHot)
+		// 热卖商品按金额统计
+		adminGroup.GET("admin/statistics/goods/hot/money/page", admin.StatisticGoodsHotPage)
+		// 热卖商品按数量统计
+		adminGroup.GET("admin/statistics/goods/hot/num", admin.StatisticGoodsHotNum)
+		// 热卖商品按数量统计
+		adminGroup.GET("admin/statistics/goods/hot/num/page", admin.StatisticGoodsHotNumPage)
+		// 商品销售明细
+		adminGroup.GET("admin/statistics/goods/sale/details", admin.StatisticGoodsSaleDetail)
+		// 商品收藏排行
+		adminGroup.GET("admin/statistics/goods/collect", admin.StatisticGoodsCollect)
+		// 商品收藏排行
+		adminGroup.GET("admin/statistics/goods/collect/page", admin.StatisticGoodsCollectPage)
+		// 按分类统计下单量
+		adminGroup.GET("admin/statistics/industry/order/quantity", admin.StatisticIndustryOrderQuantity)
+		// 按分类统计下单商品数量
+		adminGroup.GET("admin/statistics/industry/goods/num", admin.StatisticIndustryGoodsNum)
+		// 按分类统计下单金额
+		adminGroup.GET("admin/statistics/industry/order/money", admin.StatisticIndustryOrderMoney)
+		// 概括总览
+		adminGroup.GET("admin/statistics/industry/overview", admin.StatisticIndustryOverView)
+		// 获取店铺访问量数据
+		adminGroup.GET("admin/statistics/page_view/shop", admin.StatisticPageViewShop)
+		// 获取商品访问量数据，只取前30
+		adminGroup.GET("admin/statistics/page_view/goods", admin.StatisticPageViewGoods)
+		// 其他统计=》订单统计=》下单金额
+		adminGroup.GET("admin/statistics/order/order/money", admin.StatisticOrderMoney)
+		// 其他统计=》订单统计=》下单数量
+		adminGroup.GET("admin/statistics/order/order/num", admin.StatisticOrderNum)
+		// 其他统计=》订单统计=》下单数量
+		adminGroup.GET("admin/statistics/order/order/page", admin.StatisticOrderPage)
+		// 其他统计=》销售收入统计 page
+		adminGroup.GET("admin/statistics/order/sales/money", admin.StatisticOrderSalesMoney)
+		// 其他统计=》销售收入 退款统计 page
+		adminGroup.GET("admin/statistics/order/aftersales/money", admin.StatisticOrderAfterSalesMoney)
+		// 其他统计=》销售收入总览
+		adminGroup.GET("admin/statistics/order/sales/total", admin.StatisticOrderSalesTotal)
+		// 区域分析=>下单量
+		adminGroup.GET("admin/statistics/order/region/num", admin.StatisticOrderRegionNum)
+		// 区域分析=>下单金额
+		adminGroup.GET("admin/statistics/order/region/money", admin.StatisticOrderRegionMoney)
+		// 区域分析表格=>page
+		adminGroup.GET("admin/statistics/order/region/form", admin.StatisticOrderRegionForm)
+		// 区域分析=>下单会员数
+		adminGroup.GET("admin/statistics/order/region/member", admin.StatisticOrderRegionMember)
+		// 客单价分布=>客单价分布
+		adminGroup.GET("admin/statistics/order/unit/price", admin.StatisticOrderUnitPrice)
+		// 客单价分布=>购买频次分析
+		adminGroup.GET("admin/statistics/order/unit/num", admin.StatisticOrderUnitNum)
+		// 客单价分布=>购买时段分析
+		adminGroup.GET("admin/statistics/order/unit/time", admin.StatisticOrderUnitTime)
+		// 退款统计
+		adminGroup.GET("admin/statistics/order/return/money", admin.StatisticOrderReturnMoney)
 
 		adminGroup.GET("admin/task/:task_type", admin.AdminTask) // wait to do
 		// 获取当前静态页面设置参数
