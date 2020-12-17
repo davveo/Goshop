@@ -110,3 +110,28 @@ func SavePointSetting(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, config)
 }
+
+func DistributionSetting(ctx *gin.Context) {
+	config := model.CreateSettingFactory("").Get(consts.DISTRIBUTION)
+	if config == nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"code":    http.StatusInternalServerError,
+			"message": "获取数据失败",
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, config)
+}
+
+func SaveDistributionSetting(ctx *gin.Context) {
+	body := common.ParseFromBody(ctx)
+	config, err := model.CreateSettingFactory("").Save(consts.DISTRIBUTION, body)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"code":    http.StatusInternalServerError,
+			"message": "获取数据失败",
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, config)
+}

@@ -17,6 +17,18 @@ func DistributionMember(ctx *gin.Context) {
 
 }
 
+func DistributionMemberChangeTpl(ctx *gin.Context) {
+
+}
+
+func DistributionBillOrder(ctx *gin.Context) {
+
+}
+
+func DistributionBillSellbackOrder(ctx *gin.Context) {
+
+}
+
 func DistributionBillTotalList(ctx *gin.Context) {
 	queryParams := common.ParseFromQuery(ctx)
 
@@ -30,10 +42,6 @@ func DistributionBillTotalList(ctx *gin.Context) {
 		"page_no":    pageNo,
 		"page_size":  pageSize,
 	})
-}
-
-func DistributionSetting(ctx *gin.Context) {
-
 }
 
 func DistributionWithdraw(ctx *gin.Context) {
@@ -60,5 +68,17 @@ func DistributionWithdraw(ctx *gin.Context) {
 		"page_no":    pageNo,
 		"page_size":  pageSize,
 	})
+
+}
+
+func DistributionWithdrawExport(ctx *gin.Context) {
+
+}
+
+func DistributionWithdrawBatchAuditing(ctx *gin.Context) {
+
+}
+
+func DistributionWithdrawBatchAccountPaid(ctx *gin.Context) {
 
 }

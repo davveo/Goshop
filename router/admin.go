@@ -119,20 +119,52 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.GET("admin/distribution/commission-tpl", admin.DistributionCommissionTplList)
 		// done 获取模版
 		adminGroup.GET("admin/distribution/commission-tpl/:tplId", admin.DistributionCommissionTplDetail)
-		// done 编辑模版
+		// 编辑模版
 		adminGroup.PUT("admin/distribution/commission-tpl/:tplId", admin.DistributionCommissionTplEdit)
 		// done 删除模版
 		adminGroup.DELETE("admin/distribution/commission-tpl/:tplId", admin.DistributionCommissionTplDel)
 		// 添加模版
 		adminGroup.POST("admin/distribution/commission-tpl", admin.DistributionCommissionTpl)
 
-		adminGroup.GET("admin/distribution/upgradelog", admin.DistributionUpgradeLog) // wait to do
-		adminGroup.GET("admin/distribution/member", admin.DistributionMember)         // wait to do
+		// 分销商列表
+		adminGroup.GET("admin/distribution/member", admin.DistributionMember)
+		// 修改分销商模版
+		adminGroup.PUT("admin/distribution/tpl", admin.DistributionMemberChangeTpl)
+
+		// 结算单 分销订单查询
+		adminGroup.GET("admin/distribution/order", admin.DistributionBillOrder)
+		// 结算单 分销退款订单查询
+		adminGroup.GET("admin/distribution/order/sellback", admin.DistributionBillSellbackOrder)
+
 		// done 结算单分页
 		adminGroup.GET("admin/distribution/bill/total", admin.DistributionBillTotalList)
 
-		adminGroup.GET("admin/distribution/settings", admin.DistributionSetting)        // wait to do
-		adminGroup.GET("admin/distribution/withdraw/apply", admin.DistributionWithdraw) // done
+		// done 分销设置
+		adminGroup.GET("admin/distribution/settings", admin.DistributionSetting)
+
+		// done 修改分销设置
+		adminGroup.PUT("admin/distribution/settings", admin.SaveDistributionSetting)
+
+		// 订单金额统计
+		adminGroup.GET("admin/distribution/statistic/order", admin.DistributionStatisticOrder)
+		// 订单数量统计
+		adminGroup.GET("admin/distribution/statistic/count", admin.DistributionStatisticCount)
+		// 订单返现统计
+		adminGroup.GET("admin/distribution/statistic/push", admin.DistributionStatisticPush)
+		// 店铺返现统计
+		adminGroup.GET("admin/distribution/statistic/push/seller", admin.DistributionStatisticPushSeller)
+
+		// 获取升级日志
+		adminGroup.GET("admin/distribution/upgradelog", admin.DistributionUpgradeLog)
+
+		// done 提现申请审核列表
+		adminGroup.GET("admin/distribution/withdraw/apply", admin.DistributionWithdraw)
+		// 导出提现申请
+		adminGroup.GET("admin/distribution/withdraw/export", admin.DistributionWithdrawExport)
+		// 批量审核提现申请
+		adminGroup.POST("admin/distribution/withdraw/batch/auditing", admin.DistributionWithdrawBatchAuditing)
+		// 批量设为已转账
+		adminGroup.POST("admin/distribution/withdraw/batch/account/paid", admin.DistributionWithdrawBatchAccountPaid)
 
 		adminGroup.GET("admin/payment/payment-methods", admin.PaymentMethod) // wait to do
 		adminGroup.GET("admin/index/page", admin.Index)                      // done
