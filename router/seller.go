@@ -103,5 +103,17 @@ func SellerApi(router *gin.RouterGroup) {
 		sellerGroup.GET("seller/goods/skus/:sku_ids/details", seller.FindOneGoodsSku)
 		// 查询SKU列表
 		sellerGroup.GET("seller/goods/skus", seller.ListGoodsSku)
+		// 根据分类id查询规格包括规格值
+		sellerGroup.GET("seller/goods/categories/{category_id}/specs", seller.ListGoodsCategorySpecs)
+		// 商家自定义某分类的规格项
+		sellerGroup.POST("seller/goods/categories/{category_id}/specs", seller.UpdateGoodsCategorySpecs)
+		// 商家自定义某规格的规格值
+		sellerGroup.POST("seller/goods/specs/{spec_id}/values", seller.UpdateGoodsCategorySpecsValue)
+		// 查询商品标签列表
+		sellerGroup.GET("seller/goods/tags", seller.ListGoodsTag)
+		// 查询某标签下的商品
+		sellerGroup.GET("seller/goods/tags/:tag_id/goods", seller.ListTargetGoodsTag)
+		// 保存某标签下的商品
+		sellerGroup.PUT("seller/goods/:tag_id/goods/:goods_ids", seller.UpdateGoodsTag)
 	}
 }
