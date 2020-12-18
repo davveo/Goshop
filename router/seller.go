@@ -237,5 +237,17 @@ func SellerApi(router *gin.RouterGroup) {
 		sellerGroup.POST("seller/promotion/pintuan/goods/:id", seller.UpdatePinTuanGoods)
 		// 获取活动参与的商品
 		sellerGroup.GET("seller/promotion/pintuan/goods/:id", seller.ListPinTuanGoods)
+		// 查询限时抢购申请商品列表
+		sellerGroup.GET("seller/promotion/seckill-applys", seller.ListSeckillApply)
+		// 添加限时抢购申请
+		sellerGroup.POST("seller/promotion/seckill-applys", seller.CreateSeckillApply)
+		// 删除限时抢购申请
+		sellerGroup.DELETE("seller/promotion/seckill-applys/:id", seller.DelSeckillApply)
+		// 查询一个限时抢购申请
+		sellerGroup.GET("seller/promotion/seckill-applys/:id", seller.FindOneSeckillApply)
+		// 查询所有的限时抢购活动
+		sellerGroup.GET("seller/promotion/seckill-applys/seckill", seller.ListAllSeckill)
+		// 查询一个限时抢购活动
+		sellerGroup.POST("seller/promotion/seckill-applys/:seckill_id/seckill", seller.FindOneTargetSeckillApply)
 	}
 }
