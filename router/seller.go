@@ -59,5 +59,49 @@ func SellerApi(router *gin.RouterGroup) {
 		sellerGroup.GET("seller/goods/category/:category_id/params", seller.ListGoodsCategoryParams)
 		// 修改商品，获取所选分类关联的品牌信息
 		sellerGroup.GET("seller/goods/category/:category_id/brands", seller.ListGoodsCategoryBrands)
+		// 查询草稿商品列表
+		sellerGroup.GET("seller/goods/draft-goods", seller.ListGoodsDraft)
+		// 添加商品
+		sellerGroup.POST("seller/goods/draft-goods", seller.CreateGoodsDraft)
+		// 修改草稿商品
+		sellerGroup.PUT("seller/goods/draft-goods/:draft_goods_id", seller.UpdateGoodsDraft)
+		// 删除草稿商品
+		sellerGroup.DELETE("seller/goods/draft-goods/:draft_goods_id", seller.DelGoodsDraft)
+		// 查询一个草稿商品,商家编辑草稿商品使用
+		sellerGroup.GET("seller/goods/draft-goods/:draft_goods_id", seller.FindOneGoodsDraft)
+		// 查询草稿商品关联的参数，包括没有添加的参数
+		sellerGroup.GET("seller/goods/draft-goods/:draft_goods_id/params", seller.FindOneGoodsDraftParams)
+		// 查询草稿箱商品sku信息
+		sellerGroup.GET("seller/goods/draft-goods/:draft_goods_id/skus", seller.FindOneGoodsDraftSku)
+		// 草稿箱商品上架接口
+		sellerGroup.PUT("seller/goods/draft-goods/:draft_goods_id/market", seller.UpdateGoodsDraftMarket)
+		// 商家单独维护库存接口
+		sellerGroup.PUT("seller/goods/:goods_id/quantity", seller.UpdateGoodsQuantity)
+		// 查询商品列表
+		sellerGroup.GET("seller/goods", seller.ListGoods)
+		// 查询预警商品列表
+		sellerGroup.GET("seller/goods/warning", seller.ListGoodsWarning)
+		// 添加商品
+		sellerGroup.POST("seller/goods", seller.CreateGoods)
+		// 修改商品
+		sellerGroup.PUT("seller/goods/:id", seller.UpdateGoods)
+		// 查询一个商品,商家编辑时使用
+		sellerGroup.GET("seller/goods/:id", seller.FindOneGoods)
+		// 商家下架商品
+		sellerGroup.PUT("seller/goods/:goods_ids/under", seller.UpdateGoodsUnder)
+		// 商家将商品放入回收站
+		sellerGroup.PUT("seller/goods/:goods_ids/recycle", seller.UpdateGoodsRecycle)
+		// 商家还原商品
+		sellerGroup.PUT("seller/goods/:goods_ids/revert", seller.UpdateGoodsRevert)
+		// 商家彻底删除商品
+		sellerGroup.DELETE("seller/goods/:goods_ids", seller.DelGoods)
+		// 查询多个商品的基本信息
+		sellerGroup.GET("seller/goods/:goods_ids/details", seller.FindMoreGoods)
+		// 商品sku信息信息获取api
+		sellerGroup.GET("seller/goods/:goods_id/skus", seller.ListTargetGoodsSku)
+		// 查询多个商品的基本信息
+		sellerGroup.GET("seller/goods/skus/:sku_ids/details", seller.FindOneGoodsSku)
+		// 查询SKU列表
+		sellerGroup.GET("seller/goods/skus", seller.ListGoodsSku)
 	}
 }
