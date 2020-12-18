@@ -189,5 +189,53 @@ func SellerApi(router *gin.RouterGroup) {
 		sellerGroup.DELETE("seller/promotion/full-discounts/:id", seller.DelFullDiscount)
 		// 查询一个满优惠活动
 		sellerGroup.GET("seller/promotion/full-discounts/:id", seller.FindOneFullDiscount)
+		// 查询团购分类列表
+		sellerGroup.GET("seller/promotion/group-buy-cats", seller.ListGroupBuyCat)
+		// 查询团购商品列表
+		sellerGroup.GET("seller/promotion/group-buy-goods", seller.ListGroupBuyGoods)
+		// 添加团购商品
+		sellerGroup.POST("seller/promotion/group-buy-goods", seller.CreateGroupBuyGoods)
+		// 修改团购商品
+		sellerGroup.PUT("seller/promotion/group-buy-goods/:id", seller.UpdateGroupBuyGoods)
+		// 删除团购商品
+		sellerGroup.DELETE("seller/promotion/group-buy-goods/:id", seller.DelGroupBuyGoods)
+		// 查询一个团购商品
+		sellerGroup.GET("seller/promotion/group-buy-goods/:id", seller.FindOneGroupBuyGoods)
+		// 查询可以参与的团购活动列表
+		sellerGroup.GET("seller/promotion/group-buy-goods/active", seller.FindActiveGroupBuyGoods)
+		// 查询第二件半价列表
+		sellerGroup.GET("seller/promotion/half-prices", seller.ListHalfPrices)
+		// 添加第二件半价
+		sellerGroup.POST("seller/promotion/half-prices", seller.CreateHalfPrices)
+		// 修改第二件半价
+		sellerGroup.PUT("seller/promotion/half-prices/:id", seller.UpdateHalfPrices)
+		// 删除第二件半价
+		sellerGroup.DELETE("seller/promotion/half-prices/:id", seller.DelHalfPrices)
+		// 查询一个第二件半价
+		sellerGroup.GET("seller/promotion/half-prices/:id", seller.FindOneHalfPrices)
+		// 查询单品立减列表
+		sellerGroup.GET("seller/promotion/minus", seller.ListMinus)
+		// 添加单品立减
+		sellerGroup.POST("seller/promotion/minus", seller.CreateMinus)
+		// 修改单品立减
+		sellerGroup.PUT("seller/promotion/minus/:id", seller.UpdateMinus)
+		// 删除单品立减
+		sellerGroup.DELETE("seller/promotion/minus/:id", seller.DelMinus)
+		// 查询一个单品立减
+		sellerGroup.GET("seller/promotion/minus/:id", seller.FindOneMinus)
+		// 查询活动表列
+		sellerGroup.GET("seller/promotion/pintuan", seller.ListPinTuan)
+		// 添加活动
+		sellerGroup.POST("seller/promotion/pintuan", seller.CreatePinTuan)
+		// 修改活动
+		sellerGroup.PUT("seller/promotion/pintuan/:id", seller.UpdatePinTuan)
+		// 删除活动
+		sellerGroup.DELETE("seller/promotion/pintuan/:id", seller.DelPinTuan)
+		// 查询一个活动
+		sellerGroup.GET("seller/promotion/pintuan/:id", seller.FindOnePinTuan)
+		// 修改活动参与的商品
+		sellerGroup.POST("seller/promotion/pintuan/goods/:id", seller.UpdatePinTuanGoods)
+		// 获取活动参与的商品
+		sellerGroup.GET("seller/promotion/pintuan/goods/:id", seller.ListPinTuanGoods)
 	}
 }
