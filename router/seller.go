@@ -9,18 +9,27 @@ import (
 func SellerApi(router *gin.RouterGroup) {
 	sellerGroup := router.Group("seller/")
 	{
-		sellerGroup.GET("seller/members/reply", seller.Reply) // 查询会员商品咨询回复列表
-
-		// 咨询相关API
-		sellerGroup.GET("seller/members/asks", seller.Ask)                 // 查询咨询列表
-		sellerGroup.GET("seller/members/s/:ask_id", seller.AskDetail)      // 查询会员商品咨询详请  members/{ask_id}
-		sellerGroup.GET("seller/members/d/:ask_id/reply", seller.AskReply) // 商家回复会员商品咨询 members/{ask_id}/reply
+		// 查询会员商品咨询回复列表
+		sellerGroup.GET("seller/members/reply", seller.Reply)
+		// 查询咨询列表
+		sellerGroup.GET("seller/members/asks", seller.Ask)
+		// 查询会员商品咨询详请
+		sellerGroup.GET("seller/members/s/:ask_id", seller.AskDetail)
+		// 商家回复会员商品咨询
+		sellerGroup.GET("seller/members/d/:ask_id/reply", seller.AskReply)
+		// 查询评论列表
+		sellerGroup.GET("seller/members/comments", seller.ListComments)
+		// 回复评论
+		sellerGroup.POST("seller/members/comments/:comment_id/reply", seller.CommentReply)
+		// 查询商品评论详请
+		sellerGroup.GET("seller/members/comments/:comment_id", seller.FindOneComment)
+		// 注销会员登录
+		sellerGroup.GET("seller/members/logout", seller.MemberLogout)
 
 		//商家登录API
-		sellerGroup.GET("seller/login", seller.Login)                             // 用户名（手机号）/密码登录API
-		sellerGroup.POST("seller/login/smscode/:mobile", seller.SendLoginSmsCode) //发送验证码
-		sellerGroup.POST("seller/login/{mobile}", seller.MobileLogin)             // 手机号码登录API
-
+		sellerGroup.GET("seller/login", seller.Login)                                   // 用户名（手机号）/密码登录API
+		sellerGroup.POST("seller/login/smscode/:mobile", seller.SendLoginSmsCode)       //发送验证码
+		sellerGroup.POST("seller/login/{mobile}", seller.MobileLogin)                   // 手机号码登录API
 		sellerGroup.POST("seller/register/smscode/:mobile", seller.SendRegisterSmsCode) //
 
 		// 获取申请售后服务记录列表
@@ -115,5 +124,23 @@ func SellerApi(router *gin.RouterGroup) {
 		sellerGroup.GET("seller/goods/tags/:tag_id/goods", seller.ListTargetGoodsTag)
 		// 保存某标签下的商品
 		sellerGroup.PUT("seller/goods/:tag_id/goods/:goods_ids", seller.UpdateGoodsTag)
+		// 商家查看我的账单列表
+		sellerGroup.GET("seller/order/bills", seller.ListOrderBill)
+		// 商家查看某账单详细
+		sellerGroup.GET("seller/order/bills/:bill_id", seller.FindOneOrderBill)
+		// 卖家对账单进行下一步操作
+		sellerGroup.PUT("seller/order/bills/:bill_id/next", seller.OrderBillNext)
+		// 查看账单中的订单列表或者退款单列表
+		sellerGroup.GET("seller/order/bills/:bill_id/:bill_type", seller.FindOrderBillByType)
+		// 导出某账单详细
+		sellerGroup.GET("seller/order/bills/:bill_id/export", seller.ExportOrderBill)
+		// 查询会员开票历史记录信息列表
+		sellerGroup.GET("seller/members/receipts", seller.ListMemberReceipts)
+		// 查询会员开票历史记录详细
+		sellerGroup.GET("seller/members/receipts/:history_id", seller.FindOneMemberReceipts)
+		// 商家开具发票-增值税普通发票和增值税专用发票
+		sellerGroup.POST("seller/members/receipts/:history_id/logi", seller.CreateMemberReceipts)
+		// 商家开具发票-上传电子普通发票附件
+		sellerGroup.POST("seller/members/receipts/upload/files", seller.UploadMemberReceipts)
 	}
 }
