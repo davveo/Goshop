@@ -153,5 +153,41 @@ func SellerApi(router *gin.RouterGroup) {
 		sellerGroup.POST("seller/members/receipts/:history_id/logi", seller.CreateMemberReceipts)
 		// 商家开具发票-上传电子普通发票附件
 		sellerGroup.POST("seller/members/receipts/upload/files", seller.UploadMemberReceipts)
+		// 查询优惠券列表
+		sellerGroup.GET("seller/promotion/coupons", seller.ListCoupons)
+		// 添加优惠券
+		sellerGroup.POST("seller/promotion/coupons", seller.CreateCoupons)
+		// 修改优惠券
+		sellerGroup.PUT("seller/promotion/coupons/:id", seller.UpdateCoupons)
+		// 删除优惠券
+		sellerGroup.DELETE("seller/promotion/coupons/:id", seller.DelCoupons)
+		// 查询一个优惠券
+		sellerGroup.GET("seller/promotion/coupons/:id", seller.FindOneCoupons)
+		// 根据状态获取优惠券数据集合
+		sellerGroup.GET("seller/promotion/coupons/:status/list", seller.FindCouponsByStatus)
+		// 查询某分类下的子分类列表
+		sellerGroup.GET("seller/promotion/exchange-cats/:parent_id/children", seller.ListExchangeCat)
+		// 查询满优惠赠品列表
+		sellerGroup.GET("seller/promotion/full-discount-gifts", seller.ListFullDiscountGifts)
+		// 添加满优惠赠品
+		sellerGroup.POST("seller/promotion/full-discount-gifts", seller.CreateFullDiscountGifts)
+		// 修改满优惠赠品
+		sellerGroup.PUT("seller/promotion/full-discount-gifts/:id", seller.UpdateFullDiscountGifts)
+		// 删除满优惠赠品
+		sellerGroup.DELETE("seller/promotion/full-discount-gifts/:id", seller.DelFullDiscountGifts)
+		// 查询一个满优惠赠品
+		sellerGroup.GET("seller/promotion/full-discount-gifts/:id", seller.FindOneFullDiscountGifts)
+		// 查询满优惠赠品集合
+		sellerGroup.GET("seller/promotion/full-discount-gifts/all", seller.FindAllFullDiscountGifts)
+		// 查询满优惠活动列表
+		sellerGroup.GET("seller/promotion/full-discounts", seller.ListFullDiscount)
+		// 添加满优惠活动
+		sellerGroup.POST("seller/promotion/full-discounts", seller.CreateFullDiscount)
+		// 修改满优惠活动
+		sellerGroup.PUT("seller/promotion/full-discounts/:id", seller.UpdateFullDiscount)
+		// 删除满优惠活动
+		sellerGroup.DELETE("seller/promotion/full-discounts/:id", seller.DelFullDiscount)
+		// 查询一个满优惠活动
+		sellerGroup.GET("seller/promotion/full-discounts/:id", seller.FindOneFullDiscount)
 	}
 }
