@@ -9,3 +9,7 @@ func Register() {
 func SendRegisterSmsCode(ctx *gin.Context) {
 
 }
+
+func RegisterForPC(ctx *gin.Context) {
+
+}

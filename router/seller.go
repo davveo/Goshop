@@ -25,13 +25,24 @@ func SellerApi(router *gin.RouterGroup) {
 		sellerGroup.GET("seller/members/comments/:comment_id", seller.FindOneComment)
 		// 注销会员登录
 		sellerGroup.GET("seller/members/logout", seller.MemberLogout)
-
-		//商家登录API
-		sellerGroup.GET("seller/login", seller.Login)                                   // 用户名（手机号）/密码登录API
-		sellerGroup.POST("seller/login/smscode/:mobile", seller.SendLoginSmsCode)       //发送验证码
-		sellerGroup.POST("seller/login/{mobile}", seller.MobileLogin)                   // 手机号码登录API
-		sellerGroup.POST("seller/register/smscode/:mobile", seller.SendRegisterSmsCode) //
-
+		// 用户名（手机号）/密码登录API
+		sellerGroup.GET("seller/login", seller.Login)
+		//发送验证码
+		sellerGroup.POST("seller/login/smscode/:mobile", seller.SendLoginSmsCode)
+		// 手机号码登录API
+		sellerGroup.POST("seller/login/{mobile}", seller.MobileLogin)
+		// 发送验证码
+		sellerGroup.POST("seller/register/smscode/:mobile", seller.SendRegisterSmsCode)
+		// PC注册
+		sellerGroup.POST("seller/register/pc", seller.RegisterForPC)
+		// 验证手机验证码
+		sellerGroup.GET("seller/check/smscode/{mobile}", seller.CheckSmsCode)
+		// 用户名重复校验
+		sellerGroup.GET("seller/check/username/{username}", seller.CheckUserName)
+		// 手机号重复校验
+		sellerGroup.GET("seller/check/mobile/{mobile}", seller.CheckMobile)
+		// 刷新token
+		sellerGroup.POST("seller/check/token", seller.CheckToken)
 		// 获取申请售后服务记录列表
 		sellerGroup.GET("seller/after-sales", seller.ListAfterSales)
 		// 获取售后服务详细信息
