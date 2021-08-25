@@ -10,7 +10,7 @@
 mq相关参考:
     https://github.com/lzle/rabbitmq-go
    
- WaitToDO
+ Wait ToDO
  > 字段的绑定与创建数据、编辑数据
 
 计划
