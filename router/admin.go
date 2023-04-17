@@ -45,28 +45,28 @@ func AdminApi(router *gin.RouterGroup) {
 		adminGroup.DELETE("admin/goods/brands/:brand_id", admin.DeleteBrand)
 		// done 查询所有品牌 // origin: admin/admin/goods/brands/all -> admin/admin/r/goods/brands/all
 		adminGroup.GET("admin/r/goods/brands/all", admin.BrandAllList)
-		// done 查询某分类下的子分类列表
-		adminGroup.GET("admin/goods/categories/:parent_id/children", admin.CategoryList)
-		// 查询某分类下的全部子分类列表
-		adminGroup.GET("admin/goods/categories/:parent_id/all-children", admin.CategoryAllList)
+		// done 查询某分类下的子分类列表 origin: admin/admin/goods/categories/:parent_id/children
+		adminGroup.GET("admin/goods/categories/r/:parent_id/children", admin.CategoryList)
+		// 查询某分类下的全部子分类列表 origin: admin/admin/goods/categories/:parent_id/all-children
+		adminGroup.GET("admin/goods/categories/r/:parent_id/all-children", admin.CategoryAllList)
 		// done 添加商品分类
 		adminGroup.POST("admin/goods/categories", admin.CreateCategory)
 		// 修改商品分类
 		adminGroup.PUT("admin/goods/categories/:id", admin.EditCategory)
 		// 删除商品分类
 		adminGroup.DELETE("admin/goods/categories/:id", admin.DelCategory)
-		// 查询商品分类
-		adminGroup.GET("admin/goods/categories/:id", admin.Category)
-		// 查询分类品牌
-		adminGroup.GET("admin/goods/categories/:category_id/brands", admin.CategoryBrand)
-		// 管理员操作分类绑定品牌
-		adminGroup.PUT("admin/goods/categories/:category_id/brands", admin.SaveCategoryBrand)
-		// 查询分类规格
-		adminGroup.GET("admin/goods/categories/:category_id/specs", admin.CategorySpecs)
-		// 管理员操作分类绑定规格
-		adminGroup.PUT("admin/goods/categories/:category_id/specs", admin.SaveCategorySpecs)
-		// 查询分类参数
-		adminGroup.GET("admin/goods/categories/:category_id/param", admin.CategoryParam)
+		// 查询商品分类 origin: admin/admin/goods/categories/:id
+		adminGroup.GET("admin/goods/f/s/categories/:id", admin.Category)
+		// 查询分类品牌 origin: admin/admin/goods/categories/:category_id/brands
+		adminGroup.GET("admin/goods/categories/g/r/:category_id/brands", admin.CategoryBrand)
+		// 管理员操作分类绑定品牌 origin: admin/admin/goods/categories/:category_id/brands
+		adminGroup.PUT("admin/goods/categories/g/r/:category_id/brands", admin.SaveCategoryBrand)
+		// 查询分类规格 origin: admin/admin/goods/categories/:category_id/specs
+		adminGroup.GET("admin/goods/categories/t/r/:category_id/specs", admin.CategorySpecs)
+		// 管理员操作分类绑定规格 origin: admin/admin/goods/categories/:category_id/specs
+		adminGroup.PUT("admin/goods/categories/t/r/:category_id/specs", admin.SaveCategorySpecs)
+		// 查询分类参数 origin: admin/admin/goods/categories/:category_id/param
+		adminGroup.GET("admin/goods/categories/r/f/:category_id/param", admin.CategoryParam)
 		// 商品索引初始化
 		adminGroup.GET("admin/goods/search", admin.GoodsSearchCreate)
 		// done 查询自定义分词列表
@@ -308,7 +308,7 @@ func AdminApi(router *gin.RouterGroup) {
 		// 查询会员
 		adminGroup.GET("admin/members/:id", admin.FindOneMember)
 		// 查询多个会员的基本信息
-		adminGroup.GET("admin/members/:member_ids/list", admin.FindMoreMember)
+		//adminGroup.GET("admin/members/:member_ids/list", admin.FindMoreMember)
 		// 修改会员
 		adminGroup.PUT("admin/members/:id", admin.UpdateMember)
 		// 恢复会员
@@ -382,7 +382,7 @@ func AdminApi(router *gin.RouterGroup) {
 		// 查询参数组
 		adminGroup.GET("admin/goods/parameter-groups/:id", admin.FindParameterGroups)
 		// 参数组上移或者下移
-		adminGroup.PUT("admin/goods/parameter-groups/:group_id/sort", admin.SortParameterGroups)
+		//adminGroup.PUT("admin/goods/parameter-groups/:group_id/sort", admin.SortParameterGroups)
 		// 添加参数
 		adminGroup.POST("admin/goods/parameters", admin.CreateParameters)
 		// 修改参数
@@ -392,7 +392,7 @@ func AdminApi(router *gin.RouterGroup) {
 		// 查询参数
 		adminGroup.GET("admin/goods/parameters/:id", admin.FindParameters)
 		// 参数上移或者下移
-		adminGroup.PUT("admin/goods/parameters/:param_id/sort", admin.SortParameters)
+		//adminGroup.PUT("admin/goods/parameters/:param_id/sort", admin.SortParameters)
 		// done 分销商分页
 		adminGroup.GET("admin/distribution/bill/member", admin.BillMemberList)
 		// done 获取某个业绩详情  admin/distribution/bill/member/:id->admin/r/distribution/bill/member/:id
@@ -656,7 +656,7 @@ func AdminApi(router *gin.RouterGroup) {
 		// 删除角色
 		adminGroup.DELETE("admin/systems/roles/:id", admin.DelRoles)
 		// 查询一个角色表
-		adminGroup.GET("admin/systems/roles/:id", admin.FindOneRoles)
+		//adminGroup.GET("admin/systems/roles/:id", admin.FindOneRoles)
 		// done 根据角色id查询所拥有的菜单权限
 		adminGroup.GET("admin/systems/roles/:roleId/checked", admin.RoleCheck)
 		// 查询敏感词列表

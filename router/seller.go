@@ -104,21 +104,21 @@ func SellerApi(router *gin.RouterGroup) {
 		// 添加商品
 		sellerGroup.POST("seller/goods", seller.CreateGoods)
 		// 修改商品
-		sellerGroup.PUT("seller/goods/:id", seller.UpdateGoods)
+		//sellerGroup.PUT("seller/goods/:id", seller.UpdateGoods)
 		// 查询一个商品,商家编辑时使用
-		sellerGroup.GET("seller/goods/:id", seller.FindOneGoods)
+		//sellerGroup.GET("seller/goods/:id", seller.FindOneGoods)
 		// 商家下架商品
-		sellerGroup.PUT("seller/goods/:goods_ids/under", seller.UpdateGoodsUnder)
+		//sellerGroup.PUT("seller/goods/:goods_ids/under", seller.UpdateGoodsUnder)
 		// 商家将商品放入回收站
-		sellerGroup.PUT("seller/goods/:goods_ids/recycle", seller.UpdateGoodsRecycle)
+		//sellerGroup.PUT("seller/goods/:goods_ids/recycle", seller.UpdateGoodsRecycle)
 		// 商家还原商品
-		sellerGroup.PUT("seller/goods/:goods_ids/revert", seller.UpdateGoodsRevert)
+		//sellerGroup.PUT("seller/goods/:goods_ids/revert", seller.UpdateGoodsRevert)
 		// 商家彻底删除商品
 		sellerGroup.DELETE("seller/goods/:goods_ids", seller.DelGoods)
 		// 查询多个商品的基本信息
 		sellerGroup.GET("seller/goods/:goods_ids/details", seller.FindMoreGoods)
 		// 商品sku信息信息获取api
-		sellerGroup.GET("seller/goods/:goods_id/skus", seller.ListTargetGoodsSku)
+		//sellerGroup.GET("seller/goods/:goods_id/skus", seller.ListTargetGoodsSku)
 		// 查询多个商品的基本信息
 		sellerGroup.GET("seller/goods/skus/:sku_ids/details", seller.FindOneGoodsSku)
 		// 查询SKU列表
@@ -134,7 +134,7 @@ func SellerApi(router *gin.RouterGroup) {
 		// 查询某标签下的商品
 		sellerGroup.GET("seller/goods/tags/:tag_id/goods", seller.ListTargetGoodsTag)
 		// 保存某标签下的商品
-		sellerGroup.PUT("seller/goods/:tag_id/goods/:goods_ids", seller.UpdateGoodsTag)
+		//sellerGroup.PUT("seller/goods/:tag_id/goods/:goods_ids", seller.UpdateGoodsTag)
 		// 商家查看我的账单列表
 		sellerGroup.GET("seller/order/bills", seller.ListOrderBill)
 		// 商家查看某账单详细
@@ -164,7 +164,7 @@ func SellerApi(router *gin.RouterGroup) {
 		// 查询一个优惠券
 		sellerGroup.GET("seller/promotion/coupons/:id", seller.FindOneCoupons)
 		// 根据状态获取优惠券数据集合
-		sellerGroup.GET("seller/promotion/coupons/:status/list", seller.FindCouponsByStatus)
+		//sellerGroup.GET("seller/promotion/coupons/:status/list", seller.FindCouponsByStatus)
 		// 查询某分类下的子分类列表
 		sellerGroup.GET("seller/promotion/exchange-cats/:parent_id/children", seller.ListExchangeCat)
 		// 查询满优惠赠品列表
